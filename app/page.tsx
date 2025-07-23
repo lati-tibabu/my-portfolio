@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   FiMail,
@@ -48,10 +49,13 @@ export default function Home() {
           </div>
         </div>
         <div className="flex-1 flex justify-center md:justify-end">
-          <img
+          <Image
             src="/me3.png"
             alt="Lati Tibabu"
+            width={384}
+            height={384}
             className="bg-blue-500/10 w-80 h-80 md:w-96 md:h-96 object-cover rounded-full shadow-xl grayscale hover:grayscale-0 transition-all duration-500 transform hover:scale-105"
+            priority
           />
         </div>
       </div>
@@ -67,7 +71,7 @@ export default function Home() {
             I&apos;ve primarily focused on the <strong>backend</strong>, designing robust APIs, optimizing databases, and ensuring seamless communication between system components. However, my journey is constantly evolving as I embrace the frontend, aiming to become a truly <strong>full-stack developer</strong>, one project at a time.
           </p>
           <p>
-            I&apos;m driven by a simple philosophy: <strong>build things that work, and learn relentlessly through the process.</strong> Whether it's architecting systems for student productivity or contributing to internal tools, I&apos;m always asking: "How can this be simpler? How can it be clearer?" This portfolio is a reflection of that continuous cycle of building, debugging, and growing.
+            I&apos;m driven by a simple philosophy: <strong>build things that work, and learn relentlessly through the process.</strong> Whether it&apos;s architecting systems for student productivity or contributing to internal tools, I&apos;m always asking: &quot;How can this be simpler? How can it be clearer?&quot; This portfolio is a reflection of that continuous cycle of building, debugging, and growing.
           </p>
         </div>
       </section>
