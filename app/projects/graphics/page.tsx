@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { Mulish } from "next/font/google";
 import DialogModal from "@/app/components/DialogModal";
+import { FiArrowLeft, FiHome } from "react-icons/fi";
 
 
 const mulish = Mulish({
@@ -45,20 +47,29 @@ export default function GraphicsPage() {
       </h1>
 
       {/* back to home page */}
-      <button className="text-blue-500 hover:underline" onClick={() => window.history.back()}>
-        Back to Home
-      </button>
+      <div>
+        <div
+          className="flex items-center cursor-pointer text-blue-500 hover:underline w-fit mx-auto text-3xl"
+          onClick={() => window.history.back()}
+        >
+          <FiHome />
+          Back to Home
+        </div>
+      </div>
       <div className="max-w-4xl mx-auto">
         <p className="text-center text-2xl">
           Here you can find my graphics design projects.
         </p>
         <div className="columns-2 sm:columns-3 md:columns-4 gap-4 p-4">
           {images.map((img) => (
-            <img
+            <Image
               key={img.src}
               className="mb-4 w-full rounded-lg cursor-pointer"
               src={img.src}
               alt={img.alt}
+              width={400}
+              height={400}
+              style={{ objectFit: "cover" }}
               onClick={() => setSelectedImage(img)}
             />
           ))}
@@ -69,10 +80,13 @@ export default function GraphicsPage() {
         onClose={() => setSelectedImage(null)}
       >
         {selectedImage && (
-          <img
+          <Image
             className="max-w-full max-h-[70vh] mx-auto"
             src={selectedImage.src}
             alt={selectedImage.alt}
+            width={800}
+            height={800}
+            style={{ objectFit: "contain" }}
           />
         )}
       </DialogModal>

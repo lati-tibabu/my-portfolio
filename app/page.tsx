@@ -24,7 +24,7 @@ export default function Home() {
       <div className="flex flex-col md:flex-row items-center justify-between gap-10 mb-20 relative z-10">
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-5xl md:text-6xl font-extrabold mb-4 leading-tight animate-fade-in-down">
-            Hello, I'm <span className="text-blue-600">Lati Tibabu</span>
+            Hello, I&apos;m <span className="text-blue-600">Lati Tibabu</span>
           </h1>
           <h2 className="text-2xl md:text-3xl font-light mb-6 animate-fade-in-right">
             I’m learning to build things, one{" "}
@@ -64,10 +64,10 @@ export default function Home() {
             My name is <strong className="text-blue-600">Lati Tibabu</strong>. As a Computer Science and Engineering graduate based in Addis Ababa, my passion lies in bringing ideas to life through code.
           </p>
           <p className="mb-4">
-            I've primarily focused on the <strong>backend</strong>, designing robust APIs, optimizing databases, and ensuring seamless communication between system components. However, my journey is constantly evolving as I embrace the frontend, aiming to become a truly <strong>full-stack developer</strong>, one project at a time.
+            I&apos;ve primarily focused on the <strong>backend</strong>, designing robust APIs, optimizing databases, and ensuring seamless communication between system components. However, my journey is constantly evolving as I embrace the frontend, aiming to become a truly <strong>full-stack developer</strong>, one project at a time.
           </p>
           <p>
-            I'm driven by a simple philosophy: <strong>build things that work, and learn relentlessly through the process.</strong> Whether it's architecting systems for student productivity or contributing to internal tools, I'm always asking: "How can this be simpler? How can it be clearer?" This portfolio is a reflection of that continuous cycle of building, debugging, and growing.
+            I&apos;m driven by a simple philosophy: <strong>build things that work, and learn relentlessly through the process.</strong> Whether it's architecting systems for student productivity or contributing to internal tools, I&apos;m always asking: "How can this be simpler? How can it be clearer?" This portfolio is a reflection of that continuous cycle of building, debugging, and growing.
           </p>
         </div>
       </section>
@@ -332,9 +332,9 @@ export default function Home() {
 
       {/* Contact */}
       <section className="pb-10 animate-fade-in">
-        <h2 className="text-4xl font-bold mb-6 text-center text-blue-800">Let's Connect!</h2>
+        <h2 className="text-4xl font-bold mb-6 text-center text-blue-800">Let&apos;s Connect!</h2>
         <p className="text-center text-gray-700 mb-8 text-lg max-w-2xl mx-auto">
-          I'm always open to discussing new projects, interesting ideas, or just having a chat about tech. Feel free to reach out!
+          I&apos;m always open to discussing new projects, interesting ideas, or just having a chat about tech. Feel free to reach out!
         </p>
         <div className="flex justify-center">
           <button
