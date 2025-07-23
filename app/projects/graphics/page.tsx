@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Mulish } from "next/font/google";
 import DialogModal from "@/app/components/DialogModal";
-import { FiArrowLeft, FiHome } from "react-icons/fi";
+import { FiHome } from "react-icons/fi";
 
 
 const mulish = Mulish({
