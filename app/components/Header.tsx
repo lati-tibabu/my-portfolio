@@ -14,8 +14,8 @@ export default function Header() {
         <Logo size="large" />
       </Link>
       {/* Navigation */}
-      {/* <div>
-        <ul className="flex space-x-4 text-gray-800">
+      <div>
+        <ul className="flex space-x-4 text-gray-800 font-medium">
           <Link href="/">
             <li className="hover:text-blue-500 hover:underline cursor-pointer">
               Home
@@ -26,18 +26,13 @@ export default function Header() {
               About
             </li>
           </Link>
-          <Link href="/projects">
+          <Link href="/projects/graphics">
             <li className="hover:text-blue-500 hover:underline cursor-pointer">
-              Projects
-            </li>
-          </Link>
-          <Link href="/contact">
-            <li className="hover:text-blue-500 hover:underline cursor-pointer">
-              Contact
+              Graphics
             </li>
           </Link>
         </ul>
-      </div> */}
+      </div>
       {/* Social Media */}
       <div>
         <ul className="flex space-x-4 text-gray-800">

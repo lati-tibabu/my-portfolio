@@ -28,8 +28,7 @@ export default function Home() {
             Hello, I&apos;m <span className="text-blue-600">Lati Tibabu</span>
           </h1>
           <h2 className="text-2xl md:text-3xl font-light mb-6 animate-fade-in-right">
-            I’m learning to build things, one{" "}
-            <span className="font-semibold text-blue-600">full-stack project</span> at a time.
+            <span className="font-semibold text-blue-600">Full Stack & Odoo ERP Developer</span> specialized in building robust, automated business solutions.
           </h2>
           <div className="flex justify-center md:justify-start gap-4 mt-8 animate-fade-in-up">
             <button
@@ -65,13 +64,13 @@ export default function Home() {
         <h2 className="text-4xl font-bold mb-12 text-center text-blue-800">My Journey So Far</h2>
         <div className="max-w-3xl mx-auto text-lg text-gray-700 leading-relaxed text-center">
           <p className="mb-4">
-            My name is <strong className="text-blue-600">Lati Tibabu</strong>. As a Computer Science and Engineering graduate based in Addis Ababa, my passion lies in bringing ideas to life through code.
+            I am <strong className="text-blue-600">Lati Tibabu</strong>, a Full Stack and Odoo ERP Developer based in Addis Ababa. I specialize in backend development, Odoo customization, and building complex system integrations using Python and the Odoo ORM.
           </p>
           <p className="mb-4">
-            I&apos;ve primarily focused on the <strong>backend</strong>, designing robust APIs, optimizing databases, and ensuring seamless communication between system components. However, my journey is constantly evolving as I embrace the frontend, aiming to become a truly <strong>full-stack developer</strong>, one project at a time.
+            My expertise includes <strong>REST API integration</strong>, workflow automation, and <strong>Identity & Access Management</strong> using Keycloak (OIDC, OAuth2, SSO). I am passionate about translating business requirements into maintainable, functional ERP solutions that scale.
           </p>
           <p>
-            I&apos;m driven by a simple philosophy: <strong>build things that work, and learn relentlessly through the process.</strong> Whether it&apos;s architecting systems for student productivity or contributing to internal tools, I&apos;m always asking: &quot;How can this be simpler? How can it be clearer?&quot; This portfolio is a reflection of that continuous cycle of building, debugging, and growing.
+            Graduating with a B.Sc. in Computer Science and Engineering from <strong>Adama Science and Technology University</strong>, I have balanced a strong academic foundation (CGPA 3.72) with a dedication to open-source and real-world implementation. I thrive on building efficient architectures and learning relentlessly through every line of code.
           </p>
         </div>
       </section>
@@ -85,6 +84,23 @@ export default function Home() {
 
           {/* Timeline Items */}
           <div className="space-y-16">
+            {/* OTech Engineering - Full Stack / Odoo ERP Developer */}
+            <div className="flex flex-col md:flex-row-reverse items-center md:justify-between w-full relative">
+              <div className="md:w-5/12 bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 md:order-1 animate-slide-in-right">
+                <h3 className="font-bold text-2xl mb-3 text-blue-700">Full Stack / Odoo ERP Developer</h3>
+                <p className="text-gray-600 mb-2">OTech Engineering and Technology Solutions</p>
+                <p className="text-sm text-gray-500 mb-4">Aug 2025 – Present, Addis Ababa</p>
+                <div className="text-gray-700 space-y-2">
+                  <p>• Implemented 3+ custom Odoo modules for HR, Planning, and Inventory workflows.</p>
+                  <p>• Engineered system integrations and REST APIs with Keycloak-based identity management (OIDC/OAuth2).</p>
+                  <p>• Translating business requirements into functional ERP solutions within an Agile team.</p>
+                </div>
+              </div>
+              {/* Timeline dot */}
+              <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 bg-blue-600 w-6 h-6 rounded-full shadow-lg z-10"></div>
+              <div className="md:w-5/12 md:order-2"></div> {/* Spacer */}
+            </div>
+
             {/* SchoolStream EMS Project */}
             <div className="flex flex-col md:flex-row items-center md:justify-between w-full relative">
               <div className="md:w-5/12 bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 md:order-1 animate-slide-in-left">
@@ -134,7 +150,9 @@ export default function Home() {
                   alt="Student Productivity Hub"
                   className="w-full h-56 object-cover rounded-lg mb-6 shadow-md"
                 />
-                <h3 className="font-bold text-2xl mb-3 text-blue-700">Student Productivity Hub</h3>
+                <h3 className="font-bold text-2xl mb-3 text-blue-700">Student Productivity Hub (BeNote)</h3>
+                <p className="text-gray-600 mb-2">Sole Developer | Full-Stack Web App</p>
+                <p className="text-sm text-gray-500 mb-4">Nov 2024 – Present</p>
                 <p className="text-gray-600 mb-3 text-lg">
                   <strong>Live Demo:</strong>{" "}
                   <a
@@ -147,10 +165,10 @@ export default function Home() {
                   </a>
                 </p>
                 <p className="text-gray-700 mb-4">
-                  A dynamic productivity platform tailored for students, featuring robust workspace management, seamless team collaboration, and cutting-edge AI-powered study tools.
+                  A dynamic productivity platform used by 50+ students. Features include task management, note-taking, Pomodoro timer, and AI-powered study tools.
                 </p>
                 <details className="mb-2 text-gray-700">
-                  <summary className="cursor-pointer text-blue-600 font-medium hover:underline">View Details</summary>
+                  <summary className="cursor-pointer text-blue-600 font-medium hover:underline">View Tech Details</summary>
                   <div className="mt-4 text-sm space-y-2">
                     <ul className="list-disc pl-5">
                       <li>
@@ -171,6 +189,113 @@ export default function Home() {
               </div>
               {/* Timeline dot */}
               <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 bg-blue-600 w-6 h-6 rounded-full shadow-lg z-10 animate-pulse-once"></div>
+              <div className="md:w-5/12 md:order-2"></div> {/* Spacer */}
+            </div>
+
+            {/* Faarfannaa Galata Waaqayyoo - Universal Hymn Platform */}
+            <div className="flex flex-col md:flex-row items-center md:justify-between w-full relative">
+              <div className="md:w-5/12 bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 md:order-1 animate-slide-in-left">
+                <h3 className="font-bold text-2xl mb-3 text-blue-700">Faarfannaa Galata Waaqayyoo</h3>
+                <p className="text-gray-600 mb-2">Universal Hymn Platform | Web & Mobile</p>
+                <p className="text-gray-600 mb-3">
+                  <strong>Live Demo:</strong>{" "}
+                  <a
+                    href="https://faarfannaa.vercel.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-700"
+                  >
+                    faarfannaa.vercel.app
+                  </a>
+                </p>
+                <p className="text-gray-700 mb-4">
+                  A comprehensive digital ecosystem for Afaan Oromoo hymns, synchronizing content across platforms. Features offline access, smart search, and a robust admin portal.
+                </p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="skill-tag">Flutter</span>
+                  <span className="skill-tag">React 19</span>
+                  <span className="skill-tag">Node.js</span>
+                  <span className="skill-tag">PostgreSQL</span>
+                  <span className="skill-tag">Sequelize</span>
+                </div>
+              </div>
+              {/* Timeline dot */}
+              <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 bg-blue-600 w-6 h-6 rounded-full shadow-lg z-10"></div>
+              <div className="md:w-5/12 md:order-2"></div> {/* Spacer */}
+            </div>
+
+            {/* Otech ID Generator */}
+            <div className="flex flex-col md:flex-row-reverse items-center md:justify-between w-full relative">
+              <div className="md:w-5/12 bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 md:order-1 animate-slide-in-right">
+                <h3 className="font-bold text-2xl mb-3 text-blue-700">Otech ID Generator</h3>
+                <p className="text-gray-600 mb-2">Professional ID Card Tool</p>
+                <p className="text-gray-600 mb-3 text-lg">
+                  <strong>Live Demo:</strong>{" "}
+                  <a
+                    href="https://otechid.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-700"
+                  >
+                    otechid.vercel.app
+                  </a>
+                </p>
+                <p className="text-gray-700 mb-4">
+                  A semi-automated tool for generating and exporting high-quality employee ID cards. Features dual-sided generation, automated barcode/QR creation, and PDF export.
+                </p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="skill-tag">React 19</span>
+                  <span className="skill-tag">Vite 7</span>
+                  <span className="skill-tag">html2canvas</span>
+                  <span className="skill-tag">jspdf</span>
+                </div>
+              </div>
+              {/* Timeline dot */}
+              <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 bg-blue-600 w-6 h-6 rounded-full shadow-lg z-10"></div>
+              <div className="md:w-5/12 md:order-2"></div> {/* Spacer */}
+            </div>
+
+            {/* Benote SSO */}
+            <div className="flex flex-col md:flex-row items-center md:justify-between w-full relative">
+              <div className="md:w-5/12 bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 md:order-1 animate-slide-in-left">
+                <h3 className="font-bold text-2xl mb-3 text-blue-700">Benote SSO</h3>
+                <p className="text-gray-600 mb-2">Enterprise-grade Auth Solution</p>
+                <p className="text-gray-700 mb-4">
+                  An authentication solution for secure access between the Benote ecosystem and external platforms like Odoo or Moodle using JWT POST-binding flows.
+                </p>
+                <div className="text-sm space-y-1 mb-4">
+                  <a href="https://www.npmjs.com/package/@benote/sso-backend" target="_blank" className="text-blue-600 underline block">@benote/sso-backend</a>
+                  <a href="https://www.npmjs.com/package/@benote/sso-frontend" target="_blank" className="text-blue-600 underline block">@benote/sso-frontend</a>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="skill-tag">Node.js</span>
+                  <span className="skill-tag">JWT</span>
+                  <span className="skill-tag">React</span>
+                  <span className="skill-tag">Auth0 / OIDC</span>
+                </div>
+              </div>
+              {/* Timeline dot */}
+              <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 bg-blue-600 w-6 h-6 rounded-full shadow-lg z-10"></div>
+              <div className="md:w-5/12 md:order-2"></div> {/* Spacer */}
+            </div>
+
+            {/* PostaDesk */}
+            <div className="flex flex-col md:flex-row-reverse items-center md:justify-between w-full relative">
+              <div className="md:w-5/12 bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 md:order-1 animate-slide-in-right">
+                <h3 className="font-bold text-2xl mb-3 text-blue-700">PostaDesk</h3>
+                <p className="text-gray-600 mb-2">DB Management & App Builder</p>
+                <p className="text-gray-700 mb-4">
+                  A configurable database management system that allows users to manage PostgreSQL databases and build custom applications with a drag-and-drop interface.
+                </p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="skill-tag">React</span>
+                  <span className="skill-tag">Express</span>
+                  <span className="skill-tag">PostgreSQL</span>
+                  <span className="skill-tag">Crypto-JS</span>
+                </div>
+              </div>
+              {/* Timeline dot */}
+              <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 bg-blue-600 w-6 h-6 rounded-full shadow-lg z-10"></div>
               <div className="md:w-5/12 md:order-2"></div> {/* Spacer */}
             </div>
 
@@ -275,16 +400,16 @@ export default function Home() {
               <span className="skill-tag">CSS Modules</span>
             </div>
           </div>
-          {/* Skill Category Card: Backend */}
+          {/* Skill Category Card: Backend & Odoo */}
           <div className="flex flex-col items-center bg-gray-50 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
             <FiTool className="text-5xl text-blue-600 mb-4" />
-            <h3 className="font-bold text-xl mb-4 text-blue-700">Backend</h3>
+            <h3 className="font-bold text-xl mb-4 text-blue-700">Backend & Odoo</h3>
             <div className="flex flex-wrap justify-center gap-2">
               <span className="skill-tag">Node.js</span>
+              <span className="skill-tag">Odoo (Python, XML, QWeb)</span>
               <span className="skill-tag">Express.js</span>
               <span className="skill-tag">Sequelize ORM</span>
               <span className="skill-tag">PostgreSQL</span>
-              <span className="skill-tag">MySQL</span>
               <span className="skill-tag">REST API</span>
             </div>
           </div>
@@ -294,9 +419,9 @@ export default function Home() {
             <h3 className="font-bold text-xl mb-4 text-blue-700">Tools & Platforms</h3>
             <div className="flex flex-wrap justify-center gap-2">
               <span className="skill-tag">Git & GitHub</span>
-              {/* <span className="skill-tag">Docker</span> */}
+              <span className="skill-tag">Keycloak (SSO/OAuth2)</span>
+              <span className="skill-tag">Flutter</span>
               <span className="skill-tag">Vercel</span>
-              <span className="skill-tag">Google Gemini AI API</span>
               <span className="skill-tag">Figma</span>
             </div>
           </div>
@@ -305,20 +430,27 @@ export default function Home() {
 
       {/* What I Do - Rephrased for impact, potentially with more visual flair */}
       <section className="mb-20 animate-fade-in-up">
-        <h2 className="text-4xl font-bold mb-12 text-center text-blue-800">My Creative Offerings</h2>
+        <h2 className="text-4xl font-bold mb-12 text-center text-blue-800">My Expertise</h2>
         <div className="flex flex-col md:flex-row gap-8 justify-center">
           <div className="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 flex flex-col items-center text-center">
             <FiCode className="text-6xl text-blue-700 mb-4 animate-bounce-subtle" />
-            <h3 className="font-bold text-2xl mb-3 text-blue-800">Full-Stack Web Development</h3>
+            <h3 className="font-bold text-2xl mb-3 text-blue-800">Full-Stack Development</h3>
             <p className="text-gray-700">
-              Crafting robust, scalable, and user-centric web applications from concept to deployment. I specialize in bringing intricate ideas to life with clean code and modern frameworks.
+              Crafting robust, scalable, and user-centric web applications. I specialize in React, Node.js, and Python-based solutions.
+            </p>
+          </div>
+          <div className="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 flex flex-col items-center text-center">
+            <FiTool className="text-6xl text-blue-700 mb-4 animate-bounce-subtle" />
+            <h3 className="font-bold text-2xl mb-3 text-blue-800">Odoo ERP & Backend</h3>
+            <p className="text-gray-700">
+              Customizing Odoo modules, automating business workflows, and integrating systems via REST APIs and Keycloak IAM.
             </p>
           </div>
           <div className="flex-1 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 shadow-lg hover:shadow-xl transition transform hover:scale-105 flex flex-col items-center text-center">
             <FiPenTool className="text-6xl text-blue-700 mb-4 animate-bounce-subtle" />
-            <h3 className="font-bold text-2xl mb-3 text-blue-800">Compelling UI/UX & Graphic Design</h3>
+            <h3 className="font-bold text-2xl mb-3 text-blue-800">UI/UX & Graphic Design</h3>
             <p className="text-gray-700">
-              Designing intuitive and visually captivating interfaces that prioritize user experience. My focus is on creating beautiful designs that are also highly functional and accessible.
+              Designing intuitive and visually captivating interfaces that prioritize user experience and accessibility.
             </p>
 
             <Link href="/projects/graphics" className="mt-4">
