@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import "./components/Header";
 import Header from "./components/Header";
 
 export const metadata: Metadata = {
@@ -16,15 +14,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-white text-black">
-        {/* header */}
+      <body className="bg-white text-gray-900 font-sans antialiased">
         <Header />
-        {/* {children} */}
-        <main className="">{children}</main>
-        {/* Footer */}
-        <footer className="bg-gray-100 p-5 text-center">
-          <p className="text-gray-600">
-            ©{new Date().getFullYear()} Lati Tibabu. All rights reserved.
+        <main>{children}</main>
+        <footer className="bg-gray-50 border-t border-gray-200 py-6 text-center">
+          <p className="text-gray-400 text-sm">
+            &copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.
           </p>
         </footer>
       </body>

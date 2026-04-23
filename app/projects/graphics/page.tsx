@@ -4,15 +4,13 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Mulish } from "next/font/google";
 import DialogModal from "@/app/components/DialogModal";
-import { FiHome } from "react-icons/fi";
-
+import { FiArrowLeft } from "react-icons/fi";
 
 const mulish = Mulish({
   weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
   variable: "--font-mulish",
 });
-
 
 const images = [
   { src: "/Images/Graphics/akkamitti_qophoofna_2025.png", alt: "Akkamitti Qophoofna 2025 graphic" },
@@ -39,49 +37,66 @@ export default function GraphicsPage() {
   const [selectedImage, setSelectedImage] = useState<null | { src: string; alt: string }>(null);
 
   return (
-    <div className="min-h-screen p-5 ">
-      <h1
-        className={`${mulish.variable} font-mulish text-7xl text-center font-black mb-10`}
-      >
-        My <span className="text-blue-500">Graphics</span> Works
-      </h1>
+    <div className="min-h-screen bg-white font-sans text-gray-900">
 
-      {/* back to home page */}
-      <div>
-        <div
-          className="flex items-center cursor-pointer text-blue-500 hover:underline w-fit mx-auto text-3xl"
-          onClick={() => window.history.back()}
-        >
-          <FiHome />
-          Back to Home
+      {/* ─── Page Header ──────────────────────────────────────── */}
+      <div className="bg-gray-50 border-b border-gray-200 py-12 px-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xs font-semibold text-blue-600 tracking-widest uppercase mb-3">
+            Portfolio · Creative
+          </p>
+          <h1
+            className={`${mulish.variable} font-mulish text-5xl md:text-6xl font-black text-gray-900 mb-4`}
+          >
+            My <span className="text-blue-600">Graphics</span> Works
+          </h1>
+          <p className="text-gray-500 text-base max-w-md mx-auto">
+            A collection of graphic design projects — event banners, posters, and brand visuals.
+          </p>
         </div>
       </div>
-      <div className="max-w-4xl mx-auto">
-        <p className="text-center text-2xl">
-          Here you can find my graphics design projects.
-        </p>
-        <div className="columns-2 sm:columns-3 md:columns-4 gap-4 p-4">
+
+      {/* ─── Back link ────────────────────────────────────────── */}
+      <div className="max-w-4xl mx-auto px-6 pt-6">
+        <button
+          onClick={() => window.history.back()}
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition"
+        >
+          <FiArrowLeft /> Back
+        </button>
+      </div>
+
+      {/* ─── Gallery Grid ─────────────────────────────────────── */}
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className="columns-2 sm:columns-3 md:columns-4 gap-3">
           {images.map((img) => (
-            <Image
+            <div
               key={img.src}
-              className="mb-4 w-full rounded-lg cursor-pointer"
-              src={img.src}
-              alt={img.alt}
-              width={400}
-              height={400}
-              style={{ objectFit: "cover" }}
+              className="mb-3 overflow-hidden rounded-lg cursor-pointer group relative"
               onClick={() => setSelectedImage(img)}
-            />
+            >
+              <Image
+                src={img.src}
+                alt={img.alt}
+                width={400}
+                height={400}
+                className="w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              {/* hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 rounded-lg" />
+            </div>
           ))}
         </div>
       </div>
+
+      {/* ─── Modal ────────────────────────────────────────────── */}
       <DialogModal
         isOpen={!!selectedImage}
         onClose={() => setSelectedImage(null)}
       >
         {selectedImage && (
           <Image
-            className="max-w-full max-h-[70vh] mx-auto"
+            className="max-w-full max-h-[70vh] mx-auto rounded-lg"
             src={selectedImage.src}
             alt={selectedImage.alt}
             width={800}
