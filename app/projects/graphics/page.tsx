@@ -42,13 +42,13 @@ export default function GraphicsPage() {
       {/* ─── Page Header ──────────────────────────────────────── */}
       <div className="bg-gray-50 border-b border-gray-200 py-12 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xs font-semibold text-blue-600 tracking-widest uppercase mb-3">
+          <p className="text-xs font-semibold text-[#8b5e3c] tracking-widest uppercase mb-3">
             Portfolio · Creative
           </p>
           <h1
             className={`${mulish.variable} font-mulish text-5xl md:text-6xl font-black text-gray-900 mb-4`}
           >
-            My <span className="text-blue-600">Graphics</span> Works
+            My <span className="text-[#8b5e3c]">Graphics</span> Works
           </h1>
           <p className="text-gray-500 text-base max-w-md mx-auto">
             A collection of graphic design projects — event banners, posters, and brand visuals.

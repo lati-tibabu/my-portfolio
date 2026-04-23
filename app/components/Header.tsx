@@ -37,7 +37,7 @@ export default function Header() {
             href="https://facebook.com/lati.tibabu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-400 hover:text-blue-600 text-xl transition"
+            className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="Facebook"
           >
             <FiFacebook />
@@ -46,7 +46,7 @@ export default function Header() {
             href="https://linkedin.com/in/lati-tibabu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-400 hover:text-blue-600 text-xl transition"
+            className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="LinkedIn"
           >
             <FiLinkedin />
@@ -55,7 +55,7 @@ export default function Header() {
             href="https://github.com/lati-tibabu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-400 hover:text-blue-600 text-xl transition"
+            className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="GitHub"
           >
             <FiGithub />
@@ -64,7 +64,7 @@ export default function Header() {
             href="https://t.me/latitibabu"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-gray-400 hover:text-blue-600 text-xl transition"
+            className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="Telegram"
           >
             <FaTelegram />
@@ -106,10 +106,10 @@ export default function Header() {
             Graphics
           </Link>
           <div className="flex gap-5 pt-2">
-            <a href="https://facebook.com/lati.tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 text-xl transition"><FiFacebook /></a>
-            <a href="https://linkedin.com/in/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 text-xl transition"><FiLinkedin /></a>
-            <a href="https://github.com/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 text-xl transition"><FiGithub /></a>
-            <a href="https://t.me/latitibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 text-xl transition"><FaTelegram /></a>
+            <a href="https://facebook.com/lati.tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FiFacebook /></a>
+            <a href="https://linkedin.com/in/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FiLinkedin /></a>
+            <a href="https://github.com/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FiGithub /></a>
+            <a href="https://t.me/latitibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FaTelegram /></a>
           </div>
         </div>
       )}

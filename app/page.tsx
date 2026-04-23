@@ -21,18 +21,18 @@ export default function Home() {
       {/* ─── Hero ─────────────────────────────────────────────────── */}
       <section className="py-20 px-6 relative overflow-hidden">
         {/* Subtle decorative blur spots */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-60 -z-10 -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[#f7e9dc] rounded-full blur-3xl opacity-60 -z-10 -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gray-100 rounded-full blur-3xl opacity-60 -z-10 translate-x-1/2 translate-y-1/2" />
 
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
           {/* Text */}
           <div className="flex-1 text-center md:text-left">
-            <p className="text-xs font-semibold text-blue-600 tracking-widest uppercase mb-4 animate-fade-in-down">
+            <p className="text-xs font-semibold text-[#8b5e3c] tracking-widest uppercase mb-4 animate-fade-in-down">
               Full Stack &amp; Odoo ERP Developer
             </p>
             <h1 className="font-serif text-5xl md:text-6xl font-bold leading-tight mb-6 text-gray-900 animate-fade-in-down">
               Hello, I&apos;m{" "}
-              <span className="text-blue-600">Lati Tibabu</span>
+              <span className="text-[#8b5e3c]">Lati Tibabu</span>
             </h1>
             <p className="text-lg text-gray-500 leading-relaxed max-w-lg mb-10 mx-auto md:mx-0 animate-fade-in-right">
               Specialized in building robust, automated business solutions and
@@ -58,17 +58,32 @@ export default function Home() {
 
           {/* Profile Image */}
           <div className="flex-shrink-0 flex justify-center md:justify-end">
-            <div className="relative">
-              <Image
-                src="/me3.png"
-                alt="Lati Tibabu"
-                width={320}
-                height={320}
-                className="w-64 h-64 md:w-80 md:h-80 object-cover rounded-2xl grayscale hover:grayscale-0 transition-all duration-500"
+            <div className="group relative w-64 h-64 md:w-80 md:h-80">
+             <Image
+                src="/me4.png"
+                alt="Lati Tibabu line portrait"
+                fill
+                sizes="(min-width: 768px) 320px, 256px"
+                className="object-cover rounded-2xl opacity-100"
                 priority
               />
-              {/* ring overlay */}
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-black/10 pointer-events-none" />
+              {/*<Image
+                src="/me-line-portrait.png"
+                alt="Lati Tibabu line portrait"
+                fill
+                sizes="(min-width: 768px) 320px, 256px"
+                className="object-cover rounded-2xl transition-opacity duration-70 ease-in-out opacity-100 group-hover:opacity-0"
+                priority
+              />
+              <Image
+                src="/me-photo-portrait.jpg"
+                alt="Lati Tibabu photo portrait"
+                fill
+                sizes="(min-width: 768px) 320px, 256px"
+                className="object-cover rounded-2xl transition-opacity duration-70 ease-in-out opacity-0 group-hover:opacity-100"
+                priority
+              />*/}
+             
             </div>
           </div>
         </div>
@@ -99,7 +114,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
             <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiCode className="text-4xl text-blue-600 mb-4" />
+              <FiCode className="text-4xl text-[#8b5e3c] mb-4" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Languages</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">JavaScript</span>
@@ -111,7 +126,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiTerminal className="text-4xl text-blue-600 mb-4" />
+              <FiTerminal className="text-4xl text-[#8b5e3c] mb-4" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Frontend</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">React.js</span>
@@ -123,7 +138,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiTool className="text-4xl text-blue-600 mb-4" />
+              <FiTool className="text-4xl text-[#8b5e3c] mb-4" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Backend &amp; Odoo</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">Node.js</span>
@@ -136,7 +151,7 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiPenTool className="text-4xl text-blue-600 mb-4" />
+              <FiPenTool className="text-4xl text-[#8b5e3c] mb-4" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Tools &amp; Platforms</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">Git &amp; GitHub</span>
@@ -160,7 +175,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row gap-6">
 
             <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center hover:bg-gray-750 transition hover:-translate-y-1">
-              <FiCode className="text-5xl text-blue-400 mb-4 animate-bounce-subtle" />
+              <FiCode className="text-5xl text-[#a06a45] mb-4" />
               <h3 className="font-bold text-xl mb-3 text-white">Full-Stack Development</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Crafting robust, scalable, and user-centric web applications. I specialize in
@@ -169,7 +184,7 @@ export default function Home() {
             </div>
 
             <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center hover:bg-gray-750 transition hover:-translate-y-1">
-              <FiTool className="text-5xl text-blue-400 mb-4 animate-bounce-subtle" />
+              <FiTool className="text-5xl text-[#a06a45] mb-4" />
               <h3 className="font-bold text-xl mb-3 text-white">Odoo ERP &amp; Backend</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Customizing Odoo modules, automating business workflows, and integrating systems
@@ -178,14 +193,14 @@ export default function Home() {
             </div>
 
             <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center hover:bg-gray-750 transition hover:-translate-y-1">
-              <FiPenTool className="text-5xl text-blue-400 mb-4 animate-bounce-subtle" />
+              <FiPenTool className="text-5xl text-[#a06a45] mb-4" />
               <h3 className="font-bold text-xl mb-3 text-white">UI/UX &amp; Graphic Design</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Designing intuitive and visually captivating interfaces that prioritize user
                 experience and accessibility.
               </p>
               <Link href="/projects/graphics" className="mt-5">
-                <div className="flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm font-medium group cursor-pointer">
+                <div className="flex items-center gap-2 text-[#a06a45] hover:text-[#c08a5b] text-sm font-medium group cursor-pointer">
                   See My Works
                   <FiArrowRight className="opacity-0 group-hover:opacity-100 transition" />
                 </div>
@@ -219,7 +234,7 @@ export default function Home() {
               href="https://github.com/lati-tibabu"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-blue-600 text-3xl transition hover:-translate-y-1"
+              className="text-gray-400 hover:text-[#8b5e3c] text-3xl transition hover:-translate-y-1"
             >
               <FiGithub />
             </a>
@@ -227,7 +242,7 @@ export default function Home() {
               href="https://linkedin.com/in/lati-tibabu"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-blue-600 text-3xl transition hover:-translate-y-1"
+              className="text-gray-400 hover:text-[#8b5e3c] text-3xl transition hover:-translate-y-1"
             >
               <FiLinkedin />
             </a>

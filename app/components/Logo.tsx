@@ -30,7 +30,7 @@ const Logo = ({ size = "medium" }: LogoProps) => {
         } font-black ${mulish.variable} font-mulish`}
       >
         <span className="text-gray-800">lati</span>
-        <span className="text-blue-500">tibabu</span>
+        <span className="text-[#8b5e3c]">tibabu</span>
       </div>
     </div>
   );
