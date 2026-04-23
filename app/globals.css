@@ -50,11 +50,6 @@
   50%       { transform: scale(1.03); }
 }
 
-@keyframes bounceSubtle {
-  0%, 100% { transform: translateY(0);   }
-  50%       { transform: translateY(-5px); }
-}
-
 /* --- Animation utility classes --- */
 
 .animate-fade-in-down  { animation: fadeInDown  1s ease-out forwards; }
@@ -65,8 +60,6 @@
 .animate-slide-in-right{ animation: slideInRight 0.8s ease-out forwards; }
 .animate-pulse-once    { animation: pulseOnce   2s infinite ease-in-out; }
 .animate-pulse-grow    { animation: pulseGrow   2s infinite ease-in-out; }
-.animate-bounce-subtle { animation: bounceSubtle 1.5s infinite ease-in-out; }
-
 /* --- Skill tag: white/gray palette with optional blue tint --- */
 
 .skill-tag {

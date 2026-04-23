@@ -17,7 +17,7 @@ export default function About() {
       <div className="bg-gray-900 py-16 px-6">
         <div className="max-w-[1000px] mx-auto flex flex-col md:flex-row items-start gap-8">
           <div className="flex-1">
-            <p className="text-xs font-semibold text-blue-400 tracking-widest uppercase mb-3">
+            <p className="text-xs font-semibold text-[#a06a45] tracking-widest uppercase mb-3">
               Portfolio · CV
             </p>
             <h1 className="font-serif text-3xl md:text-4xl font-bold mb-2 text-white">
@@ -29,13 +29,13 @@ export default function About() {
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-400 mb-8">
               <span className="flex items-center gap-2">
-                <FiMail className="text-blue-400" /> latitibabu2018@gmail.com
+                <FiMail className="text-[#a06a45]" /> latitibabu2018@gmail.com
               </span>
               <span className="flex items-center gap-2">
-                <FiPhone className="text-blue-400" /> 0979586697
+                <FiPhone className="text-[#a06a45]" /> 0979586697
               </span>
               <span className="flex items-center gap-2">
-                <FiMapPin className="text-blue-400" /> Addis Ababa, Ethiopia
+                <FiMapPin className="text-[#a06a45]" /> Addis Ababa, Ethiopia
               </span>
             </div>
 
@@ -44,7 +44,7 @@ export default function About() {
                 href="https://linkedin.com/in/lati-tibabu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-blue-400 hover:border-blue-400 transition"
+                className="p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-[#c08a5b] hover:border-[#c08a5b] transition"
                 aria-label="LinkedIn"
               >
                 <FiLinkedin size={18} />
@@ -53,13 +53,13 @@ export default function About() {
                 href="https://github.com/lati-tibabu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-blue-400 hover:border-blue-400 transition"
+                className="p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-[#c08a5b] hover:border-[#c08a5b] transition"
                 aria-label="GitHub"
               >
                 <FiGithub size={18} />
               </a>
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2 bg-[#8b5e3c] text-white rounded-lg hover:bg-[#6f472d] transition text-sm font-medium"
                 onClick={() => window.open("/LatiTibabu_CV.pdf", "_blank")}
               >
                 <FiDownload size={16} /> Resume PDF
@@ -109,7 +109,7 @@ export default function About() {
               <div>
                 <p className="font-semibold text-sm text-gray-900">B.Sc. in Computer Science and Engineering</p>
                 <p className="text-sm text-gray-500 italic mt-1">Adama Science and Technology University</p>
-                <p className="text-xs text-blue-600 font-semibold mt-2">2021 – 2025 · CGPA 3.72 / 4.0</p>
+                <p className="text-xs text-[#8b5e3c] font-semibold mt-2">2021 – 2025 · CGPA 3.72 / 4.0</p>
               </div>
             </section>
 
@@ -154,7 +154,7 @@ export default function About() {
                   <div className="absolute top-1 left-[-9px] w-4 h-4 bg-gray-900 rounded-full ring-2 ring-white" />
                   <div className="mb-1 flex flex-wrap justify-between items-start gap-2">
                     <h4 className="font-semibold text-gray-900">Full Stack / Odoo ERP Developer</h4>
-                    <span className="text-xs font-semibold text-blue-600">08/2025 – Present</span>
+                    <span className="text-xs font-semibold text-[#8b5e3c]">08/2025 – Present</span>
                   </div>
                   <p className="text-gray-500 text-xs mb-3 font-medium">OTech Engineering and Technology Solutions</p>
                   <ul className="list-disc pl-5 text-xs text-gray-600 space-y-1">
@@ -206,7 +206,7 @@ export default function About() {
                       <h5 className="font-semibold text-sm text-gray-900">Student Productivity Hub (BeNote)</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A student productivity app with notes, tasks, Pomodoro tools, and AI-assisted study features.
-                        <a href="https://student-productivity-hub-mgis.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">Live Demo</a>
+                        <a href="https://student-productivity-hub-mgis.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline ml-1">Live Demo</a>
                       </p>
                     </article>
 
@@ -214,7 +214,7 @@ export default function About() {
                       <h5 className="font-semibold text-sm text-gray-900">Faarfannaa Galata Waaqayyoo</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A digital hymn platform with offline access, search, and synchronized content across web and mobile.
-                        <a href="https://faarfannaa.vercel.app" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">Live Demo</a>
+                        <a href="https://faarfannaa.vercel.app" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline ml-1">Live Demo</a>
                       </p>
                     </article>
 
@@ -222,7 +222,7 @@ export default function About() {
                       <h5 className="font-semibold text-sm text-gray-900">Otech ID Generator</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A professional ID card generator with dual-sided output, barcode/QR automation, and PDF export.
-                        <a href="https://otechid.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline ml-1">Live Demo</a>
+                        <a href="https://otechid.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline ml-1">Live Demo</a>
                       </p>
                     </article>
 
@@ -230,8 +230,8 @@ export default function About() {
                       <h5 className="font-semibold text-sm text-gray-900">Benote SSO</h5>
                       <p className="mt-1 text-xs text-gray-600 space-x-2">
                         <span className="block mb-1">An auth layer for secure access across Benote services and external platforms via JWT flows.</span>
-                        <a href="https://www.npmjs.com/package/@benote/sso-backend" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Backend</a>
-                        <a href="https://www.npmjs.com/package/@benote/sso-frontend" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Frontend</a>
+                        <a href="https://www.npmjs.com/package/@benote/sso-backend" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline">Backend</a>
+                        <a href="https://www.npmjs.com/package/@benote/sso-frontend" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline">Frontend</a>
                       </p>
                     </article>
 
@@ -253,13 +253,13 @@ export default function About() {
                 Certifications
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-600">
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-blue-500">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
                   A2SV 2024 AI for Impact Hackathon
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-blue-500">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
                   Intro &amp; Intermediate Machine Learning (Kaggle)
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-blue-500">
+                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
                   Responsive Web Design (freeCodeCamp)
                 </div>
               </div>
