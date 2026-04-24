@@ -1,18 +1,20 @@
-"use client";
-import React from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FiMail,
-  FiDownload,
-  FiGithub,
-  FiLinkedin,
-  FiCode,
-  FiPenTool,
-  FiTerminal,
-  FiTool,
-  FiArrowRight,
-} from "react-icons/fi";
+import HandDrawnIcon from "./components/HandDrawnIcon";
+
+export const metadata: Metadata = {
+  title: "Full Stack & Odoo ERP Developer",
+  description:
+    "Lati Tibabu builds scalable web applications, ERP integrations, and automation tools using React, Next.js, Python, and Odoo.",
+  keywords: [
+    "Full Stack Developer",
+    "Odoo ERP",
+    "React Developer",
+    "Next.js Portfolio",
+    "Python Developer",
+  ],
+};
 
 export default function Home() {
   return (
@@ -39,20 +41,20 @@ export default function Home() {
               ERP systems that scale.
             </p>
             <div className="flex flex-wrap justify-center md:justify-start gap-3 animate-fade-in-up">
-              <button
-                type="button"
-                className="flex items-center gap-2 px-6 py-3 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition shadow-sm"
-                onClick={() => window.open("/LatiTibabu_CV.pdf", "_blank")}
+              <a
+                href="/LatiTibabu_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hand-drawn-border flex items-center gap-2 px-6 py-3 rounded-lg bg-gray-900 text-white text-sm font-medium hover:bg-gray-700 transition shadow-sm"
               >
-                <FiDownload /> Download CV
-              </button>
-              <button
-                type="button"
-                className="flex items-center gap-2 px-6 py-3 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
-                onClick={() => window.open("mailto:latitibabu2018@gmail.com")}
+                <HandDrawnIcon name="download" size={20} /> Download CV
+              </a>
+              <a
+                href="mailto:latitibabu2018@gmail.com"
+                className="hand-drawn-border flex items-center gap-2 px-6 py-3 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
               >
-                <FiMail /> Get in Touch
-              </button>
+                <HandDrawnIcon name="mail" size={20} /> Get in Touch
+              </a>
             </div>
           </div>
 
@@ -113,8 +115,8 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
-            <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiCode className="text-4xl text-[#8b5e3c] mb-4" />
+            <div className="hand-drawn-border flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+              <HandDrawnIcon name="languages" size={72} className="mb-4 h-14 w-14 object-contain" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Languages</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">JavaScript</span>
@@ -125,8 +127,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiTerminal className="text-4xl text-[#8b5e3c] mb-4" />
+            <div className="hand-drawn-border flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+              <HandDrawnIcon name="frontend" size={72} className="mb-4 h-14 w-14 object-contain" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Frontend</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">React.js</span>
@@ -137,8 +139,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiTool className="text-4xl text-[#8b5e3c] mb-4" />
+            <div className="hand-drawn-border flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+              <HandDrawnIcon name="backend" size={72} className="mb-4 h-14 w-14 object-contain" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Backend &amp; Odoo</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">Node.js</span>
@@ -150,8 +152,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
-              <FiPenTool className="text-4xl text-[#8b5e3c] mb-4" />
+            <div className="hand-drawn-border flex flex-col items-center bg-white border border-gray-200 rounded-xl p-8 shadow-sm hover:shadow-md transition hover:-translate-y-1">
+              <HandDrawnIcon name="tools" size={72} className="mb-4 h-14 w-14 object-contain" />
               <h3 className="font-bold text-base mb-4 text-gray-900">Tools &amp; Platforms</h3>
               <div className="flex flex-wrap justify-center gap-2">
                 <span className="skill-tag">Git &amp; GitHub</span>
@@ -174,8 +176,8 @@ export default function Home() {
           </h2>
           <div className="flex flex-col md:flex-row gap-6">
 
-            <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center hover:bg-gray-750 transition hover:-translate-y-1">
-              <FiCode className="text-5xl text-[#a06a45] mb-4" />
+            <div className="hand-drawn-border flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center text-gray-100 hover:bg-gray-750 transition hover:-translate-y-1">
+              <HandDrawnIcon name="languages" size={84} className="mb-4 h-16 w-16 object-contain" />
               <h3 className="font-bold text-xl mb-3 text-white">Full-Stack Development</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Crafting robust, scalable, and user-centric web applications. I specialize in
@@ -183,8 +185,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center hover:bg-gray-750 transition hover:-translate-y-1">
-              <FiTool className="text-5xl text-[#a06a45] mb-4" />
+            <div className="hand-drawn-border flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center text-gray-100 hover:bg-gray-750 transition hover:-translate-y-1">
+              <HandDrawnIcon name="backend" size={84} className="mb-4 h-16 w-16 object-contain" />
               <h3 className="font-bold text-xl mb-3 text-white">Odoo ERP &amp; Backend</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Customizing Odoo modules, automating business workflows, and integrating systems
@@ -192,8 +194,8 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center hover:bg-gray-750 transition hover:-translate-y-1">
-              <FiPenTool className="text-5xl text-[#a06a45] mb-4" />
+            <div className="hand-drawn-border flex-1 bg-gray-800 border border-gray-700 rounded-xl p-8 flex flex-col items-center text-center text-gray-100 hover:bg-gray-750 transition hover:-translate-y-1">
+              <HandDrawnIcon name="tools" size={84} className="mb-4 h-16 w-16 object-contain" />
               <h3 className="font-bold text-xl mb-3 text-white">UI/UX &amp; Graphic Design</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 Designing intuitive and visually captivating interfaces that prioritize user
@@ -202,7 +204,7 @@ export default function Home() {
               <Link href="/projects/graphics" className="mt-5">
                 <div className="flex items-center gap-2 text-[#a06a45] hover:text-[#c08a5b] text-sm font-medium group cursor-pointer">
                   See My Works
-                  <FiArrowRight className="opacity-0 group-hover:opacity-100 transition" />
+                  <HandDrawnIcon name="arrow-left" size={18} className="opacity-0 group-hover:opacity-100 transition rotate-180" />
                 </div>
               </Link>
             </div>
@@ -221,30 +223,29 @@ export default function Home() {
             I&apos;m always open to discussing new projects, interesting ideas, or just
             having a chat about tech. Feel free to reach out!
           </p>
-          <button
-            type="button"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-lg bg-gray-900 text-white font-semibold text-base hover:bg-gray-700 transition shadow-sm animate-pulse-grow"
-            onClick={() => window.open("mailto:latitibabu2018@gmail.com")}
+          <a
+            href="mailto:latitibabu2018@gmail.com"
+            className="hand-drawn-border inline-flex items-center gap-3 px-8 py-4 rounded-lg bg-gray-900 text-white font-semibold text-base hover:bg-gray-700 transition shadow-sm animate-pulse-grow"
           >
-            <FiMail className="text-xl" /> Send Me an Email
-          </button>
+            <HandDrawnIcon name="mail" size={20} /> Send Me an Email
+          </a>
 
           <div className="flex gap-6 justify-center mt-10">
             <a
               href="https://github.com/lati-tibabu"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-[#8b5e3c] text-3xl transition hover:-translate-y-1"
+              className="hand-drawn-border inline-flex rounded-full border border-gray-200 p-2 text-gray-400 hover:text-[#8b5e3c] text-3xl transition hover:-translate-y-1"
             >
-              <FiGithub />
+              <HandDrawnIcon name="github" size={28} />
             </a>
             <a
               href="https://linkedin.com/in/lati-tibabu"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-[#8b5e3c] text-3xl transition hover:-translate-y-1"
+              className="hand-drawn-border inline-flex rounded-full border border-gray-200 p-2 text-gray-400 hover:text-[#8b5e3c] text-3xl transition hover:-translate-y-1"
             >
-              <FiLinkedin />
+              <HandDrawnIcon name="linkedin" size={28} />
             </a>
           </div>
         </div>

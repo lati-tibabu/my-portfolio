@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Mulish } from "next/font/google";
 import DialogModal from "@/app/components/DialogModal";
-import { FiArrowLeft } from "react-icons/fi";
+import HandDrawnIcon from "@/app/components/HandDrawnIcon";
 
 const mulish = Mulish({
   weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
@@ -60,9 +60,9 @@ export default function GraphicsPage() {
       <div className="max-w-4xl mx-auto px-6 pt-6">
         <button
           onClick={() => window.history.back()}
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition"
+          className="hand-drawn-border inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition"
         >
-          <FiArrowLeft /> Back
+          <HandDrawnIcon name="arrow-left" size={18} /> Back
         </button>
       </div>
 

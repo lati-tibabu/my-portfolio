@@ -3,13 +3,142 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+@font-face {
+  font-family: 'TC Atiquated';
+  src: url("/fonts/TCAntiquatedSans-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #111827;
+  color-scheme: light;
+}
+
+* {
+  font-family: 'TC Atiquated', Arial, Helvetica, sans-serif;
+}
+
+html.dark,
+html[data-theme="dark"] {
+  --background: #0b1220;
+  --foreground: #e5e7eb;
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-family: 'TC Atiquated', Arial, Helvetica, sans-serif;
 }
 
 .font-mulish {
   font-family: 'Mulish', Arial, Helvetica, sans-serif;
+}
+
+html.dark .bg-white,
+html[data-theme="dark"] .bg-white {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-gray-50,
+html[data-theme="dark"] .bg-gray-50 {
+  background-color: #0f172a !important;
+}
+
+html.dark .bg-gray-100,
+html[data-theme="dark"] .bg-gray-100 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-gray-200,
+html[data-theme="dark"] .bg-gray-200 {
+  background-color: #1f2937 !important;
+}
+
+html.dark .bg-gray-800,
+html[data-theme="dark"] .bg-gray-800 {
+  background-color: #111827 !important;
+}
+
+html.dark .bg-gray-900,
+html[data-theme="dark"] .bg-gray-900 {
+  background-color: #020617 !important;
+}
+
+html.dark .border-gray-100,
+html[data-theme="dark"] .border-gray-100 {
+  border-color: #1f2937 !important;
+}
+
+html.dark .border-gray-200,
+html[data-theme="dark"] .border-gray-200 {
+  border-color: #334155 !important;
+}
+
+html.dark .border-gray-700,
+html[data-theme="dark"] .border-gray-700 {
+  border-color: #475569 !important;
+}
+
+html.dark .text-gray-900,
+html[data-theme="dark"] .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-gray-800,
+html[data-theme="dark"] .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+
+html.dark .text-gray-700,
+html[data-theme="dark"] .text-gray-700 {
+  color: #e2e8f0 !important;
+}
+
+html.dark .text-gray-600,
+html[data-theme="dark"] .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-gray-500,
+html[data-theme="dark"] .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+html.dark .text-gray-400,
+html[data-theme="dark"] .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+html.dark .hover\:bg-gray-50:hover,
+html[data-theme="dark"] .hover\:bg-gray-50:hover {
+  background-color: #1e293b !important;
+}
+
+html.dark .hover\:bg-gray-700:hover,
+html[data-theme="dark"] .hover\:bg-gray-700:hover {
+  background-color: #334155 !important;
+}
+
+html.dark .hover\:text-gray-900:hover,
+html[data-theme="dark"] .hover\:text-gray-900:hover {
+  color: #f8fafc !important;
+}
+
+html.dark .skill-tag,
+html[data-theme="dark"] .skill-tag {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+html.dark .skill-tag:hover,
+html[data-theme="dark"] .skill-tag:hover {
+  background-color: #334155;
 }
 
 /* --- Keyframe Animations --- */
@@ -75,8 +204,66 @@
   border: 1px solid #e5e7eb; /* gray-200 */
   display: inline-block;
   transition: background-color 0.15s, transform 0.15s;
+  ::before {
+    content: "check";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 9999px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
 }
 .skill-tag:hover {
   background-color: #e5e7eb; /* gray-200 */
   transform: scale(1.05);
+}
+
+.hand-drawn-icon {
+  display: inline-block;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.hand-drawn-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.hand-drawn-border::before,
+.hand-drawn-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: inherit;
+  border-color: inherit;
+  border-radius: inherit;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.hand-drawn-border::before {
+  transform: translate(0.7px, -0.6px) rotate(-0.2deg) scale(1.005);
+}
+
+.hand-drawn-border::after {
+  transform: translate(-0.6px, 0.7px) rotate(0.25deg) scale(1.003);
+  opacity: 0.7;
+}
+
+.hand-drawn-border:hover::before {
+  transform: translate(1px, -0.8px) rotate(-0.35deg) scale(1.01);
+}
+
+.hand-drawn-border:hover::after {
+  transform: translate(-0.8px, 0.9px) rotate(0.35deg) scale(1.008);
+  opacity: 0.85;
 }

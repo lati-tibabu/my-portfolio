@@ -1,13 +1,18 @@
-"use client";
-import React from "react";
-import {
-  FiMail,
-  FiLinkedin,
-  FiGithub,
-  FiDownload,
-  FiMapPin,
-  FiPhone,
-} from "react-icons/fi";
+import type { Metadata } from "next";
+import HandDrawnIcon from "../components/HandDrawnIcon";
+
+export const metadata: Metadata = {
+  title: "About Lati Tibabu",
+  description:
+    "Read about Lati Tibabu's background, experience, education, skills, and selected projects as a Full Stack and Odoo ERP Developer.",
+  keywords: [
+    "About Lati Tibabu",
+    "Odoo ERP Developer",
+    "Portfolio",
+    "Software Engineer",
+    "Addis Ababa",
+  ],
+};
 
 export default function About() {
   return (
@@ -29,13 +34,13 @@ export default function About() {
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-400 mb-8">
               <span className="flex items-center gap-2">
-                <FiMail className="text-[#a06a45]" /> latitibabu2018@gmail.com
+                <HandDrawnIcon name="mail" size={18} /> latitibabu2018@gmail.com
               </span>
               <span className="flex items-center gap-2">
-                <FiPhone className="text-[#a06a45]" /> 0979586697
+                <HandDrawnIcon name="phone" size={18} /> 0979586697
               </span>
               <span className="flex items-center gap-2">
-                <FiMapPin className="text-[#a06a45]" /> Addis Ababa, Ethiopia
+                <HandDrawnIcon name="location" size={18} /> Addis Ababa, Ethiopia
               </span>
             </div>
 
@@ -44,26 +49,28 @@ export default function About() {
                 href="https://linkedin.com/in/lati-tibabu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-[#c08a5b] hover:border-[#c08a5b] transition"
+                className="hand-drawn-border p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-[#c08a5b] hover:border-[#c08a5b] transition"
                 aria-label="LinkedIn"
               >
-                <FiLinkedin size={18} />
+                <HandDrawnIcon name="linkedin" size={18} />
               </a>
               <a
                 href="https://github.com/lati-tibabu"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-[#c08a5b] hover:border-[#c08a5b] transition"
+                className="hand-drawn-border p-2 bg-gray-800 border border-gray-700 text-gray-300 rounded-lg hover:text-[#c08a5b] hover:border-[#c08a5b] transition"
                 aria-label="GitHub"
               >
-                <FiGithub size={18} />
+                <HandDrawnIcon name="github" size={18} />
               </a>
-              <button
-                className="flex items-center gap-2 px-4 py-2 bg-[#8b5e3c] text-white rounded-lg hover:bg-[#6f472d] transition text-sm font-medium"
-                onClick={() => window.open("/LatiTibabu_CV.pdf", "_blank")}
+              <a
+                href="/LatiTibabu_CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hand-drawn-border flex items-center gap-2 px-4 py-2 bg-[#8b5e3c] text-white rounded-lg hover:bg-[#6f472d] transition text-sm font-medium"
               >
-                <FiDownload size={16} /> Resume PDF
-              </button>
+                <HandDrawnIcon name="download" size={16} /> Resume PDF
+              </a>
             </div>
           </div>
         </div>
@@ -195,14 +202,14 @@ export default function About() {
                     Development Journey
                   </h4>
                   <div className="space-y-4">
-                    <article className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <article className="hand-drawn-border rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <h5 className="font-semibold text-sm text-gray-900">SchoolStream — Education Management System</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A full-stack education platform for school, user, and student data management, built with role-based dashboards and reporting.
                       </p>
                     </article>
 
-                    <article className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <article className="hand-drawn-border rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <h5 className="font-semibold text-sm text-gray-900">Student Productivity Hub (BeNote)</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A student productivity app with notes, tasks, Pomodoro tools, and AI-assisted study features.
@@ -210,7 +217,7 @@ export default function About() {
                       </p>
                     </article>
 
-                    <article className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <article className="hand-drawn-border rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <h5 className="font-semibold text-sm text-gray-900">Faarfannaa Galata Waaqayyoo</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A digital hymn platform with offline access, search, and synchronized content across web and mobile.
@@ -218,7 +225,7 @@ export default function About() {
                       </p>
                     </article>
 
-                    <article className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <article className="hand-drawn-border rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <h5 className="font-semibold text-sm text-gray-900">Otech ID Generator</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A professional ID card generator with dual-sided output, barcode/QR automation, and PDF export.
@@ -226,7 +233,7 @@ export default function About() {
                       </p>
                     </article>
 
-                    <article className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <article className="hand-drawn-border rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <h5 className="font-semibold text-sm text-gray-900">Benote SSO</h5>
                       <p className="mt-1 text-xs text-gray-600 space-x-2">
                         <span className="block mb-1">An auth layer for secure access across Benote services and external platforms via JWT flows.</span>
@@ -235,7 +242,7 @@ export default function About() {
                       </p>
                     </article>
 
-                    <article className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <article className="hand-drawn-border rounded-lg border border-gray-200 bg-gray-50 p-4">
                       <h5 className="font-semibold text-sm text-gray-900">PostaDesk</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A configurable PostgreSQL management and app-building tool with drag-and-drop workflows.
@@ -253,13 +260,13 @@ export default function About() {
                 Certifications
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-600">
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
+                <div className="hand-drawn-border p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
                   A2SV 2024 AI for Impact Hackathon
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
+                <div className="hand-drawn-border p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
                   Intro &amp; Intermediate Machine Learning (Kaggle)
                 </div>
-                <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
+                <div className="hand-drawn-border p-3 bg-gray-50 rounded-lg border border-gray-200 border-l-2 border-l-[#8b5e3c]">
                   Responsive Web Design (freeCodeCamp)
                 </div>
               </div>
