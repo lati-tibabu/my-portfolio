@@ -20,14 +20,8 @@ export default function Header() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const root = document.documentElement;
     const storedTheme = localStorage.getItem(storageKey);
-    const initialTheme =
-      storedTheme === "dark" || storedTheme === "light"
-        ? storedTheme
-        : root.classList.contains("dark")
-          ? "dark"
-          : "light";
+    const initialTheme = storedTheme === "dark" || storedTheme === "light" ? storedTheme : "light";
 
     setTheme(initialTheme);
     applyTheme(initialTheme);
