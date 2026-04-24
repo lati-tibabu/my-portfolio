@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
+import VisitorCounter from "./components/VisitorCounter";
 
 export const metadata: Metadata = {
   title: {
@@ -58,12 +59,9 @@ const themeBootstrapScript = `
     try {
       const storageKey = "theme";
       const storedTheme = localStorage.getItem(storageKey);
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const theme = storedTheme === "dark" || storedTheme === "light"
         ? storedTheme
-        : prefersDark
-          ? "dark"
-          : "light";
+        : "light";
 
       const root = document.documentElement;
       root.classList.toggle("dark", theme === "dark");
@@ -92,10 +90,11 @@ export default function RootLayout({
         />
         <Header />
         <main>{children}</main>
-        <footer className="hand-drawn-border bg-gray-50 border-t border-gray-200 py-6 text-center transition-colors duration-200">
-          <p className="text-gray-400 text-sm">
-            &copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.
-          </p>
+        <footer className="hand-drawn-border bg-gray-50 border-t border-gray-200 py-5 text-center transition-colors duration-200">
+          <div className="flex items-center justify-center gap-4 text-gray-400 text-sm">
+            <p>&copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.</p>
+            <VisitorCounter />
+          </div>
         </footer>
       </body>
     </html>
