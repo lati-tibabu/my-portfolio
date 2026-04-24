@@ -1,17 +1,47 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { FaTelegram } from "react-icons/fa6";
-import { FiFacebook, FiGithub, FiLinkedin, FiMenu, FiX } from "react-icons/fi";
 import Logo from "./Logo";
+import HandDrawnIcon from "./HandDrawnIcon";
+
+const storageKey = "theme";
+
+function applyTheme(theme: "light" | "dark") {
+  const root = document.documentElement;
+  root.classList.toggle("dark", theme === "dark");
+  root.dataset.theme = theme;
+  root.style.colorScheme = theme;
+  localStorage.setItem(storageKey, theme);
+}
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const storedTheme = localStorage.getItem(storageKey);
+    const initialTheme =
+      storedTheme === "dark" || storedTheme === "light"
+        ? storedTheme
+        : root.classList.contains("dark")
+          ? "dark"
+          : "light";
+
+    setTheme(initialTheme);
+    applyTheme(initialTheme);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    applyTheme(nextTheme);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between h-16">
+      <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between h-16 gap-4">
 
         {/* Logo */}
         <Link href="/" onClick={() => setMobileOpen(false)}>
@@ -31,8 +61,17 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Desktop Social Icons */}
         <div className="hidden md:flex items-center gap-4">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="hand-drawn-border inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 transition hover:border-[#8b5e3c] hover:text-[#8b5e3c]"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            aria-pressed={theme === "dark"}
+          >
+            {theme === "dark" ? <HandDrawnIcon name="sun" size={18} /> : <HandDrawnIcon name="moon" size={18} />}
+          </button>
+
           <a
             href="https://facebook.com/lati.tibabu"
             target="_blank"
@@ -40,7 +79,7 @@ export default function Header() {
             className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="Facebook"
           >
-            <FiFacebook />
+            <HandDrawnIcon name="facebook" size={22} />
           </a>
           <a
             href="https://linkedin.com/in/lati-tibabu"
@@ -49,7 +88,7 @@ export default function Header() {
             className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="LinkedIn"
           >
-            <FiLinkedin />
+            <HandDrawnIcon name="linkedin" size={22} />
           </a>
           <a
             href="https://github.com/lati-tibabu"
@@ -58,7 +97,7 @@ export default function Header() {
             className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="GitHub"
           >
-            <FiGithub />
+            <HandDrawnIcon name="github" size={22} />
           </a>
           <a
             href="https://t.me/latitibabu"
@@ -67,7 +106,7 @@ export default function Header() {
             className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"
             aria-label="Telegram"
           >
-            <FaTelegram />
+            <HandDrawnIcon name="telegram" size={22} />
           </a>
         </div>
 
@@ -77,13 +116,24 @@ export default function Header() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <FiX /> : <FiMenu />}
+          {mobileOpen ? <HandDrawnIcon name="close" size={28} /> : <HandDrawnIcon name="menu" size={28} />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-4">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="hand-drawn-border inline-flex items-center gap-2 rounded-full border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition hover:border-[#8b5e3c] hover:text-[#8b5e3c]"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            aria-pressed={theme === "dark"}
+          >
+            {theme === "dark" ? <HandDrawnIcon name="sun" size={18} /> : <HandDrawnIcon name="moon" size={18} />}
+            {theme === "dark" ? "Light mode" : "Dark mode"}
+          </button>
+
           <Link
             href="/"
             className="block text-sm font-medium text-gray-700 hover:text-gray-900"
@@ -106,10 +156,10 @@ export default function Header() {
             Graphics
           </Link>
           <div className="flex gap-5 pt-2">
-            <a href="https://facebook.com/lati.tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FiFacebook /></a>
-            <a href="https://linkedin.com/in/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FiLinkedin /></a>
-            <a href="https://github.com/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FiGithub /></a>
-            <a href="https://t.me/latitibabu" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[#8b5e3c] text-xl transition"><FaTelegram /></a>
+            <a href="https://facebook.com/lati.tibabu" target="_blank" rel="noopener noreferrer" className="hand-drawn-border inline-flex rounded-full border border-gray-200 p-2 text-gray-400 hover:text-[#8b5e3c] text-xl transition"><HandDrawnIcon name="facebook" size={22} /></a>
+            <a href="https://linkedin.com/in/lati-tibabu" target="_blank" rel="noopener noreferrer" className="hand-drawn-border inline-flex rounded-full border border-gray-200 p-2 text-gray-400 hover:text-[#8b5e3c] text-xl transition"><HandDrawnIcon name="linkedin" size={22} /></a>
+            <a href="https://github.com/lati-tibabu" target="_blank" rel="noopener noreferrer" className="hand-drawn-border inline-flex rounded-full border border-gray-200 p-2 text-gray-400 hover:text-[#8b5e3c] text-xl transition"><HandDrawnIcon name="github" size={22} /></a>
+            <a href="https://t.me/latitibabu" target="_blank" rel="noopener noreferrer" className="hand-drawn-border inline-flex rounded-full border border-gray-200 p-2 text-gray-400 hover:text-[#8b5e3c] text-xl transition"><HandDrawnIcon name="telegram" size={22} /></a>
           </div>
         </div>
       )}
