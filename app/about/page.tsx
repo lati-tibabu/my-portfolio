@@ -229,7 +229,7 @@ export default function About() {
                       <h5 className="font-semibold text-sm text-gray-900">Otech ID Generator</h5>
                       <p className="mt-1 text-xs text-gray-600">
                         A professional ID card generator with dual-sided output, barcode/QR automation, and PDF export.
-                        <a href="https://otechid.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline ml-1">Live Demo</a>
+                        {/* <a href="https://otechid.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[#8b5e3c] hover:underline ml-1">Live Demo</a> */}
                       </p>
                     </article>
 
