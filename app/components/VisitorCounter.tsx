@@ -44,7 +44,7 @@ export default function VisitorCounter() {
   }, []);
 
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-medium text-gray-500 shadow-sm">
+    <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-3 py-1 text-[11px] font-semibold text-[var(--color-on-surface-variant)]">
       <HandDrawnIcon name="visitor" size={12} />
       <span>{count === null ? "..." : formatCount(count)}</span>
     </div>
