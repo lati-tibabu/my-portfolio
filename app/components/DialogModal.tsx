@@ -33,7 +33,7 @@ export default function DialogModal ({isOpen, onClose, children}: DialogModalPro
     return (
         <dialog
             ref={dialogRef}
-            className="w-fit backdrop:bg-black/50 m-auto p-10 bg-black/0"
+            className="w-fit m-auto p-10 bg-transparent"
             onClick={(e: React.MouseEvent<HTMLDialogElement>) => {
                 if (e.currentTarget === e.target) onClose();
             }}
@@ -41,7 +41,7 @@ export default function DialogModal ({isOpen, onClose, children}: DialogModalPro
             <div className="relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-[-30px] right-[-30px] text-black hover:text-red-500 text-2xl cursor-pointer bg-white w-8 h-8 flex items-center justify-center rounded-full"
+                    className="absolute top-[-30px] right-[-30px] text-[var(--color-on-surface)] hover:text-[var(--color-electric-blue)] text-2xl cursor-pointer bg-[var(--color-surface-container-lowest)] w-8 h-8 flex items-center justify-center rounded-full border border-[var(--color-surface-border)]"
                 >
                     &times;
                 </button>

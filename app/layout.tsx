@@ -1,28 +1,65 @@
 import type { Metadata } from "next";
+import { Geist, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
 import VisitorCounter from "./components/VisitorCounter";
 
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
+
 export const metadata: Metadata = {
   title: {
-    default: "Lati Tibabu",
+    default: "Lati Tibabu — Full Stack & Odoo ERP Developer",
     template: "%s | Lati Tibabu",
   },
-  description: "Portfolio of Lati Tibabu, a Full Stack and Odoo ERP Developer based in Addis Ababa.",
-  applicationName: "Lati Tibabu Portfolio",
+  description:
+    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+  applicationName: "Lati Tibabu",
   keywords: [
     "Lati Tibabu",
     "Full Stack Developer",
-    "Odoo ERP Developer",
-    "React",
+    "Odoo ERP",
+    "Odoo Themes",
+    "Odoo Marketplace",
     "Next.js",
     "Python",
-    "Addis Ababa",
+    "Ethiopia",
   ],
   authors: [{ name: "Lati Tibabu" }],
   creator: "Lati Tibabu",
   publisher: "Lati Tibabu",
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
+    description:
+      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+    url: "/",
+    siteName: "Lati Tibabu",
+    images: [
+      {
+        url: "/me4.png",
+        width: 1200,
+        height: 630,
+        alt: "Lati Tibabu — Full Stack & Odoo ERP Developer",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
+    description:
+      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+    images: ["/me4.png"],
+  },
   robots: {
     index: true,
     follow: true,
@@ -35,8 +72,8 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
+    icon: "/favicon2.svg",
+    shortcut: "/favicon.svg",
     apple: "/icon.png",
   },
 };
@@ -46,32 +83,14 @@ const personStructuredData = {
   "@type": "Person",
   name: "Lati Tibabu",
   jobTitle: "Full Stack and Odoo ERP Developer",
-  url: "/",
+  url: siteUrl,
   sameAs: [
     "https://github.com/lati-tibabu",
     "https://linkedin.com/in/lati-tibabu",
     "https://facebook.com/lati.tibabu",
+    "https://t.me/latitibabu",
   ],
 };
-
-const themeBootstrapScript = `
-  (() => {
-    try {
-      const storageKey = "theme";
-      const storedTheme = localStorage.getItem(storageKey);
-      const theme = storedTheme === "dark" || storedTheme === "light"
-        ? storedTheme
-        : "light";
-
-      const root = document.documentElement;
-      root.classList.toggle("dark", theme === "dark");
-      root.dataset.theme = theme;
-      root.style.colorScheme = theme;
-    } catch {
-      // Ignore storage and media query failures.
-    }
-  })();
-`;
 
 export default function RootLayout({
   children,
@@ -80,8 +99,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning className="bg-[var(--background)] text-[var(--foreground)] font-sans antialiased transition-colors duration-200">
-        <Script id="theme-bootstrap" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+      <body
+        suppressHydrationWarning
+        className={`${geist.variable} ${inter.variable} ${jetbrainsMono.variable} bg-[var(--color-background)] text-[var(--color-on-background)] antialiased transition-colors duration-200`}
+      >
         <Script
           id="person-structured-data"
           type="application/ld+json"
@@ -90,8 +111,8 @@ export default function RootLayout({
         />
         <Header />
         <main>{children}</main>
-        <footer className="hand-drawn-border bg-gray-50 border-t border-gray-200 py-5 text-center transition-colors duration-200">
-          <div className="flex items-center justify-center gap-4 text-gray-400 text-sm">
+        <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">
+          <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[var(--color-on-surface-variant)]">
             <p>&copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.</p>
             <VisitorCounter />
           </div>

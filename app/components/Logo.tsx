@@ -1,13 +1,6 @@
 "use client";
 import React from "react";
 import "./Logo.css";
-import { Mulish } from "next/font/google";
-
-const mulish = Mulish({
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
-  variable: "--font-mulish",
-});
 
 type LogoProps = {
   size?: string;
@@ -27,10 +20,10 @@ const Logo = ({ size = "medium" }: LogoProps) => {
             : size === "xlarge"
             ? "text-5xl"
             : "text-lg"
-        } font-black ${mulish.variable} font-mulish`}
+        } font-heading font-semibold tracking-tight`}
       >
-        <span className="text-gray-800">lati</span>
-        <span className="text-[#8b5e3c]">tibabu</span>
+        <span className="text-[var(--color-on-surface)]">lati</span>
+        <span className="text-[var(--color-electric-blue)]">tibabu</span>
       </div>
     </div>
   );
