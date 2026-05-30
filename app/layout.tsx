@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
 import VisitorCounter from "./components/VisitorCounter";
+import { Analytics } from "@vercel/analytics/next";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -118,6 +119,7 @@ export default function RootLayout({
             <VisitorCounter />
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );

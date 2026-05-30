@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.4.1",
     "daisyui": "^5.0.46",
     "next": "^15.5.12",
     "react": "19.1.0",
