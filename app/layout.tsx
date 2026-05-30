@@ -87,6 +87,7 @@ const personStructuredData = {
   sameAs: [
     "https://github.com/lati-tibabu",
     "https://linkedin.com/in/lati-tibabu",
+    "https://x.com/TibabuLati",
     "https://facebook.com/lati.tibabu",
     "https://t.me/latitibabu",
   ],

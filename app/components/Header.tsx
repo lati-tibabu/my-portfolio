@@ -27,9 +27,9 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--color-on-surface-variant)]">
           {navLinks.map((link) => (
-            <a key={link.name} href={link.href} className="hover:text-[var(--color-on-surface)] transition">
+            <Link key={link.name} href={link.href} className="hover:text-[var(--color-on-surface)] transition">
               {link.name}
-            </a>
+            </Link>
           ))}
           <Link href="/graphics" className="hover:text-[var(--color-on-surface)] transition">
             Graphics
@@ -37,12 +37,12 @@ export default function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <a
+          <Link
             href="/#contact"
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition hover:scale-[1.02]"
           >
             Hire me
-          </a>
+          </Link>
           <a
             href="https://linkedin.com/in/lati-tibabu"
             target="_blank"
@@ -86,14 +86,14 @@ export default function Header() {
       {mobileOpen && (
         <div className="md:hidden bg-[var(--color-surface-container-lowest)] border-t border-[var(--color-surface-border)] px-6 py-4 space-y-4">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.name}
               href={link.href}
               className="block text-sm font-medium text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]"
               onClick={() => setMobileOpen(false)}
             >
               {link.name}
-            </a>
+            </Link>
           ))}
           <Link
             href="/graphics"
@@ -102,13 +102,13 @@ export default function Header() {
           >
             Graphics
           </Link>
-          <a
+          <Link
             href="/#contact"
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition"
             onClick={() => setMobileOpen(false)}
           >
             Hire me
-          </a>
+          </Link>
           <div className="flex gap-4 pt-2">
             <a href="https://linkedin.com/in/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"><HandDrawnIcon name="linkedin" size={20} /></a>
             <a href="https://github.com/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"><HandDrawnIcon name="github" size={20} /></a>

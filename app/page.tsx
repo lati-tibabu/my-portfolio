@@ -211,12 +211,12 @@ export default function Home() {
               performance.
             </p>
             <div className="flex flex-wrap items-center gap-3">
-              <a
+              <Link
                 href="/#contact"
                 className="inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition hover:scale-[1.02]"
               >
                 Get in touch
-              </a>
+              </Link>
               <a
                 href="/LatiTibabu_CV.pdf"
                 target="_blank"
@@ -260,7 +260,7 @@ export default function Home() {
                   <HandDrawnIcon name="linkedin" size={20} />
                 </a>
                 <a
-                  href="https://x.com/latitibabu"
+                  href="https://x.com/TibabuLati"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
@@ -697,7 +697,7 @@ export default function Home() {
                   className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
                 >
                   <p className="text-[13px] leading-[1.6] text-[var(--color-on-surface-variant)]">
-                    "{testimonial.text}"
+                    &quot;{testimonial.text}&quot;
                   </p>
                   <p className="mt-3 text-[12px] font-semibold text-[var(--color-on-surface)]">
                     — {testimonial.name}
