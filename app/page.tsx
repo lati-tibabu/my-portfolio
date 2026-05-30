@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 const stats = [
   { label: "Odoo apps/themes published", value: `${marketplaceItems.length}` },
-  { label: "Marketplace revenue", value: "€150" },
+  { label: "Odoo app adopters", value: "109+" },
   { label: "Years of experience", value: "4+" },
   { label: "Stack size", value: "20+ tools" },
 ];
@@ -225,6 +225,21 @@ export default function Home() {
               >
                 Download CV
               </a>
+              <a
+                href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]"
+              >
+                <Image
+                  src="/hand-drawn-icons/upwork.jpg"
+                  alt="Upwork"
+                  width={18}
+                  height={18}
+                  className="rounded-sm object-contain"
+                />
+                Hire me on Upwork
+              </a>
               <div className="flex items-center gap-3">
                 <a
                   href="https://github.com/lati-tibabu"
@@ -245,13 +260,13 @@ export default function Home() {
                   <HandDrawnIcon name="linkedin" size={20} />
                 </a>
                 <a
-                  href="https://facebook.com/lati.tibabu"
+                  href="https://x.com/latitibabu"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
-                  aria-label="Facebook"
+                  aria-label="X"
                 >
-                  <HandDrawnIcon name="facebook" size={20} />
+                  <HandDrawnIcon name="x" size={20} />
                 </a>
                 <a
                   href="https://t.me/latitibabu"
@@ -767,6 +782,21 @@ export default function Home() {
                 Email business
               </a>
               <a
+                href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white"
+              >
+                <Image
+                  src="/hand-drawn-icons/upwork.jpg"
+                  alt="Upwork"
+                  width={18}
+                  height={18}
+                  className="rounded-sm object-contain"
+                />
+                Hire me on Upwork
+              </a>
+              <a
                 href="https://t.me/latitibabu"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -786,9 +816,24 @@ export default function Home() {
                 <span>latitibabu2018@gmail.com · hello@latitibabu.com</span>
               </div>
               <div className="flex items-center gap-3">
-                <HandDrawnIcon name="tool" size={18} />
+                <HandDrawnIcon name="fiverr" size={18} />
                 <span>Fiverr: latitibabu</span>
               </div>
+              <a
+                href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 transition hover:text-white"
+              >
+                <Image
+                  src="/hand-drawn-icons/upwork.jpg"
+                  alt="Upwork"
+                  width={18}
+                  height={18}
+                  className="rounded-sm object-contain"
+                />
+                <span>Upwork: hire me for freelance work</span>
+              </a>
               <div className="flex items-center gap-3">
                 <HandDrawnIcon name="phone" size={18} />
                 <span>+251 979 586 697</span>
