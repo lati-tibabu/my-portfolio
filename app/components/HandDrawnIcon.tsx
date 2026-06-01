@@ -1,3 +1,20 @@
+import type { IconType } from "react-icons";
+import {
+  FaArrowLeft,
+  FaDownload,
+  FaEye,
+  FaGithub,
+  FaLinkedin,
+  FaMapMarkerAlt,
+  FaTelegramPlane,
+  FaTwitter,
+  FaRegEnvelope,
+  FaPhoneAlt,
+  FaBars,
+  FaTimes,
+  FaBriefcase,
+} from "react-icons/fa";
+
 type HandDrawnIconProps = {
   name: string;
   alt?: string;
@@ -5,11 +22,29 @@ type HandDrawnIconProps = {
   className?: string;
 };
 
+const ICONS: Record<string, IconType> = {
+  "arrow-left": FaArrowLeft,
+  close: FaTimes,
+  download: FaDownload,
+  fiverr: FaBriefcase,
+  github: FaGithub,
+  linkedin: FaLinkedin,
+  location: FaMapMarkerAlt,
+  mail: FaRegEnvelope,
+  menu: FaBars,
+  phone: FaPhoneAlt,
+  telegram: FaTelegramPlane,
+  visitor: FaEye,
+  x: FaTwitter,
+};
+
 export default function HandDrawnIcon({ name, alt, size = 24, className = "" }: HandDrawnIconProps) {
+  const Icon = ICONS[name] ?? FaArrowLeft;
+
   return (
-    <span
-      className={`hand-drawn-icon shrink-0 ${className}`.trim()}
-      style={{ width: size, height: size, WebkitMaskImage: `url(/hand-drawn-icons/${name}.svg)`, maskImage: `url(/hand-drawn-icons/${name}.svg)` }}
+    <Icon
+      size={size}
+      className={`shrink-0 ${className}`.trim()}
       aria-hidden={alt ? undefined : true}
       role={alt ? "img" : undefined}
       aria-label={alt}

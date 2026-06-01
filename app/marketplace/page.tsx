@@ -3,17 +3,53 @@ import Image from "next/image";
 import Link from "next/link";
 import { loadMarketplaceItems } from "../lib/content";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
+const canonicalUrl = `${siteUrl}/marketplace`;
+
 export const metadata: Metadata = {
   title: "Odoo Marketplace — Lati Tibabu",
   description:
     "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
+  alternates: {
+    canonical: "/marketplace",
+  },
+  openGraph: {
+    title: "Odoo Marketplace — Lati Tibabu",
+    description:
+      "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
+    url: "/marketplace",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Odoo Marketplace — Lati Tibabu",
+    description:
+      "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
+  },
 };
 
 export default async function MarketplacePage() {
   const marketplaceItems = await loadMarketplaceItems();
+  const marketplaceStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Aura Odoo apps and themes",
+    url: canonicalUrl,
+    numberOfItems: marketplaceItems.length,
+    itemListElement: marketplaceItems.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${siteUrl}/marketplace/${item.slug}`,
+      name: item.name,
+    })),
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(marketplaceStructuredData) }}
+      />
       <section className="px-6 pt-24 pb-12">
         <div className="max-w-[1200px] mx-auto space-y-4">
           <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">

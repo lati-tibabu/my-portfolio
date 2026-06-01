@@ -8,6 +8,7 @@ import { loadMarketplaceItems } from "../../lib/content";
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
 
 export async function generateMetadata({
   params,
@@ -23,6 +24,22 @@ export async function generateMetadata({
   return {
     title: `${item.name} — Lati Tibabu`,
     description: item.description,
+    alternates: {
+      canonical: `/marketplace/${item.slug}`,
+    },
+    openGraph: {
+      title: item.name,
+      description: item.description,
+      url: `/marketplace/${item.slug}`,
+      type: "website",
+      images: item.coverImage ? [{ url: item.coverImage, alt: item.name }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: item.name,
+      description: item.description,
+      images: item.coverImage ? [item.coverImage] : [],
+    },
   };
 }
 
@@ -34,9 +51,35 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
   if (!item) {
     notFound();
   }
+  const productUrl = `${siteUrl}/marketplace/${item.slug}`;
+  const productStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: item.name,
+    description: item.description,
+    image: item.coverImage ? [item.coverImage] : undefined,
+    category: item.category,
+    sku: item.technicalName,
+    brand: {
+      "@type": "Brand",
+      name: "Aura",
+    },
+    url: productUrl,
+    offers: {
+      "@type": "Offer",
+      url: item.link,
+      priceCurrency: "USD",
+      price: item.price === "Free" ? "0" : item.price.replace(/[^0-9.]/g, "") || "0",
+      availability: "https://schema.org/InStock",
+    },
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+      />
       <section className="px-6 pt-24 pb-10">
         <div className="mx-auto max-w-[1200px] space-y-4">
           <Link
@@ -105,7 +148,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
                 className="text-[14px] leading-[1.8] text-[var(--color-on-surface-variant)]"
               />
             </div>
-            <div className="mt-4 grid gap-2 text-[13px] text-[var(--color-on-surface-variant)]">
+            <div className="mt-4 grid gap-2 break-words text-[13px] text-[var(--color-on-surface-variant)]">
               <p>Version: {item.version}</p>
               <p>Price: {item.price}</p>
               <p>License: {item.license}</p>
@@ -116,7 +159,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
                   href={item.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--color-electric-blue)]"
+                  className="break-all text-[var(--color-electric-blue)]"
                 >
                   {item.website}
                 </a>
@@ -128,7 +171,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
                   Support:{" "}
                   <a
                     href={`mailto:${item.contactEmail}`}
-                    className="text-[var(--color-electric-blue)]"
+                    className="break-all text-[var(--color-electric-blue)]"
                   >
                     {item.contactEmail}
                   </a>

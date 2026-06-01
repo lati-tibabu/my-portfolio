@@ -233,6 +233,7 @@ export default function AdminConsole() {
   const [blogPage, setBlogPage] = useState(1);
   const [blogSlugManuallyEdited, setBlogSlugManuallyEdited] = useState(false);
   const [blogMetaExpanded, setBlogMetaExpanded] = useState(false);
+  const [graphicsPreviewObjectUrl, setGraphicsPreviewObjectUrl] = useState("");
 
   const signedIn = useMemo(() => Boolean(sessionUser), [sessionUser]);
   const pageSize = 8;
@@ -312,6 +313,17 @@ export default function AdminConsole() {
     }
     setMarketplaceForm((current) => ({ ...current, slug: slugify(current.name) }));
   }, [marketplaceForm.name, marketplaceSlugManuallyEdited]);
+
+  useEffect(() => {
+    if (!graphicsFile) {
+      setGraphicsPreviewObjectUrl("");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(graphicsFile);
+    setGraphicsPreviewObjectUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [graphicsFile]);
 
   const loadAll = async () => {
     setBusy(true);
@@ -950,6 +962,66 @@ export default function AdminConsole() {
                 : "Create graphics item"}
             </h2>
             <div className="mt-5 grid gap-4">
+              <div className="grid gap-4 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="space-y-4">
+                  <label className={labelClass}>
+                    Image file for Supabase Storage
+                    <input
+                      className={inputClass}
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        setGraphicsFile(event.target.files?.[0] ?? null)
+                      }
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Image URL fallback
+                    <input
+                      className={inputClass}
+                      value={graphicsForm.imageUrl}
+                      onChange={(event) =>
+                        setGraphicsForm({
+                          ...graphicsForm,
+                          imageUrl: event.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <p className="text-xs text-[var(--color-on-surface-variant)]">
+                    Upload is used first. URL fallback is used when no file is selected.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
+                    Preview
+                  </p>
+                  <div className="overflow-hidden rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)]">
+                    <div className="relative aspect-[16/10] bg-[var(--color-surface-container)]">
+                      <Image
+                        src={
+                          graphicsPreviewObjectUrl ||
+                          graphicsForm.imageUrl.trim() ||
+                          DEFAULT_PLACEHOLDER_IMAGE
+                        }
+                        alt={graphicsForm.title || "Graphics preview image"}
+                        fill
+                        sizes="(min-width: 1024px) 360px, 100vw"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
+                    <div className="space-y-2 p-3">
+                      <p className="text-sm font-semibold text-[var(--color-on-surface)]">
+                        {graphicsForm.title || "Untitled graphic"}
+                      </p>
+                      <p className="line-clamp-3 text-xs text-[var(--color-on-surface-variant)]">
+                        {graphicsForm.description || "Add a short description for better gallery context."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <label className={labelClass}>
                 Title
                 <input
@@ -959,6 +1031,20 @@ export default function AdminConsole() {
                     setGraphicsForm({
                       ...graphicsForm,
                       title: event.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label className={labelClass}>
+                Description
+                <textarea
+                  className={inputClass}
+                  rows={3}
+                  value={graphicsForm.description}
+                  onChange={(event) =>
+                    setGraphicsForm({
+                      ...graphicsForm,
+                      description: event.target.value,
                     })
                   }
                 />
@@ -1006,20 +1092,6 @@ export default function AdminConsole() {
                 </summary>
                 <div className="mt-4 grid gap-4">
                   <label className={labelClass}>
-                    Description
-                    <textarea
-                      className={inputClass}
-                      rows={3}
-                      value={graphicsForm.description}
-                      onChange={(event) =>
-                        setGraphicsForm({
-                          ...graphicsForm,
-                          description: event.target.value,
-                        })
-                      }
-                    />
-                  </label>
-                  <label className={labelClass}>
                     Category
                     <input
                       className={inputClass}
@@ -1042,30 +1114,6 @@ export default function AdminConsole() {
                         setGraphicsForm({
                           ...graphicsForm,
                           publishedAt: event.target.value,
-                        })
-                      }
-                    />
-                  </label>
-                  <label className={labelClass}>
-                    Image file for Supabase Storage
-                    <input
-                      className={inputClass}
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) =>
-                        setGraphicsFile(event.target.files?.[0] ?? null)
-                      }
-                    />
-                  </label>
-                  <label className={labelClass}>
-                    Image URL fallback
-                    <input
-                      className={inputClass}
-                      value={graphicsForm.imageUrl}
-                      onChange={(event) =>
-                        setGraphicsForm({
-                          ...graphicsForm,
-                          imageUrl: event.target.value,
                         })
                       }
                     />

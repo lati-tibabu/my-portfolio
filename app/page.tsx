@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 const createStats = (marketplaceCount: number) => [
   { label: "Odoo apps/themes published", value: `${marketplaceCount}` },
-  { label: "Odoo app adopters", value: "109+" },
+  { label: "Odoo app adopters", value: "110+" },
   { label: "Years of experience", value: "4+" },
   { label: "Stack size", value: "20+ tools" },
 ];

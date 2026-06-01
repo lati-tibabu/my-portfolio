@@ -9,6 +9,7 @@ import { loadBlogPosts } from "../../lib/content";
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
 
 const formatDate = (date: string) =>
   new Intl.DateTimeFormat("en-US", {
@@ -41,6 +42,25 @@ export async function generateMetadata({
   return {
     title: `${post.title} — Lati Tibabu`,
     description: post.excerpt,
+    alternates: {
+      canonical: `/blog/${post.slug}`,
+    },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      url: `/blog/${post.slug}`,
+      type: "article",
+      images: post.coverImage ? [{ url: post.coverImage, alt: post.title }] : [],
+      publishedTime: `${post.publishedAt}T00:00:00.000Z`,
+      authors: ["Lati Tibabu"],
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt,
+      images: post.coverImage ? [post.coverImage] : [],
+    },
   };
 }
 
@@ -54,12 +74,35 @@ export default async function BlogDetailPage({ params }: PageProps) {
   }
 
   const readingTime = getReadingTime(post.detailsHtml);
+  const articleUrl = `${siteUrl}/blog/${post.slug}`;
+  const articleStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: `${post.publishedAt}T00:00:00.000Z`,
+    dateModified: `${post.publishedAt}T00:00:00.000Z`,
+    author: {
+      "@type": "Person",
+      name: "Lati Tibabu",
+    },
+    publisher: {
+      "@type": "Person",
+      name: "Lati Tibabu",
+    },
+    mainEntityOfPage: articleUrl,
+    image: post.coverImage ? [post.coverImage] : undefined,
+  };
   const hasCoverImage =
     !!post.coverImage?.trim() &&
     post.coverImage.trim() !== "https://placehold.co/600x400@2x.png";
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleStructuredData) }}
+      />
       <article>
         <header className="px-6 pb-10 pt-16 md:pb-14 md:pt-24">
           <div className="mx-auto max-w-[820px]">

@@ -3,9 +3,26 @@ import Image from "next/image";
 import Link from "next/link";
 import { loadBlogPosts } from "../lib/content";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
+const canonicalUrl = `${siteUrl}/blog`;
+
 export const metadata: Metadata = {
   title: "Blog — Lati Tibabu",
   description: "Notes, project updates, and design thoughts from Lati Tibabu.",
+  alternates: {
+    canonical: "/blog",
+  },
+  openGraph: {
+    title: "Blog — Lati Tibabu",
+    description: "Notes, project updates, and design thoughts from Lati Tibabu.",
+    url: "/blog",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Blog — Lati Tibabu",
+    description: "Notes, project updates, and design thoughts from Lati Tibabu.",
+  },
 };
 
 const formatDate = (date: string) =>
@@ -17,9 +34,21 @@ const formatDate = (date: string) =>
 
 export default async function BlogPage() {
   const blogPosts = await loadBlogPosts();
+  const blogStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Lati Tibabu Blog",
+    description: "Notes, project updates, and design thoughts from Lati Tibabu.",
+    url: canonicalUrl,
+    inLanguage: "en",
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogStructuredData) }}
+      />
       <section className="px-6 pb-12 pt-20 md:pb-16 md:pt-28">
         <div className="mx-auto max-w-[760px]">
           <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
@@ -70,7 +99,7 @@ export default async function BlogPage() {
                       className="h-1 w-1 rounded-full bg-[var(--color-electric-blue)]"
                       aria-hidden="true"
                     />
-                    <span>{post.tags.join(" / ")}</span>
+                    <span className="break-words">{post.tags.join(" / ")}</span>
                   </div>
                   <h2 className="mt-4 font-heading text-[26px] leading-[1.2] tracking-[-0.025em] text-[var(--color-on-surface)] md:text-[30px]">
                     {post.title}

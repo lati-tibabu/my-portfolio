@@ -55,7 +55,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-md border-b border-[var(--color-surface-border)]">
-      <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between h-16 gap-4">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16 gap-4">
         {/* Logo */}
         <Link href="/" onClick={() => setMobileOpen(false)}>
           <Logo size="medium" />
@@ -169,7 +169,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[var(--color-surface-container-lowest)] border-t border-[var(--color-surface-border)] px-6 py-4 space-y-4">
+        <div className="md:hidden bg-[var(--color-surface-container-lowest)] border-t border-[var(--color-surface-border)] px-4 sm:px-6 py-4 space-y-4">
           {navLinks.map((link) => (
             <Link
               key={link.name}
