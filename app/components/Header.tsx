@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "./Logo";
 import HandDrawnIcon from "./HandDrawnIcon";
-import { supabaseBrowser } from "../lib/supabase/browser";
+import { hasSupabaseBrowserConfig, supabaseBrowser } from "../lib/supabase/browser";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,11 +31,19 @@ export default function Header() {
   useEffect(() => {
     let mounted = true;
     const hydrate = async () => {
+      if (!supabaseBrowser || !hasSupabaseBrowserConfig()) return;
       const { data } = await supabaseBrowser.auth.getSession();
       if (!mounted) return;
       setAdminEmail(data.session?.user?.email ?? null);
     };
     hydrate();
+
+    if (!supabaseBrowser || !hasSupabaseBrowserConfig()) {
+      return () => {
+        mounted = false;
+      };
+    }
+
     const {
       data: { subscription },
     } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
@@ -48,7 +56,9 @@ export default function Header() {
   }, []);
 
   const handleAdminSignOut = async () => {
-    await supabaseBrowser.auth.signOut();
+    if (supabaseBrowser) {
+      await supabaseBrowser.auth.signOut();
+    }
     setAdminMenuOpen(false);
     router.refresh();
   };
