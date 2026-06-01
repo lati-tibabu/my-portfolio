@@ -10,6 +10,8 @@ export default function Header() {
 
   const navLinks = [
     { name: "Marketplace", href: "/marketplace" },
+    { name: "Blog", href: "/blog" },
+    { name: "Admin", href: "/admin" },
     { name: "Services", href: "/#services" },
     { name: "Skills", href: "/#skills" },
     { name: "About", href: "/#about" },
@@ -18,7 +20,6 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-md border-b border-[var(--color-surface-border)]">
       <div className="max-w-[1280px] mx-auto px-6 flex items-center justify-between h-16 gap-4">
-
         {/* Logo */}
         <Link href="/" onClick={() => setMobileOpen(false)}>
           <Logo size="medium" />
@@ -27,11 +28,18 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--color-on-surface-variant)]">
           {navLinks.map((link) => (
-            <Link key={link.name} href={link.href} className="hover:text-[var(--color-on-surface)] transition">
+            <Link
+              key={link.name}
+              href={link.href}
+              className="hover:text-[var(--color-on-surface)] transition"
+            >
               {link.name}
             </Link>
           ))}
-          <Link href="/graphics" className="hover:text-[var(--color-on-surface)] transition">
+          <Link
+            href="/graphics"
+            className="hover:text-[var(--color-on-surface)] transition"
+          >
             Graphics
           </Link>
         </nav>
@@ -78,7 +86,11 @@ export default function Header() {
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
-          {mobileOpen ? <HandDrawnIcon name="close" size={28} /> : <HandDrawnIcon name="menu" size={28} />}
+          {mobileOpen ? (
+            <HandDrawnIcon name="close" size={28} />
+          ) : (
+            <HandDrawnIcon name="menu" size={28} />
+          )}
         </button>
       </div>
 
@@ -110,9 +122,30 @@ export default function Header() {
             Hire me
           </Link>
           <div className="flex gap-4 pt-2">
-            <a href="https://linkedin.com/in/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"><HandDrawnIcon name="linkedin" size={20} /></a>
-            <a href="https://github.com/lati-tibabu" target="_blank" rel="noopener noreferrer" className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"><HandDrawnIcon name="github" size={20} /></a>
-            <a href="https://t.me/latitibabu" target="_blank" rel="noopener noreferrer" className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"><HandDrawnIcon name="telegram" size={20} /></a>
+            <a
+              href="https://linkedin.com/in/lati-tibabu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
+            >
+              <HandDrawnIcon name="linkedin" size={20} />
+            </a>
+            <a
+              href="https://github.com/lati-tibabu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
+            >
+              <HandDrawnIcon name="github" size={20} />
+            </a>
+            <a
+              href="https://t.me/latitibabu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
+            >
+              <HandDrawnIcon name="telegram" size={20} />
+            </a>
           </div>
         </div>
       )}

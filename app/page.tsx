@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import HandDrawnIcon from "./components/HandDrawnIcon";
-import { marketplaceItems } from "./data/odooMarketplace";
+import { loadMarketplaceItems } from "./lib/content";
 
 export const metadata: Metadata = {
   title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   ],
 };
 
-const stats = [
-  { label: "Odoo apps/themes published", value: `${marketplaceItems.length}` },
+const createStats = (marketplaceCount: number) => [
+  { label: "Odoo apps/themes published", value: `${marketplaceCount}` },
   { label: "Odoo app adopters", value: "109+" },
   { label: "Years of experience", value: "4+" },
   { label: "Stack size", value: "20+ tools" },
@@ -185,7 +185,10 @@ const graphicsPreview = [
   "/Images/Graphics/faith_success_2025.png",
 ];
 
-export default function Home() {
+export default async function Home() {
+  const marketplaceItems = await loadMarketplaceItems();
+  const stats = createStats(marketplaceItems.length);
+
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
       <section className="relative overflow-hidden px-6 pt-28 pb-16">

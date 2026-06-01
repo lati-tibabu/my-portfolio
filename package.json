@@ -6,11 +6,16 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:supabase": "tsx scripts/seed-supabase.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.106.2",
     "@vercel/analytics": "^1.4.1",
     "daisyui": "^5.0.46",
+    "dotenv": "^17.4.2",
+    "marked": "^18.0.4",
     "next": "^15.5.12",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -25,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.2",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5"
   }
 }

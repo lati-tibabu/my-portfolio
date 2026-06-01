@@ -69,7 +69,9 @@ body {
   background: var(--color-background);
   color: var(--color-on-background);
   font-family: var(--font-inter), "Inter", "Segoe UI", Arial, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .font-heading {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { marketplaceItems } from "../data/odooMarketplace";
+import { loadMarketplaceItems } from "../lib/content";
 
 export const metadata: Metadata = {
   title: "Odoo Marketplace — Lati Tibabu",
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
     "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
 };
 
-export default function MarketplacePage() {
+export default async function MarketplacePage() {
+  const marketplaceItems = await loadMarketplaceItems();
+
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
       <section className="px-6 pt-24 pb-12">
@@ -36,19 +38,32 @@ export default function MarketplacePage() {
             >
               <Link href={`/marketplace/${item.slug}`} className="block">
                 <div className="relative mb-5 aspect-[16/9] overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
-                  <Image
-                    src={item.image}
-                    alt={`${item.name} preview`}
-                    fill
-                    sizes="(min-width: 1024px) 520px, 90vw"
-                    className="object-cover"
-                    unoptimized
-                  />
+                  {item.coverImage?.trim() ? (
+                    <Image
+                      src={item.coverImage}
+                      alt={`${item.name} preview`}
+                      fill
+                      sizes="(min-width: 1024px) 520px, 90vw"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,var(--color-surface-container-highest),var(--color-surface-container-low))] p-6 text-center">
+                      <div>
+                        <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
+                          No preview image
+                        </p>
+                        <p className="mt-2 font-heading text-[18px] text-[var(--color-on-surface)]">
+                          {item.name}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                      {item.type}
+                      {item.category}
                     </p>
                     <h2 className="font-heading text-[22px] text-[var(--color-on-surface)]">
                       {item.name}
@@ -62,11 +77,8 @@ export default function MarketplacePage() {
               </Link>
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="tag-chip">{item.price}</span>
+                <span className="tag-chip">{item.category}</span>
                 <span className="tag-chip">{item.license}</span>
-                <span className="tag-chip">{item.technicalName}</span>
-                {item.downloads && (
-                  <span className="tag-chip">{item.downloads}</span>
-                )}
               </div>
               <div className="mt-4 flex flex-wrap gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
                 <Link

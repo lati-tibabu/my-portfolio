@@ -4,11 +4,13 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
 import VisitorCounter from "./components/VisitorCounter";
-import { Analytics } from "@vercel/analytics/next";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
 
@@ -109,17 +111,20 @@ export default function RootLayout({
           id="person-structured-data"
           type="application/ld+json"
           strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personStructuredData) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(personStructuredData),
+          }}
         />
         <Header />
         <main>{children}</main>
         <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">
           <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[var(--color-on-surface-variant)]">
-            <p>&copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.</p>
+            <p>
+              &copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.
+            </p>
             <VisitorCounter />
           </div>
         </footer>
-        <Analytics />
       </body>
     </html>
   );
