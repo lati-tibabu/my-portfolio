@@ -22,11 +22,13 @@ export default function Header() {
   const navLinks = [
     { name: "Marketplace", href: "/marketplace" },
     { name: "Blog", href: "/blog" },
-    { name: "Admin", href: "/admin" },
     { name: "Services", href: "/#services" },
     { name: "Skills", href: "/#skills" },
     { name: "About", href: "/#about" },
   ];
+  const visibleNavLinks = adminEmail
+    ? [...navLinks.slice(0, 2), { name: "Admin", href: "/admin" }, ...navLinks.slice(2)]
+    : navLinks;
 
   useEffect(() => {
     let mounted = true;
@@ -73,7 +75,7 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--color-on-surface-variant)]">
-          {navLinks.map((link) => (
+          {visibleNavLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
@@ -180,7 +182,7 @@ export default function Header() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-[var(--color-surface-container-lowest)] border-t border-[var(--color-surface-border)] px-4 sm:px-6 py-4 space-y-4">
-          {navLinks.map((link) => (
+          {visibleNavLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
