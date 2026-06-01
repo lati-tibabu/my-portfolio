@@ -54,6 +54,9 @@ export default async function BlogDetailPage({ params }: PageProps) {
   }
 
   const readingTime = getReadingTime(post.detailsHtml);
+  const hasCoverImage =
+    !!post.coverImage?.trim() &&
+    post.coverImage.trim() !== "https://placehold.co/600x400@2x.png";
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
@@ -98,18 +101,20 @@ export default async function BlogDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        <div className="px-4 sm:px-6">
-          <div className="relative mx-auto aspect-[16/9] max-w-[1040px] overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] shadow-[0_24px_60px_-32px_rgba(15,23,42,0.3)]">
-            <Image
-              src={post.coverImage}
-              alt=""
-              fill
-              priority
-              sizes="(min-width: 1100px) 1040px, 94vw"
-              className="object-cover"
-            />
+        {hasCoverImage && (
+          <div className="px-4 sm:px-6">
+            <div className="relative mx-auto aspect-[16/9] max-w-[1040px] overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] shadow-[0_24px_60px_-32px_rgba(15,23,42,0.3)]">
+              <Image
+                src={post.coverImage}
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 1100px) 1040px, 94vw"
+                className="object-cover"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         <section className="px-6 pb-20 pt-12 md:pb-28 md:pt-16">
           <div className="mx-auto max-w-[720px]">

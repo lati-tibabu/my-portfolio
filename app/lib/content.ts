@@ -54,6 +54,7 @@ type BlogRow = {
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const DEFAULT_COVER_IMAGE = "https://placehold.co/600x400@2x.png";
 
 const createReadClient = () => {
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -80,6 +81,11 @@ const normalizeArray = (value: string[] | string | null | undefined) => {
     .filter(Boolean);
 };
 
+const normalizeImageUrl = (value: string | null | undefined) => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : DEFAULT_COVER_IMAGE;
+};
+
 export async function loadGraphicsItems(): Promise<GraphicItem[]> {
   const client = createReadClient();
   if (!client) {
@@ -102,7 +108,7 @@ export async function loadGraphicsItems(): Promise<GraphicItem[]> {
     title: row.title,
     description: row.description,
     category: row.category,
-    image: row.image_url,
+    image: normalizeImageUrl(row.image_url),
     publishedAt: row.published_at,
     detailsHtml: row.details_html,
   }));
@@ -129,7 +135,7 @@ export async function loadMarketplaceItems(): Promise<MarketplaceItem[]> {
     description: row.description,
     price: row.price,
     category: row.category,
-    coverImage: row.cover_image_url,
+    coverImage: normalizeImageUrl(row.cover_image_url),
     publishedAt: row.published_at,
     detailsHtml: row.details_html,
     version: row.version,
@@ -171,7 +177,7 @@ export async function loadBlogPosts(): Promise<BlogPost[]> {
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
-    coverImage: row.cover_image_url,
+    coverImage: normalizeImageUrl(row.cover_image_url),
     publishedAt: row.published_at,
     tags: normalizeArray(row.tags) ?? [],
     detailsHtml: row.details_html,

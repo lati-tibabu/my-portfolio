@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import HandDrawnIcon from "../components/HandDrawnIcon";
+import GraphicsCardsClient from "../components/GraphicsCardsClient";
 import { loadGraphicsItems } from "../lib/content";
 
 const PAGE_SIZE = 6;
@@ -49,36 +49,7 @@ export default async function GraphicsPage({ searchParams }: PageProps) {
       </section>
 
       <section className="px-6 pb-20">
-        <div className="max-w-[1100px] mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {pageItems.map((item) => (
-            <article
-              key={item.slug}
-              className="overflow-hidden rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] shadow-[0_20px_25px_-5px_rgba(15,23,42,0.05)]"
-            >
-              <div className="relative aspect-[4/3]">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="space-y-3 p-5">
-                <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.16em] text-[var(--color-electric-blue)]">
-                  <span>{item.category}</span>
-                  <span>{item.publishedAt}</span>
-                </div>
-                <h2 className="font-heading text-[22px] text-[var(--color-on-surface)]">
-                  {item.title}
-                </h2>
-                <p className="text-[14px] leading-[1.7] text-[var(--color-on-surface-variant)]">
-                  {item.description}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+        <GraphicsCardsClient items={pageItems} />
 
         <div className="max-w-[1100px] mx-auto mt-10 flex flex-wrap items-center justify-center gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
           {Array.from({ length: totalPages }, (_, index) => index + 1).map(

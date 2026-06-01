@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import BlogContent from "../components/BlogContent";
 import { supabaseBrowser } from "../lib/supabase/browser";
 
 const STORAGE_BUCKET = "portfolio-media";
+const DEFAULT_PLACEHOLDER_IMAGE = "https://placehold.co/600x400@2x.png";
 
 type TabKey = "graphics" | "marketplace" | "blog";
 
@@ -107,6 +109,7 @@ type BlogForm = {
   slug: string;
   title: string;
   excerpt: string;
+  useCoverImage: boolean;
   coverImageUrl: string;
   publishedAt: string;
   tagsText: string;
@@ -158,6 +161,7 @@ const emptyBlogForm = (): BlogForm => ({
   slug: "",
   title: "",
   excerpt: "",
+  useCoverImage: false,
   coverImageUrl: "",
   publishedAt: new Date().toISOString().slice(0, 10),
   tagsText: "",
@@ -165,6 +169,15 @@ const emptyBlogForm = (): BlogForm => ({
   contentFormat: "html",
   isDraft: true,
 });
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 
 const joinList = (items: string[] | null | undefined) => (items ?? []).join(", ");
 
@@ -202,12 +215,43 @@ export default function AdminConsole() {
   const [graphicsForm, setGraphicsForm] =
     useState<GraphicsForm>(emptyGraphicsForm);
   const [graphicsFile, setGraphicsFile] = useState<File | null>(null);
+  const [graphicsSlugManuallyEdited, setGraphicsSlugManuallyEdited] =
+    useState(false);
+  const [graphicsMetaExpanded, setGraphicsMetaExpanded] = useState(false);
   const [marketplaceForm, setMarketplaceForm] =
     useState<MarketplaceForm>(emptyMarketplaceForm);
+  const [marketplaceSlugManuallyEdited, setMarketplaceSlugManuallyEdited] =
+    useState(false);
+  const [marketplaceMetaExpanded, setMarketplaceMetaExpanded] = useState(false);
   const [blogForm, setBlogForm] = useState<BlogForm>(emptyBlogForm);
   const [showBlogPreview, setShowBlogPreview] = useState(false);
+  const [graphicsView, setGraphicsView] = useState<"list" | "new">("list");
+  const [marketplaceView, setMarketplaceView] = useState<"list" | "new">("list");
+  const [blogView, setBlogView] = useState<"list" | "new">("list");
+  const [graphicsPage, setGraphicsPage] = useState(1);
+  const [marketplacePage, setMarketplacePage] = useState(1);
+  const [blogPage, setBlogPage] = useState(1);
+  const [blogSlugManuallyEdited, setBlogSlugManuallyEdited] = useState(false);
+  const [blogMetaExpanded, setBlogMetaExpanded] = useState(false);
 
   const signedIn = useMemo(() => Boolean(sessionUser), [sessionUser]);
+  const pageSize = 8;
+  const pagedGraphics = useMemo(
+    () => graphics.slice((graphicsPage - 1) * pageSize, graphicsPage * pageSize),
+    [graphics, graphicsPage],
+  );
+  const pagedMarketplace = useMemo(
+    () =>
+      marketplace.slice(
+        (marketplacePage - 1) * pageSize,
+        marketplacePage * pageSize,
+      ),
+    [marketplace, marketplacePage],
+  );
+  const pagedBlog = useMemo(
+    () => blog.slice((blogPage - 1) * pageSize, blogPage * pageSize),
+    [blog, blogPage],
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -244,6 +288,30 @@ export default function AdminConsole() {
       void loadAll();
     }
   }, [signedIn]);
+
+  useEffect(() => {
+    if (blogSlugManuallyEdited) {
+      return;
+    }
+    setBlogForm((current) => ({
+      ...current,
+      slug: slugify(current.title),
+    }));
+  }, [blogForm.title, blogSlugManuallyEdited]);
+
+  useEffect(() => {
+    if (graphicsSlugManuallyEdited) {
+      return;
+    }
+    setGraphicsForm((current) => ({ ...current, slug: slugify(current.title) }));
+  }, [graphicsForm.title, graphicsSlugManuallyEdited]);
+
+  useEffect(() => {
+    if (marketplaceSlugManuallyEdited) {
+      return;
+    }
+    setMarketplaceForm((current) => ({ ...current, slug: slugify(current.name) }));
+  }, [marketplaceForm.name, marketplaceSlugManuallyEdited]);
 
   const loadAll = async () => {
     setBusy(true);
@@ -323,20 +391,32 @@ export default function AdminConsole() {
     router.refresh();
   };
 
-  const signOut = async () => {
-    setBusy(true);
-    await supabaseBrowser.auth.signOut();
-    setSessionUser(null);
-    setBusy(false);
-    setMessage("Signed out.");
-  };
-
   const saveGraphics = async () => {
-    if (!graphicsForm.slug || !graphicsForm.title) {
-      setMessage("Graphics items need a slug and title.");
+    const ensureUniqueGraphicsSlug = async (initialSlug: string, itemId?: string) => {
+      let counter = 1;
+      let candidate = initialSlug;
+      while (true) {
+        let query = supabaseBrowser
+          .from("graphics_items")
+          .select("id")
+          .eq("slug", candidate)
+          .limit(1);
+        if (itemId) {
+          query = query.neq("id", itemId);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        if (!data || data.length === 0) return candidate;
+        counter += 1;
+        candidate = `${initialSlug}-${counter}`;
+      }
+    };
+
+    const baseSlug = slugify(graphicsForm.slug || graphicsForm.title);
+    if (!baseSlug || !graphicsForm.title) {
+      setMessage("Graphics items need a title.");
       return;
     }
-
     setBusy(true);
     try {
       let imageUrl = graphicsForm.imageUrl;
@@ -347,13 +427,17 @@ export default function AdminConsole() {
         imageUrl = uploaded.imageUrl;
         imagePath = uploaded.imagePath;
       }
+      const uniqueSlug = await ensureUniqueGraphicsSlug(
+        baseSlug,
+        graphicsForm.id ?? undefined,
+      );
 
       const payload = {
-        slug: graphicsForm.slug,
+        slug: uniqueSlug,
         title: graphicsForm.title,
         description: graphicsForm.description,
         category: graphicsForm.category,
-        image_url: imageUrl,
+        image_url: imageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE,
         image_path: imagePath,
         published_at: graphicsForm.publishedAt,
         details_html: graphicsForm.detailsHtml,
@@ -372,10 +456,15 @@ export default function AdminConsole() {
       }
 
       setMessage(
-        graphicsForm.id ? "Graphics item updated." : "Graphics item created.",
+        graphicsForm.id
+          ? `Graphics item updated (${uniqueSlug}).`
+          : `Graphics item created (${uniqueSlug}).`,
       );
       setGraphicsForm(emptyGraphicsForm());
       setGraphicsFile(null);
+      setGraphicsSlugManuallyEdited(false);
+      setGraphicsMetaExpanded(false);
+      setGraphicsView("list");
       await loadAll();
     } catch (error) {
       setMessage(
@@ -410,20 +499,48 @@ export default function AdminConsole() {
   };
 
   const saveMarketplace = async () => {
-    if (!marketplaceForm.slug || !marketplaceForm.name) {
-      setMessage("Marketplace items need a slug and name.");
+    const ensureUniqueMarketplaceSlug = async (
+      initialSlug: string,
+      itemId?: string,
+    ) => {
+      let counter = 1;
+      let candidate = initialSlug;
+      while (true) {
+        let query = supabaseBrowser
+          .from("marketplace_items")
+          .select("id")
+          .eq("slug", candidate)
+          .limit(1);
+        if (itemId) {
+          query = query.neq("id", itemId);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        if (!data || data.length === 0) return candidate;
+        counter += 1;
+        candidate = `${initialSlug}-${counter}`;
+      }
+    };
+
+    const baseSlug = slugify(marketplaceForm.slug || marketplaceForm.name);
+    if (!baseSlug || !marketplaceForm.name) {
+      setMessage("Marketplace items need a name.");
       return;
     }
-
     setBusy(true);
     try {
+      const uniqueSlug = await ensureUniqueMarketplaceSlug(
+        baseSlug,
+        marketplaceForm.id ?? undefined,
+      );
       const payload = {
-        slug: marketplaceForm.slug,
+        slug: uniqueSlug,
         name: marketplaceForm.name,
         description: marketplaceForm.description,
         price: marketplaceForm.price,
         category: marketplaceForm.category,
-        cover_image_url: marketplaceForm.coverImageUrl,
+        cover_image_url:
+          marketplaceForm.coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE,
         published_at: marketplaceForm.publishedAt,
         details_html: marketplaceForm.detailsHtml,
         version: marketplaceForm.version,
@@ -456,10 +573,13 @@ export default function AdminConsole() {
 
       setMessage(
         marketplaceForm.id
-          ? "Marketplace item updated."
-          : "Marketplace item created.",
+          ? `Marketplace item updated (${uniqueSlug}).`
+          : `Marketplace item created (${uniqueSlug}).`,
       );
       setMarketplaceForm(emptyMarketplaceForm());
+      setMarketplaceSlugManuallyEdited(false);
+      setMarketplaceMetaExpanded(false);
+      setMarketplaceView("list");
       await loadAll();
     } catch (error) {
       setMessage(
@@ -494,18 +614,50 @@ export default function AdminConsole() {
   };
 
   const saveBlog = async () => {
-    if (!blogForm.slug || !blogForm.title) {
-      setMessage("Blog posts need a slug and title.");
+    const ensureUniqueBlogSlug = async (initialSlug: string, postId?: string) => {
+      let counter = 1;
+      let candidate = initialSlug;
+
+      while (true) {
+        let query = supabaseBrowser
+          .from("blog_posts")
+          .select("id")
+          .eq("slug", candidate)
+          .limit(1);
+
+        if (postId) {
+          query = query.neq("id", postId);
+        }
+
+        const { data, error } = await query;
+        if (error) {
+          throw error;
+        }
+
+        if (!data || data.length === 0) {
+          return candidate;
+        }
+
+        counter += 1;
+        candidate = `${initialSlug}-${counter}`;
+      }
+    };
+
+    const baseSlug = slugify(blogForm.slug || blogForm.title);
+    if (!baseSlug || !blogForm.title) {
+      setMessage("Blog posts need a title.");
       return;
     }
-
     setBusy(true);
     try {
+      const uniqueSlug = await ensureUniqueBlogSlug(baseSlug, blogForm.id ?? undefined);
       const payload = {
-        slug: blogForm.slug,
+        slug: uniqueSlug,
         title: blogForm.title,
         excerpt: blogForm.excerpt,
-        cover_image_url: blogForm.coverImageUrl,
+        cover_image_url: blogForm.useCoverImage
+          ? blogForm.coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE
+          : DEFAULT_PLACEHOLDER_IMAGE,
         published_at: blogForm.publishedAt,
         tags: splitList(blogForm.tagsText),
         details_html: blogForm.detailsHtml,
@@ -527,13 +679,15 @@ export default function AdminConsole() {
 
       setMessage(
         blogForm.isDraft
-          ? "Blog draft saved."
+          ? `Blog draft saved (${uniqueSlug}).`
           : blogForm.id
-            ? "Blog post updated and published."
-            : "Blog post published.",
+            ? `Blog post updated and published (${uniqueSlug}).`
+            : `Blog post published (${uniqueSlug}).`,
       );
       setBlogForm(emptyBlogForm());
       setShowBlogPreview(false);
+      setBlogSlugManuallyEdited(false);
+      setBlogView("list");
       await loadAll();
     } catch (error) {
       setMessage(
@@ -627,81 +781,103 @@ export default function AdminConsole() {
   }
 
   return (
-    <div className="space-y-8 px-6 py-10">
-      <div className={sectionClass}>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              Admin Dashboard
-            </p>
-            <h1 className="mt-2 font-heading text-[32px] text-[var(--color-on-surface)]">
-              Content manager
-            </h1>
-            <p className="mt-2 text-[15px] text-[var(--color-on-surface-variant)]">
-              Signed in as {sessionUser?.email ?? "Supabase user"}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="rounded-lg border border-[var(--color-surface-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]"
-              onClick={loadAll}
-              disabled={busy}
-            >
-              Refresh
-            </button>
-            <button
-              type="button"
-              className="rounded-lg border border-[var(--color-surface-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]"
-              onClick={signOut}
-              disabled={busy}
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
-        <p className="mt-4 text-sm text-[var(--color-on-surface-variant)]">
-          {message}
+    <div className="grid gap-6 px-6 py-8 lg:grid-cols-[220px_1fr]">
+      <aside className={`${sectionClass} h-fit`}>
+        <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+          CMS
         </p>
-      </div>
+        <nav className="mt-4 space-y-2">
+          {(["graphics", "marketplace", "blog"] as TabKey[]).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold uppercase tracking-[0.12em] ${
+                activeTab === tab
+                  ? "bg-[var(--color-electric-blue)] text-white"
+                  : "text-[var(--color-on-surface-variant)]"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-      <div className="flex flex-wrap gap-3">
-        {(["graphics", "marketplace", "blog"] as TabKey[]).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] ${
-              activeTab === tab
-                ? "bg-[var(--color-electric-blue)] text-white"
-                : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <div className="space-y-4">
+        <p className="text-sm text-[var(--color-on-surface-variant)]">{message}</p>
 
       {activeTab === "graphics" && (
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
+              Graphics
+            </h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setGraphicsView("list")}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  graphicsView === "list"
+                    ? "bg-[var(--color-electric-blue)] text-white"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                }`}
+              >
+                List
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setGraphicsForm(emptyGraphicsForm());
+                  setGraphicsFile(null);
+                  setGraphicsSlugManuallyEdited(false);
+                  setGraphicsMetaExpanded(false);
+                  setGraphicsView("new");
+                }}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  graphicsView === "new"
+                    ? "bg-[var(--color-electric-blue)] text-white"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                }`}
+              >
+                New
+              </button>
+            </div>
+          </div>
+          {graphicsView === "list" ? (
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
               Graphics items
             </h2>
             <div className="mt-5 space-y-4">
-              {graphics.map((item) => (
+              {pagedGraphics.map((item) => (
                 <article
                   key={item.id}
                   className="rounded-xl border border-[var(--color-surface-border)] p-4"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
+                    <div className="flex items-center gap-3">
+                      {item.image_url?.trim() ? (
+                        <Image
+                          src={item.image_url.trim()}
+                          alt={item.title}
+                          width={56}
+                          height={56}
+                          className="h-14 w-14 rounded-md border border-[var(--color-surface-border)] object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-14 w-14 items-center justify-center rounded-md border border-[var(--color-surface-border)] text-[10px] uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
+                          No image
+                        </div>
+                      )}
+                      <div>
                       <h3 className="font-semibold text-[var(--color-on-surface)]">
                         {item.title}
                       </h3>
                       <p className="text-sm text-[var(--color-on-surface-variant)]">
                         {item.slug}
                       </p>
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -720,6 +896,8 @@ export default function AdminConsole() {
                             detailsHtml: item.details_html,
                           });
                           setGraphicsFile(null);
+                          setGraphicsSlugManuallyEdited(true);
+                          setGraphicsView("new");
                         }}
                       >
                         Edit
@@ -736,8 +914,35 @@ export default function AdminConsole() {
                 </article>
               ))}
             </div>
+            <div className="mt-5 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+              <span>
+                Page {graphicsPage} of {Math.max(1, Math.ceil(graphics.length / pageSize))}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
+                  disabled={graphicsPage <= 1}
+                  onClick={() => setGraphicsPage((current) => Math.max(1, current - 1))}
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
+                  disabled={graphicsPage >= Math.max(1, Math.ceil(graphics.length / pageSize))}
+                  onClick={() =>
+                    setGraphicsPage((current) =>
+                      Math.min(Math.max(1, Math.ceil(graphics.length / pageSize)), current + 1),
+                    )
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
-
+          ) : (
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
               {graphicsForm.id
@@ -745,19 +950,6 @@ export default function AdminConsole() {
                 : "Create graphics item"}
             </h2>
             <div className="mt-5 grid gap-4">
-              <label className={labelClass}>
-                Slug
-                <input
-                  className={inputClass}
-                  value={graphicsForm.slug}
-                  onChange={(event) =>
-                    setGraphicsForm({
-                      ...graphicsForm,
-                      slug: event.target.value,
-                    })
-                  }
-                />
-              </label>
               <label className={labelClass}>
                 Title
                 <input
@@ -772,70 +964,22 @@ export default function AdminConsole() {
                 />
               </label>
               <label className={labelClass}>
-                Description
-                <textarea
-                  className={inputClass}
-                  rows={3}
-                  value={graphicsForm.description}
-                  onChange={(event) =>
-                    setGraphicsForm({
-                      ...graphicsForm,
-                      description: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Category
+                Slug
                 <input
                   className={inputClass}
-                  value={graphicsForm.category}
-                  onChange={(event) =>
+                  value={graphicsForm.slug}
+                  onChange={(event) => {
+                    setGraphicsSlugManuallyEdited(true);
                     setGraphicsForm({
                       ...graphicsForm,
-                      category: event.target.value,
-                    })
-                  }
+                      slug: slugify(event.target.value),
+                    });
+                  }}
                 />
               </label>
-              <label className={labelClass}>
-                Published date
-                <input
-                  className={inputClass}
-                  type="date"
-                  value={graphicsForm.publishedAt}
-                  onChange={(event) =>
-                    setGraphicsForm({
-                      ...graphicsForm,
-                      publishedAt: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Image file for Supabase Storage
-                <input
-                  className={inputClass}
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) =>
-                    setGraphicsFile(event.target.files?.[0] ?? null)
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Image URL fallback
-                <input
-                  className={inputClass}
-                  value={graphicsForm.imageUrl}
-                  onChange={(event) =>
-                    setGraphicsForm({
-                      ...graphicsForm,
-                      imageUrl: event.target.value,
-                    })
-                  }
-                />
-              </label>
+              <p className="text-xs text-[var(--color-on-surface-variant)]">
+                Slug is auto-generated from title. On conflict, a suffix is added when saving.
+              </p>
               <label className={labelClass}>
                 HTML details
                 <textarea
@@ -850,6 +994,84 @@ export default function AdminConsole() {
                   }
                 />
               </label>
+              <details
+                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
+                open={graphicsMetaExpanded}
+                onToggle={(event) =>
+                  setGraphicsMetaExpanded((event.target as HTMLDetailsElement).open)
+                }
+              >
+                <summary className="cursor-pointer text-sm font-semibold text-[var(--color-on-surface)]">
+                  Other fields
+                </summary>
+                <div className="mt-4 grid gap-4">
+                  <label className={labelClass}>
+                    Description
+                    <textarea
+                      className={inputClass}
+                      rows={3}
+                      value={graphicsForm.description}
+                      onChange={(event) =>
+                        setGraphicsForm({
+                          ...graphicsForm,
+                          description: event.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Category
+                    <input
+                      className={inputClass}
+                      value={graphicsForm.category}
+                      onChange={(event) =>
+                        setGraphicsForm({
+                          ...graphicsForm,
+                          category: event.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Published date
+                    <input
+                      className={inputClass}
+                      type="date"
+                      value={graphicsForm.publishedAt}
+                      onChange={(event) =>
+                        setGraphicsForm({
+                          ...graphicsForm,
+                          publishedAt: event.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Image file for Supabase Storage
+                    <input
+                      className={inputClass}
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        setGraphicsFile(event.target.files?.[0] ?? null)
+                      }
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Image URL fallback
+                    <input
+                      className={inputClass}
+                      value={graphicsForm.imageUrl}
+                      onChange={(event) =>
+                        setGraphicsForm({
+                          ...graphicsForm,
+                          imageUrl: event.target.value,
+                        })
+                      }
+                    />
+                  </label>
+                </div>
+              </details>
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -859,30 +1081,56 @@ export default function AdminConsole() {
                 >
                   {graphicsForm.id ? "Update" : "Create"}
                 </button>
-                <button
-                  type="button"
-                  className="rounded-lg border border-[var(--color-surface-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em]"
-                  onClick={() => {
-                    setGraphicsForm(emptyGraphicsForm());
-                    setGraphicsFile(null);
-                  }}
-                >
-                  Clear
-                </button>
               </div>
             </div>
           </div>
+          )}
         </div>
       )}
 
       {activeTab === "marketplace" && (
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
+              Marketplace
+            </h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setMarketplaceView("list")}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  marketplaceView === "list"
+                    ? "bg-[var(--color-electric-blue)] text-white"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                }`}
+              >
+                List
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMarketplaceForm(emptyMarketplaceForm());
+                  setMarketplaceSlugManuallyEdited(false);
+                  setMarketplaceMetaExpanded(false);
+                  setMarketplaceView("new");
+                }}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  marketplaceView === "new"
+                    ? "bg-[var(--color-electric-blue)] text-white"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                }`}
+              >
+                New
+              </button>
+            </div>
+          </div>
+          {marketplaceView === "list" ? (
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
               Marketplace items
             </h2>
             <div className="mt-5 space-y-4">
-              {marketplace.map((item) => (
+              {pagedMarketplace.map((item) => (
                 <article
                   key={item.id}
                   className="rounded-xl border border-[var(--color-surface-border)] p-4"
@@ -926,6 +1174,8 @@ export default function AdminConsole() {
                             highlightsText: joinList(item.highlights),
                             screenshotsText: joinList(item.screenshots),
                           });
+                          setMarketplaceSlugManuallyEdited(true);
+                          setMarketplaceView("new");
                         }}
                       >
                         Edit
@@ -942,8 +1192,37 @@ export default function AdminConsole() {
                 </article>
               ))}
             </div>
+            <div className="mt-5 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+              <span>
+                Page {marketplacePage} of {Math.max(1, Math.ceil(marketplace.length / pageSize))}
+              </span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
+                  disabled={marketplacePage <= 1}
+                  onClick={() =>
+                    setMarketplacePage((current) => Math.max(1, current - 1))
+                  }
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
+                  disabled={marketplacePage >= Math.max(1, Math.ceil(marketplace.length / pageSize))}
+                  onClick={() =>
+                    setMarketplacePage((current) =>
+                      Math.min(Math.max(1, Math.ceil(marketplace.length / pageSize)), current + 1),
+                    )
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
-
+          ) : (
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
               {marketplaceForm.id
@@ -951,19 +1230,6 @@ export default function AdminConsole() {
                 : "Create marketplace item"}
             </h2>
             <div className="mt-5 grid gap-4">
-              <label className={labelClass}>
-                Slug
-                <input
-                  className={inputClass}
-                  value={marketplaceForm.slug}
-                  onChange={(event) =>
-                    setMarketplaceForm({
-                      ...marketplaceForm,
-                      slug: event.target.value,
-                    })
-                  }
-                />
-              </label>
               <label className={labelClass}>
                 Name
                 <input
@@ -978,6 +1244,23 @@ export default function AdminConsole() {
                 />
               </label>
               <label className={labelClass}>
+                Slug
+                <input
+                  className={inputClass}
+                  value={marketplaceForm.slug}
+                  onChange={(event) => {
+                    setMarketplaceSlugManuallyEdited(true);
+                    setMarketplaceForm({
+                      ...marketplaceForm,
+                      slug: slugify(event.target.value),
+                    });
+                  }}
+                />
+              </label>
+              <p className="text-xs text-[var(--color-on-surface-variant)]">
+                Slug is auto-generated from name. On conflict, a suffix is added when saving.
+              </p>
+              <label className={labelClass}>
                 Description
                 <textarea
                   className={inputClass}
@@ -991,6 +1274,31 @@ export default function AdminConsole() {
                   }
                 />
               </label>
+              <label className={labelClass}>
+                HTML details
+                <textarea
+                  className={inputClass}
+                  rows={8}
+                  value={marketplaceForm.detailsHtml}
+                  onChange={(event) =>
+                    setMarketplaceForm({
+                      ...marketplaceForm,
+                      detailsHtml: event.target.value,
+                    })
+                  }
+                />
+              </label>
+              <details
+                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
+                open={marketplaceMetaExpanded}
+                onToggle={(event) =>
+                  setMarketplaceMetaExpanded((event.target as HTMLDetailsElement).open)
+                }
+              >
+                <summary className="cursor-pointer text-sm font-semibold text-[var(--color-on-surface)]">
+                  Other fields
+                </summary>
+                <div className="mt-4 grid gap-4">
               <label className={labelClass}>
                 Price
                 <input
@@ -1040,20 +1348,6 @@ export default function AdminConsole() {
                     setMarketplaceForm({
                       ...marketplaceForm,
                       publishedAt: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                HTML details
-                <textarea
-                  className={inputClass}
-                  rows={8}
-                  value={marketplaceForm.detailsHtml}
-                  onChange={(event) =>
-                    setMarketplaceForm({
-                      ...marketplaceForm,
-                      detailsHtml: event.target.value,
                     })
                   }
                 />
@@ -1242,6 +1536,8 @@ export default function AdminConsole() {
                   }
                 />
               </label>
+                </div>
+              </details>
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -1251,27 +1547,57 @@ export default function AdminConsole() {
                 >
                   {marketplaceForm.id ? "Update" : "Create"}
                 </button>
-                <button
-                  type="button"
-                  className="rounded-lg border border-[var(--color-surface-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em]"
-                  onClick={() => setMarketplaceForm(emptyMarketplaceForm())}
-                >
-                  Clear
-                </button>
               </div>
             </div>
           </div>
+          )}
         </div>
       )}
 
       {activeTab === "blog" && (
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
+              Blog
+            </h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setBlogView("list")}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  blogView === "list"
+                    ? "bg-[var(--color-electric-blue)] text-white"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                }`}
+              >
+                List
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setBlogForm(emptyBlogForm());
+                  setShowBlogPreview(false);
+                  setBlogSlugManuallyEdited(false);
+                  setBlogMetaExpanded(false);
+                  setBlogView("new");
+                }}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                  blogView === "new"
+                    ? "bg-[var(--color-electric-blue)] text-white"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                }`}
+              >
+                New
+              </button>
+            </div>
+          </div>
+          {blogView === "list" ? (
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
               Blog posts
             </h2>
             <div className="mt-5 space-y-4">
-              {blog.map((item) => (
+              {pagedBlog.map((item) => (
                 <article
                   key={item.id}
                   className="rounded-xl border border-[var(--color-surface-border)] p-4"
@@ -1309,6 +1635,9 @@ export default function AdminConsole() {
                             slug: item.slug,
                             title: item.title,
                             excerpt: item.excerpt,
+                            useCoverImage:
+                              textValue(item.cover_image_url).trim() !==
+                              DEFAULT_PLACEHOLDER_IMAGE,
                             coverImageUrl: textValue(item.cover_image_url),
                             publishedAt: item.published_at,
                             tagsText: joinList(item.tags),
@@ -1316,7 +1645,10 @@ export default function AdminConsole() {
                             contentFormat: item.content_format ?? "html",
                             isDraft: item.is_draft ?? false,
                           });
+                          setBlogSlugManuallyEdited(true);
                           setShowBlogPreview(false);
+                          setBlogMetaExpanded(false);
+                          setBlogView("new");
                         }}
                       >
                         Edit
@@ -1333,134 +1665,194 @@ export default function AdminConsole() {
                 </article>
               ))}
             </div>
+            <div className="mt-5 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+              <span>Page {blogPage} of {Math.max(1, Math.ceil(blog.length / pageSize))}</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
+                  disabled={blogPage <= 1}
+                  onClick={() => setBlogPage((current) => Math.max(1, current - 1))}
+                >
+                  Prev
+                </button>
+                <button
+                  type="button"
+                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
+                  disabled={blogPage >= Math.max(1, Math.ceil(blog.length / pageSize))}
+                  onClick={() =>
+                    setBlogPage((current) =>
+                      Math.min(Math.max(1, Math.ceil(blog.length / pageSize)), current + 1),
+                    )
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
-
-          <div className={sectionClass}>
-            <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
-              {blogForm.id ? "Update blog post" : "Create blog post"}
-            </h2>
-            <div className="mt-5 grid gap-4">
-              <label className={labelClass}>
-                Slug
-                <input
-                  className={inputClass}
-                  value={blogForm.slug}
-                  onChange={(event) =>
-                    setBlogForm({ ...blogForm, slug: event.target.value })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Title
-                <input
-                  className={inputClass}
-                  value={blogForm.title}
-                  onChange={(event) =>
-                    setBlogForm({ ...blogForm, title: event.target.value })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Excerpt
-                <textarea
-                  className={inputClass}
-                  rows={3}
-                  value={blogForm.excerpt}
-                  onChange={(event) =>
-                    setBlogForm({ ...blogForm, excerpt: event.target.value })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Cover image URL
-                <input
-                  className={inputClass}
-                  value={blogForm.coverImageUrl}
-                  onChange={(event) =>
-                    setBlogForm({
-                      ...blogForm,
-                      coverImageUrl: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Published date
-                <input
-                  className={inputClass}
-                  type="date"
-                  value={blogForm.publishedAt}
-                  onChange={(event) =>
-                    setBlogForm({
-                      ...blogForm,
-                      publishedAt: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className={labelClass}>
-                Tags, comma separated
-                <input
-                  className={inputClass}
-                  value={blogForm.tagsText}
-                  onChange={(event) =>
-                    setBlogForm({ ...blogForm, tagsText: event.target.value })
-                  }
-                />
-              </label>
-              <div className={labelClass}>
-                <p>Content format</p>
-                <div className="flex gap-2">
-                  {(["html", "md"] as const).map((format) => (
-                    <button
-                      key={format}
-                      type="button"
-                      className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-                        blogForm.contentFormat === format
-                          ? "bg-[var(--color-electric-blue)] text-white"
-                          : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
-                      }`}
-                      onClick={() =>
+          ) : (
+          <div
+            className={`grid gap-4 ${showBlogPreview ? "xl:grid-cols-[minmax(0,1fr)_520px]" : ""}`}
+          >
+            <div className={sectionClass}>
+              <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
+                {blogForm.id ? "Update blog post" : "Create blog post"}
+              </h2>
+              <div className="mt-5 grid gap-4">
+                <label className={labelClass}>
+                  Title
+                  <input
+                    className={inputClass}
+                    value={blogForm.title}
+                    onChange={(event) =>
+                      setBlogForm({ ...blogForm, title: event.target.value })
+                    }
+                  />
+                </label>
+                <label className={labelClass}>
+                  Slug
+                  <input
+                    className={inputClass}
+                    value={blogForm.slug}
+                    onChange={(event) => {
+                      setBlogSlugManuallyEdited(true);
+                      setBlogForm({ ...blogForm, slug: slugify(event.target.value) });
+                    }}
+                  />
+                </label>
+                <p className="text-xs text-[var(--color-on-surface-variant)]">
+                  Slug is auto-generated from title. If the slug already exists, a numeric suffix is added when saving.
+                </p>
+                <div className={labelClass}>
+                  <p>Content format</p>
+                  <div className="flex gap-2">
+                    {(["html", "md"] as const).map((format) => (
+                      <button
+                        key={format}
+                        type="button"
+                        className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                          blogForm.contentFormat === format
+                            ? "bg-[var(--color-electric-blue)] text-white"
+                            : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                        }`}
+                        onClick={() =>
+                          setBlogForm({
+                            ...blogForm,
+                            contentFormat: format,
+                          })
+                        }
+                      >
+                        {format === "md" ? "Markdown" : "HTML"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <label className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3 text-sm text-[var(--color-on-surface-variant)]">
+                  <input
+                    type="checkbox"
+                    checked={blogForm.useCoverImage}
+                    onChange={(event) =>
+                      setBlogForm({
+                        ...blogForm,
+                        useCoverImage: event.target.checked,
+                      })
+                    }
+                  />
+                  Include cover image
+                </label>
+                <label className={labelClass}>
+                  {blogForm.contentFormat === "md"
+                    ? "Markdown content"
+                    : "HTML content"}
+                  <textarea
+                    className={inputClass}
+                    rows={14}
+                    value={blogForm.detailsHtml}
+                    onChange={(event) =>
+                      setBlogForm({
+                        ...blogForm,
+                        detailsHtml: event.target.value,
+                      })
+                    }
+                  />
+                </label>
+              <details
+                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
+                open={blogMetaExpanded}
+                onToggle={(event) =>
+                  setBlogMetaExpanded((event.target as HTMLDetailsElement).open)
+                }
+              >
+                <summary className="cursor-pointer text-sm font-semibold text-[var(--color-on-surface)]">
+                  Other fields
+                </summary>
+                <div className="mt-4 grid gap-4">
+                  <label className={labelClass}>
+                    Excerpt
+                    <textarea
+                      className={inputClass}
+                      rows={3}
+                      value={blogForm.excerpt}
+                      onChange={(event) =>
+                        setBlogForm({ ...blogForm, excerpt: event.target.value })
+                      }
+                    />
+                  </label>
+                  {blogForm.useCoverImage && (
+                    <label className={labelClass}>
+                      Cover image URL
+                      <input
+                        className={inputClass}
+                        value={blogForm.coverImageUrl}
+                        onChange={(event) =>
+                          setBlogForm({
+                            ...blogForm,
+                            coverImageUrl: event.target.value,
+                          })
+                        }
+                      />
+                    </label>
+                  )}
+                  <label className={labelClass}>
+                    Published date
+                    <input
+                      className={inputClass}
+                      type="date"
+                      value={blogForm.publishedAt}
+                      onChange={(event) =>
                         setBlogForm({
                           ...blogForm,
-                          contentFormat: format,
+                          publishedAt: event.target.value,
                         })
                       }
-                    >
-                      {format === "md" ? "Markdown" : "HTML"}
-                    </button>
-                  ))}
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Tags, comma separated
+                    <input
+                      className={inputClass}
+                      value={blogForm.tagsText}
+                      onChange={(event) =>
+                        setBlogForm({ ...blogForm, tagsText: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3 text-sm text-[var(--color-on-surface-variant)]">
+                    <input
+                      type="checkbox"
+                      checked={blogForm.isDraft}
+                      onChange={(event) =>
+                        setBlogForm({
+                          ...blogForm,
+                          isDraft: event.target.checked,
+                        })
+                      }
+                    />
+                    Save as draft and keep this post off the public blog
+                  </label>
                 </div>
-              </div>
-              <label className={labelClass}>
-                {blogForm.contentFormat === "md"
-                  ? "Markdown content"
-                  : "HTML content"}
-                <textarea
-                  className={inputClass}
-                  rows={14}
-                  value={blogForm.detailsHtml}
-                  onChange={(event) =>
-                    setBlogForm({
-                      ...blogForm,
-                      detailsHtml: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3 text-sm text-[var(--color-on-surface-variant)]">
-                <input
-                  type="checkbox"
-                  checked={blogForm.isDraft}
-                  onChange={(event) =>
-                    setBlogForm({
-                      ...blogForm,
-                      isDraft: event.target.checked,
-                    })
-                  }
-                />
-                Save as draft and keep this post off the public blog
-              </label>
+              </details>
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -1479,21 +1871,14 @@ export default function AdminConsole() {
                   className="rounded-lg border border-[var(--color-electric-blue)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
                   onClick={() => setShowBlogPreview((current) => !current)}
                 >
-                  {showBlogPreview ? "Hide preview" : "Preview"}
-                </button>
-                <button
-                  type="button"
-                  className="rounded-lg border border-[var(--color-surface-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em]"
-                  onClick={() => {
-                    setBlogForm(emptyBlogForm());
-                    setShowBlogPreview(false);
-                  }}
-                >
-                  Clear
+                  {showBlogPreview ? "Close right preview" : "Open right preview"}
                 </button>
               </div>
-              {showBlogPreview && (
-                <article className="mt-3 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-background)] p-5">
+              </div>
+            </div>
+            {showBlogPreview && (
+              <aside className={`${sectionClass} h-fit xl:sticky xl:top-24`}>
+                <article className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-background)] p-5">
                   <div className="flex flex-wrap gap-2">
                     <span className="tag-chip">
                       {blogForm.contentFormat === "md" ? "Markdown" : "HTML"}
@@ -1523,11 +1908,13 @@ export default function AdminConsole() {
                     )}
                   </div>
                 </article>
-              )}
-            </div>
+              </aside>
+            )}
           </div>
+          )}
         </div>
       )}
+      </div>
     </div>
   );
 }

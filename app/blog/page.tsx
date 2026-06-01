@@ -37,24 +37,30 @@ export default async function BlogPage() {
 
       <section className="px-6 pb-24">
         <div className="mx-auto grid max-w-[980px] gap-6">
-          {blogPosts.map((post) => (
+          {blogPosts.map((post) => {
+            const hasCoverImage =
+              !!post.coverImage?.trim() &&
+              post.coverImage.trim() !== "https://placehold.co/600x400@2x.png";
+            return (
             <article
               key={post.slug}
               className="group overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_45px_-28px_rgba(15,23,42,0.35)]"
             >
               <Link
                 href={`/blog/${post.slug}`}
-                className="grid md:grid-cols-[260px_1fr]"
+                className={hasCoverImage ? "grid md:grid-cols-[260px_1fr]" : "block"}
               >
-                <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[230px]">
-                  <Image
-                    src={post.coverImage}
-                    alt={post.title}
-                    fill
-                    sizes="(min-width: 768px) 260px, 90vw"
-                    className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                  />
-                </div>
+                {hasCoverImage && (
+                  <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[230px]">
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      sizes="(min-width: 768px) 260px, 90vw"
+                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                )}
                 <div className="flex flex-col justify-center p-6 md:p-8">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2 font-label text-[10px] uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">
                     <time dateTime={post.publishedAt}>
@@ -78,7 +84,8 @@ export default async function BlogPage() {
                 </div>
               </Link>
             </article>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

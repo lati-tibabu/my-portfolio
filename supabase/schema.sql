@@ -6,13 +6,27 @@ create table if not exists public.graphics_items (
   title text not null,
   description text not null,
   category text not null,
-  image_url text not null,
+  image_url text not null default 'https://placehold.co/600x400@2x.png',
   image_path text,
   published_at date not null default current_date,
   details_html text not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.graphics_items
+drop constraint if exists graphics_items_image_url_not_blank;
+
+alter table public.graphics_items
+alter column image_url set default 'https://placehold.co/600x400@2x.png';
+
+update public.graphics_items
+set image_url = 'https://placehold.co/600x400@2x.png'
+where btrim(image_url) = '';
+
+alter table public.graphics_items
+add constraint graphics_items_image_url_not_blank
+check (btrim(image_url) <> '');
 
 create table if not exists public.marketplace_items (
   id uuid primary key default gen_random_uuid(),
@@ -21,7 +35,7 @@ create table if not exists public.marketplace_items (
   description text not null,
   price text not null,
   category text not null,
-  cover_image_url text not null,
+  cover_image_url text not null default 'https://placehold.co/600x400@2x.png',
   published_at date not null default current_date,
   details_html text not null,
   version text not null,
@@ -42,12 +56,26 @@ create table if not exists public.marketplace_items (
   updated_at timestamptz not null default now()
 );
 
+alter table public.marketplace_items
+drop constraint if exists marketplace_items_cover_image_url_not_blank;
+
+alter table public.marketplace_items
+alter column cover_image_url set default 'https://placehold.co/600x400@2x.png';
+
+update public.marketplace_items
+set cover_image_url = 'https://placehold.co/600x400@2x.png'
+where btrim(cover_image_url) = '';
+
+alter table public.marketplace_items
+add constraint marketplace_items_cover_image_url_not_blank
+check (btrim(cover_image_url) <> '');
+
 create table if not exists public.blog_posts (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   title text not null,
   excerpt text not null,
-  cover_image_url text not null,
+  cover_image_url text not null default 'https://placehold.co/600x400@2x.png',
   published_at date not null default current_date,
   tags text[] not null default '{}'::text[],
   details_html text not null,
@@ -57,6 +85,20 @@ create table if not exists public.blog_posts (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.blog_posts
+drop constraint if exists blog_posts_cover_image_url_not_blank;
+
+alter table public.blog_posts
+alter column cover_image_url set default 'https://placehold.co/600x400@2x.png';
+
+update public.blog_posts
+set cover_image_url = 'https://placehold.co/600x400@2x.png'
+where btrim(cover_image_url) = '';
+
+alter table public.blog_posts
+add constraint blog_posts_cover_image_url_not_blank
+check (btrim(cover_image_url) <> '');
 
 alter table public.blog_posts
 add column if not exists content_format text not null default 'html';

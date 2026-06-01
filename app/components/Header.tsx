@@ -1,12 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import Logo from "./Logo";
 import HandDrawnIcon from "./HandDrawnIcon";
+import { supabaseBrowser } from "../lib/supabase/browser";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const isAdminRoute = pathname?.startsWith("/admin");
+  const adminName = useMemo(
+    () => (adminEmail ? adminEmail.split("@")[0] : "Admin"),
+    [adminEmail],
+  );
 
   const navLinks = [
     { name: "Marketplace", href: "/marketplace" },
@@ -16,6 +27,31 @@ export default function Header() {
     { name: "Skills", href: "/#skills" },
     { name: "About", href: "/#about" },
   ];
+
+  useEffect(() => {
+    let mounted = true;
+    const hydrate = async () => {
+      const { data } = await supabaseBrowser.auth.getSession();
+      if (!mounted) return;
+      setAdminEmail(data.session?.user?.email ?? null);
+    };
+    hydrate();
+    const {
+      data: { subscription },
+    } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      setAdminEmail(session?.user?.email ?? null);
+    });
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const handleAdminSignOut = async () => {
+    await supabaseBrowser.auth.signOut();
+    setAdminMenuOpen(false);
+    router.refresh();
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-md border-b border-[var(--color-surface-border)]">
@@ -45,6 +81,43 @@ export default function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          {isAdminRoute && adminEmail && (
+            <div className="relative">
+              <button
+                type="button"
+                className="rounded-lg border border-[var(--color-surface-border)] px-3 py-2 text-sm font-semibold text-[var(--color-on-surface)]"
+                onClick={() => setAdminMenuOpen((current) => !current)}
+              >
+                {adminName}
+              </button>
+              {adminMenuOpen && (
+                <div className="absolute right-0 mt-2 w-64 rounded-lg border border-[var(--color-surface-border)] bg-white p-3 shadow-lg">
+                  <p className="text-xs text-[var(--color-on-surface-variant)]">
+                    {adminEmail}
+                  </p>
+                  <div className="mt-3 grid gap-2">
+                    <button
+                      type="button"
+                      className="rounded border border-[var(--color-surface-border)] px-3 py-2 text-left text-sm"
+                      onClick={() => {
+                        setAdminMenuOpen(false);
+                        router.refresh();
+                      }}
+                    >
+                      Refresh
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded border border-[var(--color-surface-border)] px-3 py-2 text-left text-sm text-[var(--color-error)]"
+                      onClick={handleAdminSignOut}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
           <Link
             href="/#contact"
             className="inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition hover:scale-[1.02]"
