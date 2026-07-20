@@ -8,6 +8,8 @@ export type GraphicItem = {
   image: string;
   publishedAt: string;
   detailsHtml: string;
+  authorName?: string;
+  createdAt?: string;
 };
 
 export type MarketplaceItem = {
@@ -33,6 +35,8 @@ export type MarketplaceItem = {
   upgradeUrl?: string;
   highlights?: string[];
   screenshots?: string[];
+  authorName?: string;
+  createdAt?: string;
 };
 
 export type BlogPost = {
@@ -46,6 +50,8 @@ export type BlogPost = {
   detailsHtml: string;
   contentFormat?: "html" | "md";
   isDraft?: boolean;
+  authorName?: string;
+  createdAt?: string;
 };
 
 const toListItems = (items: string[]) =>

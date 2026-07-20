@@ -39,7 +39,7 @@ export default function ImageUploader({
     <div className="grid gap-4 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4 lg:grid-cols-[1.1fr_0.9fr]">
       <div className="space-y-4">
         <label className={labelClass}>
-          Image file for Supabase Storage
+          Upload an image file
           <input
             className={inputClass}
             type="file"

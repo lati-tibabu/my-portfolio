@@ -14,6 +14,8 @@ export type GraphicsRecord = {
   image_path: string | null;
   published_at: string;
   details_html: string;
+  author_name: string;
+  created_at: string;
 };
 
 export type MarketplaceRecord = {
@@ -40,6 +42,8 @@ export type MarketplaceRecord = {
   upgrade_url: string | null;
   highlights: string[] | null;
   screenshots: string[] | null;
+  author_name: string;
+  created_at: string;
 };
 
 export type BlogRecord = {
@@ -53,6 +57,8 @@ export type BlogRecord = {
   details_html: string;
   content_format: "html" | "md";
   is_draft: boolean;
+  author_name: string;
+  created_at: string;
 };
 
 export type GraphicsForm = {
@@ -65,6 +71,7 @@ export type GraphicsForm = {
   imagePath: string;
   publishedAt: string;
   detailsHtml: string;
+  authorName: string;
 };
 
 export type MarketplaceForm = {
@@ -91,6 +98,7 @@ export type MarketplaceForm = {
   upgradeUrl: string;
   highlightsText: string;
   screenshotsText: string;
+  authorName: string;
 };
 
 export type BlogForm = {
@@ -105,4 +113,5 @@ export type BlogForm = {
   detailsHtml: string;
   contentFormat: "html" | "md";
   isDraft: boolean;
+  authorName: string;
 };

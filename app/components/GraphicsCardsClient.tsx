@@ -26,7 +26,7 @@ export default function GraphicsCardsClient({ items }: GraphicsCardsClientProps)
           >
             <button
               type="button"
-              className="relative block aspect-[4/3] w-full"
+              className="group relative block aspect-[4/3] w-full"
               onClick={() => setSelected(item)}
               onContextMenu={blockDownloadActions}
               aria-label={`Preview ${item.title}`}
@@ -36,7 +36,7 @@ export default function GraphicsCardsClient({ items }: GraphicsCardsClientProps)
                 alt={item.title}
                 fill
                 sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
-                className="object-cover"
+                className="object-cover grayscale transition-[filter] duration-300 ease-out group-hover:grayscale-0"
                 draggable={false}
                 onContextMenu={blockDownloadActions}
                 onDragStart={blockDownloadActions}
@@ -52,6 +52,10 @@ export default function GraphicsCardsClient({ items }: GraphicsCardsClientProps)
               </h2>
               <p className="text-[14px] leading-[1.7] text-[var(--color-on-surface-variant)]">
                 {item.description}
+              </p>
+              <p className="text-[11px] text-[var(--color-on-surface-variant)]">
+                By {item.authorName || "latitibabu"}
+                {item.createdAt ? ` · Created ${new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : ""}
               </p>
             </div>
           </article>

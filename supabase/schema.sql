@@ -10,6 +10,7 @@ create table if not exists public.graphics_items (
   image_path text,
   published_at date not null default current_date,
   details_html text not null,
+  author_name text not null default 'latitibabu',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -52,6 +53,7 @@ create table if not exists public.marketplace_items (
   upgrade_url text,
   highlights text[] not null default '{}'::text[],
   screenshots text[] not null default '{}'::text[],
+  author_name text not null default 'latitibabu',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -82,6 +84,7 @@ create table if not exists public.blog_posts (
   content_format text not null default 'html'
     check (content_format in ('html', 'md')),
   is_draft boolean not null default false,
+  author_name text not null default 'latitibabu',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

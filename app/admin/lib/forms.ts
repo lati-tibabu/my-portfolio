@@ -33,6 +33,7 @@ export const emptyGraphicsForm = (): GraphicsForm => ({
   imagePath: "",
   publishedAt: new Date().toISOString().slice(0, 10),
   detailsHtml: "",
+  authorName: "",
 });
 
 export const emptyMarketplaceForm = (): MarketplaceForm => ({
@@ -59,6 +60,7 @@ export const emptyMarketplaceForm = (): MarketplaceForm => ({
   upgradeUrl: "",
   highlightsText: "",
   screenshotsText: "",
+  authorName: "",
 });
 
 export const emptyBlogForm = (): BlogForm => ({
@@ -73,4 +75,5 @@ export const emptyBlogForm = (): BlogForm => ({
   detailsHtml: "",
   contentFormat: "html",
   isDraft: true,
+  authorName: "",
 });

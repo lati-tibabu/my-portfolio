@@ -23,7 +23,7 @@ export default function AdminConsole() {
   const [activeTab, setActiveTab] = useState<TabKey>("graphics");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(
-    "Sign in with Supabase to manage content.",
+    "Sign in to manage content.",
   );
   const [graphics, setGraphics] = useState<GraphicsRecord[]>([]);
   const [marketplace, setMarketplace] = useState<MarketplaceRecord[]>([]);
@@ -31,7 +31,7 @@ export default function AdminConsole() {
 
   const reload = async () => {
     setBusy(true);
-    setMessage("Loading content from Supabase...");
+    setMessage("Loading content...");
     try {
       const result = await loadAll(supabaseBrowser);
       setGraphics(result.graphics);

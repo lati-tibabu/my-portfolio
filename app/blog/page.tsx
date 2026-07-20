@@ -35,6 +35,15 @@ const formatDate = (date: string) =>
     year: "numeric",
   }).format(new Date(`${date}T00:00:00`));
 
+const formatCreatedDate = (date?: string) =>
+  date
+    ? new Intl.DateTimeFormat("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }).format(new Date(date))
+    : "";
+
 export default async function BlogPage() {
   const blogPosts = await loadBlogPosts();
   const blogStructuredData = {
@@ -112,6 +121,9 @@ export default async function BlogPage() {
                   </p>
                   <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-electric-blue)]">
                     Read article →
+                  </p>
+                  <p className="mt-3 text-[11px] text-[var(--color-on-surface-variant)]">
+                    By {post.authorName || "latitibabu"} · Created {formatCreatedDate(post.createdAt)}
                   </p>
                 </div>
               </Link>

@@ -13,6 +13,8 @@ type GraphicsRow = {
   image_url: string;
   published_at: string;
   details_html: string;
+  author_name: string;
+  created_at: string;
 };
 
 type MarketplaceRow = {
@@ -38,6 +40,8 @@ type MarketplaceRow = {
   upgrade_url: string | null;
   highlights: string[] | string | null;
   screenshots: string[] | string | null;
+  author_name: string;
+  created_at: string;
 };
 
 type BlogRow = {
@@ -51,6 +55,8 @@ type BlogRow = {
   details_html: string;
   content_format: "html" | "md";
   is_draft: boolean;
+  author_name: string;
+  created_at: string;
 };
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -96,7 +102,7 @@ export async function loadGraphicsItems(): Promise<GraphicItem[]> {
   const { data, error } = await client
     .from("graphics_items")
     .select(
-      "slug,title,description,category,image_url,published_at,details_html",
+      "slug,title,description,category,image_url,published_at,details_html,author_name,created_at",
     )
     .order("published_at", { ascending: false });
 
@@ -112,6 +118,8 @@ export async function loadGraphicsItems(): Promise<GraphicItem[]> {
     image: normalizeImageUrl(row.image_url),
     publishedAt: row.published_at,
     detailsHtml: row.details_html,
+    authorName: row.author_name || "latitibabu",
+    createdAt: row.created_at,
   }));
 }
 
@@ -153,6 +161,8 @@ export async function loadMarketplaceItems(): Promise<MarketplaceItem[]> {
     upgradeUrl: row.upgrade_url ?? undefined,
     highlights: normalizeArray(row.highlights),
     screenshots: normalizeArray(row.screenshots),
+    authorName: row.author_name || "latitibabu",
+    createdAt: row.created_at,
   }));
 }
 
@@ -165,7 +175,7 @@ export async function loadBlogPosts(): Promise<BlogPost[]> {
   const { data, error } = await client
     .from("blog_posts")
     .select(
-      "id,slug,title,excerpt,cover_image_url,published_at,tags,details_html,content_format,is_draft",
+      "id,slug,title,excerpt,cover_image_url,published_at,tags,details_html,content_format,is_draft,author_name,created_at",
     )
     .eq("is_draft", false)
     .order("published_at", { ascending: false });
@@ -185,5 +195,7 @@ export async function loadBlogPosts(): Promise<BlogPost[]> {
     detailsHtml: row.details_html,
     contentFormat: row.content_format,
     isDraft: row.is_draft,
+    authorName: row.author_name || "latitibabu",
+    createdAt: row.created_at,
   }));
 }

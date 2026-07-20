@@ -82,6 +82,7 @@ export default function GraphicsPanel({
         image_path: imagePath,
         published_at: form.publishedAt,
         details_html: form.detailsHtml,
+        author_name: form.authorName.trim() || "latitibabu",
       };
 
       const query = form.id
@@ -225,7 +226,8 @@ export default function GraphicsPanel({
                           imageUrl: textValue(item.image_url),
                           imagePath: textValue(item.image_path),
                           publishedAt: item.published_at,
-                          detailsHtml: item.details_html,
+                            detailsHtml: item.details_html,
+                            authorName: item.author_name ?? "latitibabu",
                         });
                         setFile(null);
                         setSlugManuallyEdited(true);
@@ -365,6 +367,17 @@ export default function GraphicsPanel({
                         ...form,
                         category: event.target.value,
                       })
+                    }
+                  />
+                </label>
+                <label className={labelClass}>
+                  Author name
+                  <input
+                    className={inputClass}
+                    value={form.authorName}
+                    placeholder="latitibabu"
+                    onChange={(event) =>
+                      setForm({ ...form, authorName: event.target.value })
                     }
                   />
                 </label>

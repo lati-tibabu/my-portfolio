@@ -152,6 +152,10 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
               />
             </div>
             <div className="mt-4 grid gap-2 break-words text-[13px] text-[var(--color-on-surface-variant)]">
+              <p>Created by: {item.authorName || "latitibabu"}</p>
+              {item.createdAt && (
+                <p>Created: {new Date(item.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+              )}
               <p>Version: {item.version}</p>
               <p>Price: {item.price}</p>
               <p>License: {item.license}</p>

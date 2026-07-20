@@ -73,6 +73,7 @@ export default function MarketplacePanel({
           form.coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE,
         published_at: form.publishedAt,
         details_html: form.detailsHtml,
+        author_name: form.authorName.trim() || "latitibabu",
         version: form.version,
         license: form.license,
         technical_name: form.technicalName,
@@ -225,7 +226,8 @@ export default function MarketplacePanel({
                           downloads: textValue(item.downloads),
                           upgradeUrl: textValue(item.upgrade_url),
                           highlightsText: joinList(item.highlights),
-                          screenshotsText: joinList(item.screenshots),
+                            screenshotsText: joinList(item.screenshots),
+                            authorName: item.author_name ?? "latitibabu",
                         });
                         setSlugManuallyEdited(true);
                         setView("new");
@@ -382,6 +384,17 @@ export default function MarketplacePanel({
                         ...form,
                         coverImageUrl: event.target.value,
                       })
+                    }
+                  />
+                </label>
+                <label className={labelClass}>
+                  Author name
+                  <input
+                    className={inputClass}
+                    value={form.authorName}
+                    placeholder="latitibabu"
+                    onChange={(event) =>
+                      setForm({ ...form, authorName: event.target.value })
                     }
                   />
                 </label>

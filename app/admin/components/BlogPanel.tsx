@@ -88,6 +88,7 @@ export default function BlogPanel({
         details_html: form.detailsHtml,
         content_format: form.contentFormat,
         is_draft: publishNow ? false : unpublishNow ? true : form.isDraft,
+        author_name: form.authorName.trim() || "latitibabu",
       };
 
       const query = form.id
@@ -238,8 +239,9 @@ export default function BlogPanel({
                           publishedAt: item.published_at,
                           tagsText: joinList(item.tags),
                           detailsHtml: item.details_html,
-                          contentFormat: item.content_format ?? "html",
-                          isDraft: item.is_draft ?? false,
+                            contentFormat: item.content_format ?? "html",
+                            isDraft: item.is_draft ?? false,
+                            authorName: item.author_name ?? "latitibabu",
                         });
                         setImageFile(null);
                         setSlugManuallyEdited(true);
@@ -433,6 +435,17 @@ export default function BlogPanel({
                       </label>
                     </>
                   )}
+                  <label className={labelClass}>
+                    Author name
+                    <input
+                      className={inputClass}
+                      value={form.authorName}
+                      placeholder="latitibabu"
+                      onChange={(event) =>
+                        setForm({ ...form, authorName: event.target.value })
+                      }
+                    />
+                  </label>
                   <label className={labelClass}>
                     Published date
                     <input

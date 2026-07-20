@@ -113,6 +113,10 @@ export default async function MarketplacePage() {
                 <p className="mt-3 text-[15px] leading-[1.65] text-[var(--color-on-surface-variant)]">
                   {item.description}
                 </p>
+                <p className="mt-2 text-[11px] text-[var(--color-on-surface-variant)]">
+                  By {item.authorName || "latitibabu"}
+                  {item.createdAt ? ` · Created ${new Date(item.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}` : ""}
+                </p>
               </Link>
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="tag-chip">{item.price}</span>

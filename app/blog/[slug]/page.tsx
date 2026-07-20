@@ -22,6 +22,15 @@ const formatDate = (date: string) =>
     year: "numeric",
   }).format(new Date(`${date}T00:00:00`));
 
+const formatCreatedDate = (date?: string) =>
+  date
+    ? new Intl.DateTimeFormat("en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(new Date(date))
+    : "";
+
 const getReadingTime = (html: string) => {
   const wordCount = html
     .replace(/<[^>]*>/g, " ")
@@ -127,6 +136,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 aria-hidden="true"
               />
               <span>{readingTime} min read</span>
+              <span>By {post.authorName || "latitibabu"}</span>
+              <span>Created {formatCreatedDate(post.createdAt)}</span>
             </div>
 
             <h1 className="mt-5 max-w-[800px] font-heading text-[40px] leading-[1.08] tracking-[-0.045em] text-[var(--color-on-surface)] sm:text-[52px] md:text-[64px]">

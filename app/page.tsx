@@ -757,14 +757,14 @@ export default async function Home() {
             {graphicsPreview.map((src) => (
               <div
                 key={src}
-                className="relative aspect-[4/5] overflow-hidden rounded-lg border border-[var(--color-surface-border)]"
+                className="group relative aspect-[4/5] overflow-hidden rounded-lg border border-[var(--color-surface-border)]"
               >
                 <Image
                   src={src}
                   alt="Graphics preview"
                   fill
                   sizes="(min-width: 1024px) 260px, 45vw"
-                  className="object-cover"
+                  className="object-cover grayscale transition-[filter] duration-300 ease-out group-hover:grayscale-0"
                 />
               </div>
             ))}

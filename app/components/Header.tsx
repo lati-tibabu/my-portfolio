@@ -10,7 +10,6 @@ import { hasSupabaseBrowserConfig, supabaseBrowser } from "../lib/supabase/brows
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
-  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const isAdminRoute = pathname?.startsWith("/admin");
@@ -61,12 +60,11 @@ export default function Header() {
     if (supabaseBrowser) {
       await supabaseBrowser.auth.signOut();
     }
-    setAdminMenuOpen(false);
     router.refresh();
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[rgba(255,255,255,0.85)] backdrop-blur-md border-b border-[var(--color-surface-border)]">
+    <header className="sticky top-0 z-[9999] isolate bg-[rgba(255,255,255,0.85)] backdrop-blur-md border-b border-[var(--color-surface-border)]">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16 gap-4">
         {/* Logo */}
         <Link href="/" onClick={() => setMobileOpen(false)}>
@@ -94,40 +92,19 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-3">
           {isAdminRoute && adminEmail && (
-            <div className="relative">
+            <div className="relative z-[100] flex items-center gap-2">
+              <span className="hidden text-xs text-[var(--color-on-surface-variant)] sm:inline">
+                {adminName}
+              </span>
               <button
                 type="button"
-                className="rounded-lg border border-[var(--color-surface-border)] px-3 py-2 text-sm font-semibold text-[var(--color-on-surface)]"
-                onClick={() => setAdminMenuOpen((current) => !current)}
+                onClick={handleAdminSignOut}
+                aria-label="Sign out"
+                title="Sign out"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] text-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_var(--color-surface-border)] active:translate-y-0 active:shadow-none focus:outline-none focus:ring-2 focus:ring-[var(--color-on-surface)]/30"
               >
-                {adminName}
+                <Icon name="power" size={17} />
               </button>
-              {adminMenuOpen && (
-                <div className="absolute right-0 mt-2 w-64 rounded-lg border border-[var(--color-surface-border)] bg-white p-3 shadow-lg">
-                  <p className="text-xs text-[var(--color-on-surface-variant)]">
-                    {adminEmail}
-                  </p>
-                  <div className="mt-3 grid gap-2">
-                    <button
-                      type="button"
-                      className="rounded border border-[var(--color-surface-border)] px-3 py-2 text-left text-sm"
-                      onClick={() => {
-                        setAdminMenuOpen(false);
-                        router.refresh();
-                      }}
-                    >
-                      Refresh
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded border border-[var(--color-surface-border)] px-3 py-2 text-left text-sm text-[var(--color-error)]"
-                      onClick={handleAdminSignOut}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           )}
           <Link
