@@ -3,7 +3,11 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "./components/Icon";
-import { loadMarketplaceItems } from "./lib/content";
+import MarkdownText from "./components/MarkdownText";
+import TestimonialsMarquee from "./components/TestimonialsMarquee";
+import { heroContent as defaultHeroContent } from "./data/cms";
+import type { HeroContent } from "./data/cms";
+import { loadHeroContent, loadMarketplaceItems, loadTestimonials } from "./lib/content";
 
 // CMS content lives in Supabase; always render fresh so admin edits appear immediately.
 export const revalidate = 0;
@@ -183,9 +187,6 @@ const certifications = [
   "Responsive Web Design (freeCodeCamp)",
 ];
 
-// Client feedback temporarily removed — testimonials hidden
-const testimonials: { name: string; text: string }[] = [];
-
 const graphicsPreview = [
   "/Images/Graphics/akkamitti_qophoofna_2025.png",
   "/Images/Graphics/duula_kadhannaa_2023.png",
@@ -195,77 +196,120 @@ const graphicsPreview = [
 
 export default async function Home() {
   const marketplaceItems = await loadMarketplaceItems();
+  const [heroFromCms, testimonials] = await Promise.all([
+    loadHeroContent(),
+    loadTestimonials(),
+  ]);
+  const hero: HeroContent = heroFromCms ?? defaultHeroContent;
   const stats = createStats(marketplaceItems.length);
+
+  const heroCtas = [
+    { label: hero.cta1Label, href: hero.cta1Href, primary: true },
+    { label: hero.cta2Label, href: hero.cta2Href, primary: false },
+    { label: hero.cta3Label, href: hero.cta3Href, primary: false },
+  ].filter((cta) => cta.label?.trim() && cta.href?.trim()) as {
+    label: string;
+    href: string;
+    primary: boolean;
+  }[];
+
+  const isCentered = hero.layout === "centered";
+  const showHeroImage = hero.imageEnabled && !isCentered && !!hero.imageUrl;
+
+  const heroText = (
+    <div
+      className={`space-y-8 animate-fade-up ${isCentered ? "mx-auto max-w-[720px] text-center" : ""}`}
+    >
+      <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+        {hero.eyebrow}
+      </p>
+      <h1 className="font-heading text-[40px] leading-[1.1] tracking-tight text-[var(--color-on-surface)] md:text-[64px]">
+        {hero.headline}
+      </h1>
+      <MarkdownText
+        content={hero.bodyMd}
+        className="text-[17px] leading-[1.65] text-[var(--color-on-surface-variant)] [&_p]:max-w-[560px] [&_p+p]:mt-4"
+      />
+      {heroCtas.length > 0 && (
+        <div
+          className={`flex flex-wrap items-center gap-3 ${isCentered ? "justify-center" : ""}`}
+        >
+          {heroCtas.map((cta) => {
+            const external = /^https?:\/\//i.test(cta.href);
+            const className = cta.primary
+              ? "inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition hover:scale-[1.02]"
+              : "inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]";
+            return external ? (
+              <a
+                key={cta.href}
+                href={cta.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+              >
+                {cta.label}
+              </a>
+            ) : (
+              <Link key={cta.href} href={cta.href} className={className}>
+                {cta.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
+  const heroImage = (
+    <div className="relative">
+      <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]">
+        <div className="relative aspect-square overflow-hidden rounded-lg">
+          <Image
+            src={hero.imageUrl || "https://placehold.co/600x600@2x.png"}
+            alt={hero.imageAlt || hero.headline}
+            fill
+            sizes="(min-width: 1024px) 420px, 80vw"
+            className="object-cover"
+            priority
+          />
+        </div>
+        {(hero.availabilityLabel || hero.availabilityValue) && (
+          <div className="mt-4 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+            <span className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
+              {hero.availabilityLabel}
+            </span>
+            <span>{hero.availabilityValue}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
       <section className="relative overflow-hidden px-6 pt-28 pb-16">
         <div className="absolute -top-32 right-[-10%] h-[420px] w-[420px] rounded-full bg-[var(--color-primary-fixed)] blur-3xl opacity-70" />
         <div className="absolute -bottom-40 left-[-5%] h-[420px] w-[420px] rounded-full bg-[var(--color-secondary-fixed)] blur-3xl opacity-50" />
-        <div className="max-w-[1280px] mx-auto grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
-          <div className="space-y-8 animate-fade-up">
-            <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              Full Stack & Odoo ERP Developer
-            </p>
-            <h1 className="font-heading text-[40px] leading-[1.1] tracking-tight text-[var(--color-on-surface)] md:text-[64px]">
-              Building products people rely on.
-            </h1>
-            <p className="text-[18px] leading-[1.65] text-[var(--color-on-surface-variant)] max-w-[560px]">
-              Available for freelance engagements worldwide. I specialize in
-              Odoo customization, theme development, and full-stack application
-              delivery backed by secure IAM integrations.
-            </p>
-            <p className="text-[15px] leading-[1.7] text-[var(--color-on-surface-variant)] max-w-[560px]">
-              I develop web applications, enterprise platforms, and Odoo
-              solutions that prioritize performance, usability, and long-term
-              maintainability.
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/#contact"
-                className="inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition hover:scale-[1.02]"
-              >
-                Get in touch
-              </Link>
-              <a
-                href="/LatiTibabu_CV.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]"
-              >
-                Download CV
-              </a>
-              <a
-                href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]"
-              >
-                <Icon name="upwork" size={18} />
-                Hire me on Upwork
-              </a>
+        <div className="max-w-[1280px] mx-auto">
+          {showHeroImage ? (
+            <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
+              {hero.layout === "image-left-text-right" ? (
+                <>
+                  {heroImage}
+                  {heroText}
+                </>
+              ) : (
+                <>
+                  {heroText}
+                  {heroImage}
+                </>
+              )}
             </div>
-          </div>
-          <div className="relative">
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]">
-              <div className="relative aspect-square overflow-hidden rounded-lg">
-                <Image
-                  src="/me4.png"
-                  alt="Lati Tibabu portrait"
-                  fill
-                  sizes="(min-width: 1024px) 420px, 80vw"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              <div className="mt-4 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
-                <span className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                  Availability
-                </span>
-                <span>Open for freelance work</span>
-              </div>
+          ) : (
+            <div className={isCentered ? "flex flex-col items-center" : ""}>
+              {heroText}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -712,32 +756,30 @@ export default async function Home() {
               </ul>
             </div>
           </div>
-
-          <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
-            <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-              Client feedback
-            </h3>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              {testimonials.map((testimonial) => (
-                <article
-                  key={testimonial.name}
-                  className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
-                >
-                  <p className="text-[13px] leading-[1.6] text-[var(--color-on-surface-variant)]">
-                    &quot;{testimonial.text}&quot;
-                  </p>
-                  <p className="mt-3 text-[12px] font-semibold text-[var(--color-on-surface)]">
-                    — {testimonial.name}
-                  </p>
-                </article>
-              ))}
-            </div>
-            <p className="mt-4 text-[12px] uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]">
-              Trusted by growing businesses worldwide
-            </p>
-          </div>
         </div>
       </section>
+
+      {testimonials.length > 0 && (
+        <section
+          id="feedback"
+          className="px-6 py-20 border-y border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)]"
+        >
+          <div className="max-w-[1280px] mx-auto space-y-10">
+            <div className="space-y-3">
+              <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+                Client feedback
+              </p>
+              <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
+                What clients say
+              </h2>
+              <p className="text-[16px] text-[var(--color-on-surface-variant)] max-w-[640px]">
+                Trusted by growing businesses worldwide.
+              </p>
+            </div>
+            <TestimonialsMarquee items={testimonials} />
+          </div>
+        </section>
+      )}
 
       <section id="graphics" className="px-6 py-20">
         <div className="max-w-[1280px] mx-auto space-y-10">

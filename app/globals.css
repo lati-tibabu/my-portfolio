@@ -323,7 +323,45 @@ footer {
   50% { transform: translate3d(0, 14px, 0) scale(1.04); }
 }
 
+/* Testimonials marquee: the track contains the cards duplicated once,
+   so translating to -50% loops seamlessly. Only applied when the cards
+   overflow the viewport (toggled by TestimonialsMarquee). */
+@keyframes testimonials-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.testimonials-marquee {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+}
+
+.testimonials-track--animated {
+  animation: testimonials-marquee 60s linear infinite;
+  will-change: transform;
+}
+
+.testimonials-marquee:hover .testimonials-track--animated {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .testimonials-track--animated {
+    animation: none;
+  }
+
   .lively-section::before,
   .lively-section::after,
   .stagger-up {

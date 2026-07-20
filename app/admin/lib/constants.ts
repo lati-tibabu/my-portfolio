@@ -3,6 +3,10 @@ import type { TabKey } from "./types";
 export const STORAGE_BUCKET = "portfolio-media";
 export const DEFAULT_PLACEHOLDER_IMAGE = "https://placehold.co/600x400@2x.png";
 
+// Fixed singleton id for the hero_content row so re-seeding / admin upserts
+// always target the same single row instead of creating duplicates.
+export const HERO_SINGLETON_ID = "00000000-0000-0000-0000-000000000001";
+
 export const adminNavItems: Array<{
   tab: TabKey;
   label: string;
@@ -11,6 +15,8 @@ export const adminNavItems: Array<{
   { tab: "graphics", label: "Graphics", description: "Visual work" },
   { tab: "marketplace", label: "Products", description: "Apps and themes" },
   { tab: "blog", label: "Blog", description: "Articles and updates" },
+  { tab: "testimonials", label: "Testimonials", description: "Client feedback" },
+  { tab: "hero", label: "Hero", description: "Home header" },
 ];
 
 export const inputClass =

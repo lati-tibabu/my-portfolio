@@ -1,4 +1,4 @@
-export type TabKey = "graphics" | "marketplace" | "blog";
+export type TabKey = "graphics" | "marketplace" | "blog" | "testimonials" | "hero";
 
 export type SessionUser = {
   email?: string | null;
@@ -61,6 +61,38 @@ export type BlogRecord = {
   created_at: string;
 };
 
+export type TestimonialRecord = {
+  id: string;
+  name: string;
+  role: string | null;
+  photo_url: string | null;
+  photo_path: string | null;
+  quote_md: string;
+  is_published: boolean;
+  created_at: string;
+};
+
+export type HeroRecord = {
+  id: string;
+  eyebrow: string;
+  headline: string;
+  body_md: string;
+  cta1_label: string | null;
+  cta1_href: string | null;
+  cta2_label: string | null;
+  cta2_href: string | null;
+  cta3_label: string | null;
+  cta3_href: string | null;
+  image_enabled: boolean;
+  image_url: string | null;
+  image_path: string | null;
+  image_alt: string | null;
+  layout: "text-left-image-right" | "image-left-text-right" | "centered";
+  availability_label: string | null;
+  availability_value: string | null;
+  updated_at: string;
+};
+
 export type GraphicsForm = {
   id: string | null;
   slug: string;
@@ -114,4 +146,33 @@ export type BlogForm = {
   contentFormat: "html" | "md";
   isDraft: boolean;
   authorName: string;
+};
+
+export type TestimonialForm = {
+  id: string | null;
+  name: string;
+  role: string;
+  photoUrl: string;
+  photoPath: string;
+  quoteMd: string;
+  isPublished: boolean;
+};
+
+export type HeroForm = {
+  eyebrow: string;
+  headline: string;
+  bodyMd: string;
+  cta1Label: string;
+  cta1Href: string;
+  cta2Label: string;
+  cta2Href: string;
+  cta3Label: string;
+  cta3Href: string;
+  imageEnabled: boolean;
+  imageUrl: string;
+  imagePath: string;
+  imageAlt: string;
+  layout: "text-left-image-right" | "image-left-text-right" | "centered";
+  availabilityLabel: string;
+  availabilityValue: string;
 };

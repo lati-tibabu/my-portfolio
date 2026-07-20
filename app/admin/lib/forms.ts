@@ -1,7 +1,9 @@
 import type {
   BlogForm,
   GraphicsForm,
+  HeroForm,
   MarketplaceForm,
+  TestimonialForm,
 } from "./types";
 
 export const slugify = (value: string) =>
@@ -77,3 +79,35 @@ export const emptyBlogForm = (): BlogForm => ({
   isDraft: true,
   authorName: "",
 });
+
+export const emptyTestimonialForm = (): TestimonialForm => ({
+  id: null,
+  name: "",
+  role: "",
+  photoUrl: "",
+  photoPath: "",
+  quoteMd: "",
+  isPublished: true,
+});
+
+export const defaultHeroForm = (): HeroForm => ({
+  eyebrow: "Full Stack & Odoo ERP Developer",
+  headline: "Building products people rely on.",
+  bodyMd:
+    "Available for freelance engagements worldwide. I specialize in Odoo customization, theme development, and full-stack application delivery backed by secure IAM integrations.\n\nI develop web applications, enterprise platforms, and Odoo solutions that prioritize performance, usability, and long-term maintainability.",
+  cta1Label: "Get in touch",
+  cta1Href: "/#contact",
+  cta2Label: "Download CV",
+  cta2Href: "/LatiTibabu_CV.pdf",
+  cta3Label: "Hire me on Upwork",
+  cta3Href: "https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share",
+  imageEnabled: true,
+  imageUrl: "/me4.png",
+  imagePath: "",
+  imageAlt: "Lati Tibabu portrait",
+  layout: "text-left-image-right",
+  availabilityLabel: "Availability",
+  availabilityValue: "Open for freelance work",
+});
+
+export const emptyHeroForm = (): HeroForm => defaultHeroForm();

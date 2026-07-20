@@ -3,7 +3,13 @@ import "dotenv/config";
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
-import { blogPosts, graphicsItems, marketplaceItems } from "../app/data/cms";
+import {
+  blogPosts,
+  graphicsItems,
+  heroContent,
+  marketplaceItems,
+  testimonials,
+} from "../app/data/cms";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -177,11 +183,75 @@ async function seedBlog() {
   }
 }
 
+async function seedTestimonials() {
+  console.log(`Seeding ${testimonials.length} testimonials...`);
+
+  const rows = testimonials.map((item) => ({
+    name: item.name,
+    role: item.role ?? null,
+    photo_url: item.photo ?? null,
+    quote_md: item.quoteMd,
+    is_published: item.isPublished ?? true,
+  }));
+
+  const { error } = await supabase
+    .from("client_testimonials")
+    .upsert(rows, { onConflict: "name" });
+
+  if (error) {
+    throw new Error(`Failed to seed testimonials: ${error.message}`);
+  }
+}
+
+async function seedHero() {
+  console.log("Seeding hero content...");
+
+  let publicUrl = heroContent.imageUrl ?? null;
+  let storagePath: string | null = null;
+
+  if (publicUrl?.startsWith("/")) {
+    const extension = path.extname(publicUrl) || ".png";
+    storagePath = `hero/portrait${extension}`;
+    publicUrl = await uploadLocalImage(publicUrl, storagePath);
+  }
+
+  const row = {
+    id: "00000000-0000-0000-0000-000000000001",
+    eyebrow: heroContent.eyebrow,
+    headline: heroContent.headline,
+    body_md: heroContent.bodyMd,
+    cta1_label: heroContent.cta1Label ?? null,
+    cta1_href: heroContent.cta1Href ?? null,
+    cta2_label: heroContent.cta2Label ?? null,
+    cta2_href: heroContent.cta2Href ?? null,
+    cta3_label: heroContent.cta3Label ?? null,
+    cta3_href: heroContent.cta3Href ?? null,
+    image_enabled: heroContent.imageEnabled,
+    image_url: publicUrl,
+    image_path: storagePath,
+    image_alt: heroContent.imageAlt ?? null,
+    layout: heroContent.layout,
+    availability_label: heroContent.availabilityLabel ?? null,
+    availability_value: heroContent.availabilityValue ?? null,
+  };
+
+  // Singleton: keep only one row. Upsert by fixed id.
+  const { error: insertError } = await supabase
+    .from("hero_content")
+    .upsert(row, { onConflict: "id" });
+
+  if (insertError) {
+    throw new Error(`Failed to seed hero content: ${insertError.message}`);
+  }
+}
+
 async function main() {
   await ensureBucket();
   await seedGraphics();
   await seedMarketplace();
   await seedBlog();
+  await seedTestimonials();
+  await seedHero();
   console.log("Supabase migration complete.");
 }
 

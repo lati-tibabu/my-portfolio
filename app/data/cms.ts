@@ -54,6 +54,36 @@ export type BlogPost = {
   createdAt?: string;
 };
 
+export type Testimonial = {
+  id?: string;
+  name: string;
+  role?: string;
+  photo?: string;
+  quoteMd: string;
+  isPublished?: boolean;
+  createdAt?: string;
+};
+
+export type HeroLayout = "text-left-image-right" | "image-left-text-right" | "centered";
+
+export type HeroContent = {
+  eyebrow: string;
+  headline: string;
+  bodyMd: string;
+  cta1Label?: string;
+  cta1Href?: string;
+  cta2Label?: string;
+  cta2Href?: string;
+  cta3Label?: string;
+  cta3Href?: string;
+  imageEnabled: boolean;
+  imageUrl?: string;
+  imageAlt?: string;
+  layout: HeroLayout;
+  availabilityLabel?: string;
+  availabilityValue?: string;
+};
+
 const toListItems = (items: string[]) =>
   items.map((item) => `<li>${item}</li>`).join("");
 
@@ -376,3 +406,44 @@ export const blogPosts: BlogPost[] = [
       "<p>Large image collections can turn into a wall of thumbnails quickly. Pagination gives the user a sense of progress, keeps the page lighter, and makes future filtering easier to add later.</p>",
   },
 ];
+
+export const testimonials: Testimonial[] = [
+  {
+    name: "Sara Bekele",
+    role: "Operations Lead, Aurora Distributors",
+    quoteMd:
+      "Lati rebuilt our Odoo sales workflow end to end. **Order processing time dropped by half** and the team actually enjoys using the system now. Reliable, fast, and genuinely collaborative.",
+  },
+  {
+    name: "Daniel M.",
+    role: "Founder, TechHabesha",
+    quoteMd:
+      "We hired Lati to customize our Odoo theme and the result looked *better than the demos we were comparing against*. Clean code, on time, and easy to hand off to our in-house team.",
+  },
+  {
+    name: "Hanna Girma",
+    role: "Product Manager",
+    quoteMd:
+      "Sharp eye for both UX and performance. Lati flagged issues we hadn't even noticed and shipped fixes the same week. Will absolutely work with again.",
+  },
+];
+
+export const heroContent: HeroContent = {
+  eyebrow: "Full Stack & Odoo ERP Developer",
+  headline: "Building products people rely on.",
+  bodyMd:
+    "Available for freelance engagements worldwide. I specialize in Odoo customization, theme development, and full-stack application delivery backed by secure IAM integrations.\n\nI develop web applications, enterprise platforms, and Odoo solutions that prioritize performance, usability, and long-term maintainability.",
+  cta1Label: "Get in touch",
+  cta1Href: "/#contact",
+  cta2Label: "Download CV",
+  cta2Href: "/LatiTibabu_CV.pdf",
+  cta3Label: "Hire me on Upwork",
+  cta3Href:
+    "https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share",
+  imageEnabled: true,
+  imageUrl: "/me4.png",
+  imageAlt: "Lati Tibabu portrait",
+  layout: "text-left-image-right",
+  availabilityLabel: "Availability",
+  availabilityValue: "Open for freelance work",
+};

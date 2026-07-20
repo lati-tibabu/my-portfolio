@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import Icon from "../../components/Icon";
 import BlogContent from "../../components/BlogContent";
 import BlogComments from "../../components/BlogComments";
+import BlogShareButton from "../../components/BlogShareButton";
+import HighlightQuote from "../../components/HighlightQuote";
 import { loadBlogPosts } from "../../lib/content";
 
 // CMS content lives in Supabase; always render fresh so admin edits appear immediately.
@@ -119,13 +121,20 @@ export default async function BlogDetailPage({ params }: PageProps) {
       <article>
         <header className="px-6 pb-10 pt-16 md:pb-14 md:pt-24">
           <div className="mx-auto max-w-[820px]">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-electric-blue)] transition hover:text-[var(--color-secondary)]"
-            >
-              <Icon name="arrow-left" size={15} />
-              Back to blog
-            </Link>
+            <div className="flex items-center justify-between gap-4">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-electric-blue)] transition hover:text-[var(--color-secondary)]"
+              >
+                <Icon name="arrow-left" size={15} />
+                Back to blog
+              </Link>
+              <BlogShareButton
+                url={articleUrl}
+                title={post.title}
+                text={post.excerpt}
+              />
+            </div>
 
             <div className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 font-label text-[10px] uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]">
               <time dateTime={post.publishedAt}>
@@ -176,17 +185,30 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
         <section className="px-6 pb-20 pt-12 md:pb-28 md:pt-16">
           <div className="mx-auto max-w-[720px]">
-            <BlogContent
-              content={post.detailsHtml}
-              format={post.contentFormat ?? "html"}
-            />
+            <HighlightQuote
+              url={articleUrl}
+              title={post.title}
+              author={post.authorName || "latitibabu"}
+            >
+              <BlogContent
+                content={post.detailsHtml}
+                format={post.contentFormat ?? "html"}
+              />
+            </HighlightQuote>
 
             <BlogComments postId={post.id} />
 
             <footer className="mt-14 border-t border-[var(--color-surface-border)] pt-7">
-              <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                Thanks for reading
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                  Thanks for reading
+                </p>
+                <BlogShareButton
+                  url={articleUrl}
+                  title={post.title}
+                  text={post.excerpt}
+                />
+              </div>
               <Link
                 href="/blog"
                 className="mt-4 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-electric-blue)] transition hover:text-[var(--color-secondary)]"

@@ -130,6 +130,43 @@ alter table public.blog_posts
 add constraint blog_posts_content_format_check
 check (content_format in ('html', 'md'));
 
+create table if not exists public.client_testimonials (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  role text,
+  photo_url text,
+  photo_path text,
+  quote_md text not null,
+  is_published boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint client_testimonials_name_not_blank check (btrim(name) <> ''),
+  constraint client_testimonials_quote_not_blank check (btrim(quote_md) <> '')
+);
+
+create table if not exists public.hero_content (
+  id uuid primary key default gen_random_uuid(),
+  eyebrow text not null,
+  headline text not null,
+  body_md text not null,
+  cta1_label text,
+  cta1_href text,
+  cta2_label text,
+  cta2_href text,
+  cta3_label text,
+  cta3_href text,
+  image_enabled boolean not null default true,
+  image_url text,
+  image_path text,
+  image_alt text,
+  layout text not null default 'text-left-image-right'
+    check (layout in ('text-left-image-right', 'image-left-text-right', 'centered')),
+  availability_label text,
+  availability_value text,
+  updated_at timestamptz not null default now(),
+  constraint hero_content_headline_not_blank check (btrim(headline) <> '')
+);
+
 insert into storage.buckets (id, name, public)
 values ('portfolio-media', 'portfolio-media', true)
 on conflict (id) do update
@@ -139,6 +176,8 @@ alter table public.graphics_items enable row level security;
 alter table public.marketplace_items enable row level security;
 alter table public.blog_posts enable row level security;
 alter table public.blog_comments enable row level security;
+alter table public.client_testimonials enable row level security;
+alter table public.hero_content enable row level security;
 
 drop policy if exists "Public can read graphics items" on public.graphics_items;
 create policy "Public can read graphics items"
@@ -260,6 +299,71 @@ with check (true);
 drop policy if exists "Authenticated can delete blog comments" on public.blog_comments;
 create policy "Authenticated can delete blog comments"
 on public.blog_comments
+for delete
+to authenticated
+using (true);
+
+drop policy if exists "Public can read published testimonials" on public.client_testimonials;
+create policy "Public can read published testimonials"
+on public.client_testimonials
+for select
+to anon
+using (is_published = true);
+
+drop policy if exists "Authenticated can read testimonials" on public.client_testimonials;
+create policy "Authenticated can read testimonials"
+on public.client_testimonials
+for select
+to authenticated
+using (true);
+
+drop policy if exists "Authenticated can insert testimonials" on public.client_testimonials;
+create policy "Authenticated can insert testimonials"
+on public.client_testimonials
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists "Authenticated can update testimonials" on public.client_testimonials;
+create policy "Authenticated can update testimonials"
+on public.client_testimonials
+for update
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Authenticated can delete testimonials" on public.client_testimonials;
+create policy "Authenticated can delete testimonials"
+on public.client_testimonials
+for delete
+to authenticated
+using (true);
+
+drop policy if exists "Public can read hero content" on public.hero_content;
+create policy "Public can read hero content"
+on public.hero_content
+for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "Authenticated can insert hero content" on public.hero_content;
+create policy "Authenticated can insert hero content"
+on public.hero_content
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists "Authenticated can update hero content" on public.hero_content;
+create policy "Authenticated can update hero content"
+on public.hero_content
+for update
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Authenticated can delete hero content" on public.hero_content;
+create policy "Authenticated can delete hero content"
+on public.hero_content
 for delete
 to authenticated
 using (true);

@@ -8,8 +8,10 @@ import { useAdminAuth } from "./lib/useAdminAuth";
 import type {
   BlogRecord,
   GraphicsRecord,
+  HeroRecord,
   MarketplaceRecord,
   TabKey,
+  TestimonialRecord,
 } from "./lib/types";
 import AdminLoginScreen from "./components/AdminLoginScreen";
 import AdminSidebar from "./components/AdminSidebar";
@@ -17,6 +19,8 @@ import WorkspaceHeader from "./components/WorkspaceHeader";
 import GraphicsPanel from "./components/GraphicsPanel";
 import MarketplacePanel from "./components/MarketplacePanel";
 import BlogPanel from "./components/BlogPanel";
+import TestimonialsPanel from "./components/TestimonialsPanel";
+import HeroPanel from "./components/HeroPanel";
 
 export default function AdminConsole() {
   const auth = useAdminAuth();
@@ -28,6 +32,8 @@ export default function AdminConsole() {
   const [graphics, setGraphics] = useState<GraphicsRecord[]>([]);
   const [marketplace, setMarketplace] = useState<MarketplaceRecord[]>([]);
   const [blog, setBlog] = useState<BlogRecord[]>([]);
+  const [testimonials, setTestimonials] = useState<TestimonialRecord[]>([]);
+  const [hero, setHero] = useState<HeroRecord | null>(null);
 
   const reload = async () => {
     setBusy(true);
@@ -37,6 +43,8 @@ export default function AdminConsole() {
       setGraphics(result.graphics);
       setMarketplace(result.marketplace);
       setBlog(result.blog);
+      setTestimonials(result.testimonials);
+      setHero(result.hero);
       setMessage(result.message);
     } catch (error) {
       setMessage(
@@ -114,6 +122,26 @@ export default function AdminConsole() {
         {activeTab === "blog" && (
           <BlogPanel
             records={blog}
+            reload={reload}
+            busy={busy}
+            setBusy={setBusy}
+            setMessage={setMessage}
+          />
+        )}
+
+        {activeTab === "testimonials" && (
+          <TestimonialsPanel
+            records={testimonials}
+            reload={reload}
+            busy={busy}
+            setBusy={setBusy}
+            setMessage={setMessage}
+          />
+        )}
+
+        {activeTab === "hero" && (
+          <HeroPanel
+            record={hero}
             reload={reload}
             busy={busy}
             setBusy={setBusy}

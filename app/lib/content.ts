@@ -2,7 +2,10 @@ import { createClient } from "@supabase/supabase-js";
 import {
   type BlogPost,
   type GraphicItem,
+  type HeroContent,
+  type HeroLayout,
   type MarketplaceItem,
+  type Testimonial,
 } from "../data/cms";
 
 type GraphicsRow = {
@@ -57,6 +60,36 @@ type BlogRow = {
   is_draft: boolean;
   author_name: string;
   created_at: string;
+};
+
+type TestimonialRow = {
+  id: string;
+  name: string;
+  role: string | null;
+  photo_url: string | null;
+  quote_md: string;
+  is_published: boolean;
+  created_at: string;
+};
+
+type HeroRow = {
+  id: string;
+  eyebrow: string;
+  headline: string;
+  body_md: string;
+  cta1_label: string | null;
+  cta1_href: string | null;
+  cta2_label: string | null;
+  cta2_href: string | null;
+  cta3_label: string | null;
+  cta3_href: string | null;
+  image_enabled: boolean;
+  image_url: string | null;
+  image_alt: string | null;
+  layout: HeroLayout;
+  availability_label: string | null;
+  availability_value: string | null;
+  updated_at: string;
 };
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -198,4 +231,74 @@ export async function loadBlogPosts(): Promise<BlogPost[]> {
     authorName: row.author_name || "latitibabu",
     createdAt: row.created_at,
   }));
+}
+
+export async function loadTestimonials(): Promise<Testimonial[]> {
+  const client = createReadClient();
+  if (!client) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("client_testimonials")
+    .select(
+      "id,name,role,photo_url,quote_md,is_published,created_at",
+    )
+    .eq("is_published", true)
+    .order("created_at", { ascending: false });
+
+  if (error || !data?.length) {
+    return [];
+  }
+
+  return (data as TestimonialRow[]).map((row) => {
+    const photo = row.photo_url?.trim();
+    return {
+      id: row.id,
+      name: row.name,
+      role: row.role?.trim() || undefined,
+      photo: photo || undefined,
+      quoteMd: row.quote_md,
+      isPublished: row.is_published,
+      createdAt: row.created_at,
+    };
+  });
+}
+
+export async function loadHeroContent(): Promise<HeroContent | null> {
+  const client = createReadClient();
+  if (!client) {
+    return null;
+  }
+
+  const { data, error } = await client
+    .from("hero_content")
+    .select("*")
+    .order("updated_at", { ascending: false })
+    .limit(1);
+
+  if (error || !data?.length) {
+    return null;
+  }
+
+  const row = data[0] as HeroRow;
+  const imageUrl = row.image_url?.trim();
+
+  return {
+    eyebrow: row.eyebrow,
+    headline: row.headline,
+    bodyMd: row.body_md,
+    cta1Label: row.cta1_label?.trim() || undefined,
+    cta1Href: row.cta1_href?.trim() || undefined,
+    cta2Label: row.cta2_label?.trim() || undefined,
+    cta2Href: row.cta2_href?.trim() || undefined,
+    cta3Label: row.cta3_label?.trim() || undefined,
+    cta3Href: row.cta3_href?.trim() || undefined,
+    imageEnabled: row.image_enabled,
+    imageUrl: imageUrl || undefined,
+    imageAlt: row.image_alt?.trim() || undefined,
+    layout: row.layout,
+    availabilityLabel: row.availability_label?.trim() || undefined,
+    availabilityValue: row.availability_value?.trim() || undefined,
+  };
 }

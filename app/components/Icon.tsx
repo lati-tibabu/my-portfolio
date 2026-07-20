@@ -6,17 +6,20 @@ import {
   FaDownload,
   FaEnvelope,
   FaEye,
+  FaFacebook,
   FaGithub,
+  FaLink,
   FaLinkedin,
   FaMapMarkerAlt,
   FaPhone,
   FaPowerOff,
+  FaQuoteLeft,
   FaRocket,
   FaTelegram,
   FaTimes,
   FaWhatsapp,
 } from "react-icons/fa";
-import { FaArrowUpRightFromSquare, FaXTwitter } from "react-icons/fa6";
+import { FaArrowUpRightFromSquare, FaShareNodes, FaXTwitter } from "react-icons/fa6";
 import { SiFiverr, SiUpwork } from "react-icons/si";
 
 type IconProps = {
@@ -32,15 +35,19 @@ const ICONS: Record<string, IconType> = {
   "arrow-up-right": FaArrowUpRightFromSquare,
   close: FaTimes,
   download: FaDownload,
+  facebook: FaFacebook,
   fiverr: SiFiverr,
   github: FaGithub,
+  link: FaLink,
   linkedin: FaLinkedin,
   location: FaMapMarkerAlt,
   mail: FaEnvelope,
   menu: FaBars,
   phone: FaPhone,
   power: FaPowerOff,
+  quote: FaQuoteLeft,
   rocket: FaRocket,
+  share: FaShareNodes,
   telegram: FaTelegram,
   upwork: SiUpwork,
   visitor: FaEye,

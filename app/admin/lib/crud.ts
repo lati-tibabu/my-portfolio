@@ -4,7 +4,9 @@ import { STORAGE_BUCKET } from "./constants";
 import type {
   BlogRecord,
   GraphicsRecord,
+  HeroRecord,
   MarketplaceRecord,
+  TestimonialRecord,
 } from "./types";
 
 /**
@@ -54,15 +56,29 @@ export const uploadContentImage = async (file: File, folder: string) => {
 export const uploadGraphicsImage = (file: File) =>
   uploadContentImage(file, "graphics");
 
+export const uploadTestimonialPhoto = (file: File) =>
+  uploadContentImage(file, "testimonials");
+
+export const uploadHeroImage = (file: File) =>
+  uploadContentImage(file, "hero");
+
 export type LoadAllResult = {
   graphics: GraphicsRecord[];
   marketplace: MarketplaceRecord[];
   blog: BlogRecord[];
+  testimonials: TestimonialRecord[];
+  hero: HeroRecord | null;
   message: string;
 };
 
 export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> => {
-  const [graphicsResult, marketplaceResult, blogResult] = await Promise.all([
+  const [
+    graphicsResult,
+    marketplaceResult,
+    blogResult,
+    testimonialsResult,
+    heroResult,
+  ] = await Promise.all([
     client
       .from("graphics_items")
       .select("*")
@@ -75,20 +91,37 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
       .from("blog_posts")
       .select("*")
       .order("published_at", { ascending: false }),
+    client
+      .from("client_testimonials")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    client
+      .from("hero_content")
+      .select("*")
+      .order("updated_at", { ascending: false })
+      .limit(1),
   ]);
 
   const graphics = (graphicsResult.data as GraphicsRecord[]) ?? [];
   const marketplace = (marketplaceResult.data as MarketplaceRecord[]) ?? [];
   const blog = (blogResult.data as BlogRecord[]) ?? [];
+  const testimonials = (testimonialsResult.data as TestimonialRecord[]) ?? [];
+  const hero = (heroResult.data?.[0] as HeroRecord | undefined) ?? null;
 
   const hasError =
-    graphicsResult.error || marketplaceResult.error || blogResult.error;
+    graphicsResult.error ||
+    marketplaceResult.error ||
+    blogResult.error ||
+    testimonialsResult.error ||
+    heroResult.error;
   const message = hasError
     ? graphicsResult.error?.message ||
       marketplaceResult.error?.message ||
       blogResult.error?.message ||
+      testimonialsResult.error?.message ||
+      heroResult.error?.message ||
       "Loaded with some empty sections."
     : "Content loaded successfully.";
 
-  return { graphics, marketplace, blog, message };
+  return { graphics, marketplace, blog, testimonials, hero, message };
 };
