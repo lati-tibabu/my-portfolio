@@ -1,21 +1,22 @@
 import type { IconType } from "react-icons";
 import {
   FaArrowLeft,
+  FaBars,
   FaDownload,
+  FaEnvelope,
   FaEye,
   FaGithub,
   FaLinkedin,
   FaMapMarkerAlt,
-  FaTelegramPlane,
-  FaTwitter,
-  FaRegEnvelope,
-  FaPhoneAlt,
-  FaBars,
+  FaPhone,
+  FaTelegram,
   FaTimes,
-  FaBriefcase,
+  FaWhatsapp,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { SiFiverr, SiUpwork } from "react-icons/si";
 
-type HandDrawnIconProps = {
+type IconProps = {
   name: string;
   alt?: string;
   size?: number;
@@ -26,23 +27,25 @@ const ICONS: Record<string, IconType> = {
   "arrow-left": FaArrowLeft,
   close: FaTimes,
   download: FaDownload,
-  fiverr: FaBriefcase,
+  fiverr: SiFiverr,
   github: FaGithub,
   linkedin: FaLinkedin,
   location: FaMapMarkerAlt,
-  mail: FaRegEnvelope,
+  mail: FaEnvelope,
   menu: FaBars,
-  phone: FaPhoneAlt,
-  telegram: FaTelegramPlane,
+  phone: FaPhone,
+  telegram: FaTelegram,
+  upwork: SiUpwork,
   visitor: FaEye,
-  x: FaTwitter,
+  whatsapp: FaWhatsapp,
+  x: FaXTwitter,
 };
 
-export default function HandDrawnIcon({ name, alt, size = 24, className = "" }: HandDrawnIconProps) {
-  const Icon = ICONS[name] ?? FaArrowLeft;
+export default function Icon({ name, alt, size = 24, className = "" }: IconProps) {
+  const IconComponent = ICONS[name] ?? FaArrowLeft;
 
   return (
-    <Icon
+    <IconComponent
       size={size}
       className={`shrink-0 ${className}`.trim()}
       aria-hidden={alt ? undefined : true}

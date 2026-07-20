@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import HandDrawnIcon from "./components/HandDrawnIcon";
+import Icon from "./components/Icon";
 import { loadMarketplaceItems } from "./lib/content";
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 const createStats = (marketplaceCount: number) => [
   { label: "Odoo apps/themes published", value: `${marketplaceCount}` },
-  { label: "Odoo app adopters", value: "110+" },
+  { label: "Odoo app adopters", value: "170+" },
   { label: "Years of experience", value: "4+" },
   { label: "Stack size", value: "20+ tools" },
 ];
@@ -234,53 +234,9 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]"
               >
-                <Image
-                  src="/hand-drawn-icons/upwork.jpg"
-                  alt="Upwork"
-                  width={18}
-                  height={18}
-                  className="rounded-sm object-contain"
-                />
+                <Icon name="upwork" size={18} />
                 Hire me on Upwork
               </a>
-              <div className="flex items-center gap-3">
-                <a
-                  href="https://github.com/lati-tibabu"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
-                  aria-label="GitHub"
-                >
-                  <HandDrawnIcon name="github" size={20} />
-                </a>
-                <a
-                  href="https://linkedin.com/in/lati-tibabu"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
-                  aria-label="LinkedIn"
-                >
-                  <HandDrawnIcon name="linkedin" size={20} />
-                </a>
-                <a
-                  href="https://x.com/TibabuLati"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
-                  aria-label="X"
-                >
-                  <HandDrawnIcon name="x" size={20} />
-                </a>
-                <a
-                  href="https://t.me/latitibabu"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
-                  aria-label="Telegram"
-                >
-                  <HandDrawnIcon name="telegram" size={20} />
-                </a>
-              </div>
             </div>
           </div>
           <div className="relative">
@@ -790,13 +746,7 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white"
               >
-                <Image
-                  src="/hand-drawn-icons/upwork.jpg"
-                  alt="Upwork"
-                  width={18}
-                  height={18}
-                  className="rounded-sm object-contain"
-                />
+                <Icon name="upwork" size={18} />
                 Hire me on Upwork
               </a>
               <a
@@ -815,11 +765,11 @@ export default async function Home() {
             </h3>
             <div className="mt-4 space-y-4 text-[14px] text-[var(--color-inverse-on-surface)]">
               <div className="flex items-center gap-3">
-                <HandDrawnIcon name="mail" size={18} />
+                <Icon name="mail" size={18} />
                 <span>latitibabu2018@gmail.com · hello@latitibabu.com</span>
               </div>
               <div className="flex items-center gap-3">
-                <HandDrawnIcon name="fiverr" size={18} />
+                <Icon name="fiverr" size={18} />
                 <span>Fiverr: latitibabu</span>
               </div>
               <a
@@ -828,21 +778,15 @@ export default async function Home() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 transition hover:text-white"
               >
-                <Image
-                  src="/hand-drawn-icons/upwork.jpg"
-                  alt="Upwork"
-                  width={18}
-                  height={18}
-                  className="rounded-sm object-contain"
-                />
+                <Icon name="upwork" size={18} />
                 <span>Upwork: hire me for freelance work</span>
               </a>
               <div className="flex items-center gap-3">
-                <HandDrawnIcon name="phone" size={18} />
+                <Icon name="phone" size={18} />
                 <span>+251 979 586 697</span>
               </div>
               <div className="flex items-center gap-3">
-                <HandDrawnIcon name="location" size={18} />
+                <Icon name="location" size={18} />
                 <span>Addis Ababa, Ethiopia</span>
               </div>
             </div>

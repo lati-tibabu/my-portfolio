@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HandDrawnIcon from "../components/HandDrawnIcon";
+import Icon from "../components/Icon";
 
 export const metadata: Metadata = {
   title: "About Lati Tibabu",
@@ -24,13 +24,13 @@ export default function About() {
           <p className="text-[18px] text-white/80">Full Stack &amp; Odoo ERP Developer</p>
           <div className="flex flex-wrap gap-4 text-[14px] text-white/80">
             <span className="flex items-center gap-2">
-              <HandDrawnIcon name="mail" size={16} /> latitibabu2018@gmail.com
+              <Icon name="mail" size={16} /> latitibabu2018@gmail.com
             </span>
             <span className="flex items-center gap-2">
-              <HandDrawnIcon name="phone" size={16} /> 0979586697
+              <Icon name="phone" size={16} /> 0979586697
             </span>
             <span className="flex items-center gap-2">
-              <HandDrawnIcon name="location" size={16} /> Addis Ababa, Ethiopia
+              <Icon name="location" size={16} /> Addis Ababa, Ethiopia
             </span>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -41,7 +41,7 @@ export default function About() {
               className="inline-flex items-center gap-2 rounded-md border border-white/30 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em]"
               aria-label="LinkedIn"
             >
-              <HandDrawnIcon name="linkedin" size={16} /> LinkedIn
+              <Icon name="linkedin" size={16} /> LinkedIn
             </a>
             <a
               href="https://github.com/lati-tibabu"
@@ -50,7 +50,7 @@ export default function About() {
               className="inline-flex items-center gap-2 rounded-md border border-white/30 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em]"
               aria-label="GitHub"
             >
-              <HandDrawnIcon name="github" size={16} /> GitHub
+              <Icon name="github" size={16} /> GitHub
             </a>
             <a
               href="/LatiTibabu_CV.pdf"
@@ -58,7 +58,7 @@ export default function About() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-deep-navy)]"
             >
-              <HandDrawnIcon name="download" size={16} /> Resume PDF
+              <Icon name="download" size={16} /> Resume PDF
             </a>
           </div>
         </div>

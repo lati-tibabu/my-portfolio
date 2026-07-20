@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import HandDrawnIcon from "../../components/HandDrawnIcon";
+import Icon from "../../components/Icon";
 import BlogContent from "../../components/BlogContent";
 import { loadBlogPosts } from "../../lib/content";
 
@@ -110,7 +110,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
               href="/blog"
               className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-electric-blue)] transition hover:text-[var(--color-secondary)]"
             >
-              <HandDrawnIcon name="arrow-left" size={15} />
+              <Icon name="arrow-left" size={15} />
               Back to blog
             </Link>
 
@@ -174,7 +174,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 href="/blog"
                 className="mt-4 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-electric-blue)] transition hover:text-[var(--color-secondary)]"
               >
-                <HandDrawnIcon name="arrow-left" size={16} />
+                <Icon name="arrow-left" size={16} />
                 Browse more writing
               </Link>
             </footer>

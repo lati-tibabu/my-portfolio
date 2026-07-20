@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import HandDrawnIcon from "../components/HandDrawnIcon";
+import Icon from "../components/Icon";
 import GraphicsCardsClient from "../components/GraphicsCardsClient";
 import { loadGraphicsItems } from "../lib/content";
 
@@ -43,7 +43,7 @@ export default async function GraphicsPage({ searchParams }: PageProps) {
             href="/"
             className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
           >
-            <HandDrawnIcon name="arrow-left" size={16} /> Back to home
+            <Icon name="arrow-left" size={16} /> Back to home
           </Link>
         </div>
       </section>

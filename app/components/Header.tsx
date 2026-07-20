@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "./Logo";
-import HandDrawnIcon from "./HandDrawnIcon";
+import Icon from "./Icon";
 import { hasSupabaseBrowserConfig, supabaseBrowser } from "../lib/supabase/browser";
 
 export default function Header() {
@@ -143,7 +143,7 @@ export default function Header() {
             className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
             aria-label="LinkedIn"
           >
-            <HandDrawnIcon name="linkedin" size={20} />
+            <Icon name="linkedin" size={20} />
           </a>
           <a
             href="https://github.com/lati-tibabu"
@@ -152,7 +152,7 @@ export default function Header() {
             className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
             aria-label="GitHub"
           >
-            <HandDrawnIcon name="github" size={20} />
+            <Icon name="github" size={20} />
           </a>
           <a
             href="https://t.me/latitibabu"
@@ -161,7 +161,16 @@ export default function Header() {
             className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
             aria-label="Telegram"
           >
-            <HandDrawnIcon name="telegram" size={20} />
+            <Icon name="telegram" size={20} />
+          </a>
+          <a
+            href="https://wa.me/251979586697"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
+            aria-label="WhatsApp"
+          >
+            <Icon name="whatsapp" size={20} />
           </a>
         </div>
 
@@ -172,9 +181,9 @@ export default function Header() {
           aria-label="Toggle menu"
         >
           {mobileOpen ? (
-            <HandDrawnIcon name="close" size={28} />
+            <Icon name="close" size={28} />
           ) : (
-            <HandDrawnIcon name="menu" size={28} />
+            <Icon name="menu" size={28} />
           )}
         </button>
       </div>
@@ -213,7 +222,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
             >
-              <HandDrawnIcon name="linkedin" size={20} />
+              <Icon name="linkedin" size={20} />
             </a>
             <a
               href="https://github.com/lati-tibabu"
@@ -221,7 +230,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
             >
-              <HandDrawnIcon name="github" size={20} />
+              <Icon name="github" size={20} />
             </a>
             <a
               href="https://t.me/latitibabu"
@@ -229,7 +238,16 @@ export default function Header() {
               rel="noopener noreferrer"
               className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
             >
-              <HandDrawnIcon name="telegram" size={20} />
+              <Icon name="telegram" size={20} />
+            </a>
+            <a
+              href="https://wa.me/251979586697"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
+              aria-label="WhatsApp"
+            >
+              <Icon name="whatsapp" size={20} />
             </a>
           </div>
         </div>

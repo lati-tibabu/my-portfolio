@@ -3,7 +3,6 @@ import { Geist, Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
-import VisitorCounter from "./components/VisitorCounter";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -122,7 +121,6 @@ export default function RootLayout({
             <p>
               &copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.
             </p>
-            <VisitorCounter />
           </div>
         </footer>
       </body>
