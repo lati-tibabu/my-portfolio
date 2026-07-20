@@ -34,6 +34,7 @@ Three collections — **graphics**, **marketplace** (Odoo apps/themes), **blog**
 - **Public pages read only from Supabase** via server-side loaders in `app/lib/content.ts` (`loadGraphicsItems`, `loadMarketplaceItems`, `loadBlogPosts`). These create a fresh anon client per call, return `[]` when Supabase is unconfigured or empty, and filter blog drafts (`is_draft = false`). Detail pages `notFound()` if the slug isn't in the loaded set — so with no Supabase config, list and detail pages render empty / 404.
 - **Static seed data** lives in `app/data/cms.ts` (marketplace built from `app/data/odooMarketplace.ts`). It defines the TypeScript types (`GraphicItem`, `MarketplaceItem`, `BlogPost`) and the shapes the schema expects, but is **not** rendered directly by public pages — it feeds `npm run seed:supabase`. When adding a new collection, update both the Supabase schema/loaders and the static seed data so they stay in sync.
 - Row → model mapping in `content.ts` normalizes snake_case DB columns to camelCase, coerces array columns (`tags`, `highlights`, `screenshots`) that may arrive as comma strings, and falls back to `https://placehold.co/600x400@2x.png` for blank image URLs.
+- CMS-driven pages (`app/page.tsx`, `marketplace/page.tsx`, `marketplace/[slug]/page.tsx`, `blog/page.tsx`, `blog/[slug]/page.tsx`, `graphics/page.tsx`) export `revalidate = 0` so they always query Supabase fresh — without it, Next renders them statically once and admin edits never appear on the public site. Keep this export when editing those pages.
 
 ### Admin CMS (`app/admin`)
 

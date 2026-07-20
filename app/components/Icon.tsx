@@ -1,6 +1,7 @@
 import type { IconType } from "react-icons";
 import {
   FaArrowLeft,
+  FaArrowRight,
   FaBars,
   FaDownload,
   FaEnvelope,
@@ -13,7 +14,7 @@ import {
   FaTimes,
   FaWhatsapp,
 } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaArrowUpRightFromSquare, FaXTwitter } from "react-icons/fa6";
 import { SiFiverr, SiUpwork } from "react-icons/si";
 
 type IconProps = {
@@ -25,6 +26,8 @@ type IconProps = {
 
 const ICONS: Record<string, IconType> = {
   "arrow-left": FaArrowLeft,
+  "arrow-right": FaArrowRight,
+  "arrow-up-right": FaArrowUpRightFromSquare,
   close: FaTimes,
   download: FaDownload,
   fiverr: SiFiverr,

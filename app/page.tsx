@@ -49,21 +49,25 @@ const solutions = [
 const services = [
   {
     title: "Odoo Customization",
+    tag: "ERP",
     description:
       "Implementation, module development, migrations, and workflow automation for complex ERP operations.",
   },
   {
     title: "Odoo Theme Development",
+    tag: "UI",
     description:
       "Modern backend and frontend experiences that improve usability, speed, and stakeholder adoption.",
   },
   {
     title: "Full-Stack Web Apps",
+    tag: "Web",
     description:
       "React and Next.js applications built with resilient APIs, observability, and clean architecture.",
   },
   {
     title: "System Integration",
+    tag: "IAM",
     description:
       "Secure IAM integrations with Keycloak, OIDC, OAuth2, and REST APIs for cross-platform workflows.",
   },
@@ -328,35 +332,126 @@ export default async function Home() {
         id="services"
         className="px-6 py-20 bg-[var(--color-surface-container-low)]"
       >
-        <div className="max-w-[1280px] mx-auto space-y-10">
-          <div className="space-y-3">
-            <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              02 / Services
-            </p>
-            <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
-              Services built for measurable growth
-            </h2>
-            <p className="text-[16px] text-[var(--color-on-surface-variant)] max-w-[640px]">
-              From ERP implementation to system integrations, LATI delivers
-              robust systems that scale with your business.
-            </p>
+        <div className="max-w-[1280px] mx-auto space-y-12">
+          <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
+            <div className="space-y-4">
+              <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+                02 / Services
+              </p>
+              <h2 className="font-heading text-[36px] leading-[1.05] tracking-[-0.02em] text-[var(--color-on-surface)] md:text-[44px]">
+                Services built for measurable growth
+              </h2>
+              <p className="text-[16px] leading-[1.7] text-[var(--color-on-surface-variant)] max-w-[560px]">
+                From ERP implementation to system integrations, LATI delivers
+                robust systems that scale with your business.
+              </p>
+            </div>
+            <Link
+              href="/#contact"
+              className="group inline-flex items-center justify-between gap-3 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--color-on-surface)] transition hover:border-[var(--color-on-surface)] lg:justify-self-start"
+            >
+              Start a project
+              <Icon
+                name="arrow-up-right"
+                size={16}
+                className="text-[var(--color-on-surface-variant)] transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[var(--color-on-surface)]"
+              />
+            </Link>
           </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            {services.map((service) => (
-              <article
+
+          <div className="overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)]">
+            {services.map((service, index) => (
+              <Link
                 key={service.title}
-                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 transition hover:shadow-[0_20px_25px_-5px_rgba(15,23,42,0.05)]"
+                href="/#contact"
+                className="group grid grid-cols-[auto_1fr_auto] items-center gap-5 px-5 py-7 transition-colors duration-300 hover:bg-[var(--color-on-surface)] sm:gap-8 sm:px-7 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-[var(--color-surface-border)] hover:[&:not(:first-child)]:border-[var(--color-on-surface)]"
               >
-                <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                  {service.title}
-                </h3>
-                <p className="mt-3 text-[15px] leading-[1.65] text-[var(--color-on-surface-variant)]">
-                  {service.description}
-                </p>
-              </article>
+                <span className="font-label text-[12px] tracking-[0.2em] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-white/55">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div className="min-w-0">
+                  <h3 className="font-heading text-[22px] leading-tight text-[var(--color-on-surface)] transition-colors duration-300 group-hover:text-white sm:text-[24px]">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 max-w-[560px] text-[14px] leading-[1.6] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-white/70">
+                    {service.description}
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 sm:gap-6">
+                  <span className="font-label hidden text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-white/55 sm:inline">
+                    {service.tag}
+                  </span>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] transition-all duration-300 group-hover:border-white/40 group-hover:text-white">
+                    <Icon
+                      name="arrow-right"
+                      size={15}
+                      className="transition-transform duration-300 group-hover:translate-x-0.5"
+                    />
+                  </span>
+                </div>
+              </Link>
             ))}
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <article className="rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 lg:col-span-2">
+              <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+                Delivery approach
+              </p>
+              <h3 className="mt-3 font-heading text-[24px] text-[var(--color-on-surface)]">
+                Plan, build, launch, improve
+              </h3>
+              <p className="mt-2 max-w-[520px] text-[14px] leading-[1.65] text-[var(--color-on-surface-variant)]">
+                Strategy-led engineering with transparent milestones,
+                measurable outcomes, and long-term maintainability.
+              </p>
+              <ol className="mt-7 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
+                {[
+                  "Discovery & planning",
+                  "Implementation sprints",
+                  "Testing & deployment",
+                  "Continuous improvement",
+                ].map((step, index) => (
+                  <li key={step} className="relative border-t border-[var(--color-surface-border)] pt-4">
+                    <span className="font-heading text-[26px] leading-none text-[var(--color-on-surface)]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <p className="mt-3 text-[12px] leading-[1.5] text-[var(--color-on-surface-variant)]">
+                      {step}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </article>
+
+            <article className="rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
+              <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+                Solutions
+              </p>
+              <ul className="mt-4">
+                {solutions.map((solution, index) => (
+                  <li
+                    key={solution.title}
+                    className="border-t border-[var(--color-surface-border)] pt-4 first:border-t-0 first:pt-0 [&:not(:first-child)]:mt-4"
+                  >
+                    <div className="flex items-baseline gap-3">
+                      <span className="font-label text-[11px] tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <h4 className="font-heading text-[17px] text-[var(--color-on-surface)]">
+                        {solution.title}
+                      </h4>
+                    </div>
+                    <p className="mt-1.5 pl-7 text-[13px] leading-[1.6] text-[var(--color-on-surface-variant)]">
+                      {solution.description}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          </div>
+
+          <div className="grid gap-px overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-border)] sm:grid-cols-3">
             {[
               "Enterprise-grade architecture and security",
               "Fast delivery with long-term maintainability",
@@ -364,55 +459,16 @@ export default async function Home() {
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-5 py-4 text-[13px] text-[var(--color-on-surface-variant)]"
+                className="flex items-center gap-3 bg-[var(--color-surface-container-lowest)] px-5 py-4 text-[13px] text-[var(--color-on-surface-variant)]"
               >
-                {item}
+                <Icon
+                  name="arrow-right"
+                  size={13}
+                  className="text-[var(--color-on-surface)]"
+                />
+                <span>{item}</span>
               </div>
             ))}
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {solutions.map((solution) => (
-              <article
-                key={solution.title}
-                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5"
-              >
-                <h3 className="font-heading text-[18px] text-[var(--color-on-surface)]">
-                  {solution.title}
-                </h3>
-                <p className="mt-2 text-[14px] leading-[1.6] text-[var(--color-on-surface-variant)]">
-                  {solution.description}
-                </p>
-              </article>
-            ))}
-          </div>
-          <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
-            <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] items-center">
-              <div>
-                <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-                  Delivery approach
-                </p>
-                <h3 className="font-heading text-[24px] text-[var(--color-on-surface)] mt-3">
-                  Plan, build, launch, improve
-                </h3>
-                <p className="mt-3 text-[15px] leading-[1.65] text-[var(--color-on-surface-variant)]">
-                  Strategy-led engineering with transparent milestones,
-                  measurable outcomes, and long-term maintainability.
-                </p>
-              </div>
-              <ul className="space-y-3 text-[14px] text-[var(--color-on-surface-variant)]">
-                {[
-                  "Discovery & planning",
-                  "Implementation sprints",
-                  "Testing & deployment",
-                  "Continuous improvement",
-                ].map((step) => (
-                  <li key={step} className="flex items-center gap-3">
-                    <span className="h-2 w-2 rounded-full bg-[var(--color-electric-blue)]" />
-                    {step}
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </section>
