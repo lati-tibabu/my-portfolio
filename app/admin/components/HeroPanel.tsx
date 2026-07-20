@@ -5,7 +5,6 @@ import { supabaseBrowser } from "../../lib/supabase/browser";
 import {
   HERO_SINGLETON_ID,
   inputClass,
-  labelClass,
   sectionClass,
 } from "../lib/constants";
 import { defaultHeroForm, emptyHeroForm, textValue } from "../lib/forms";
@@ -13,6 +12,7 @@ import { uploadHeroImage } from "../lib/crud";
 import type { HeroForm, HeroRecord } from "../lib/types";
 import ImageUploader from "./ImageUploader";
 import HeroSkeletonPreview from "../../components/HeroSkeletonPreview";
+import { Button, FormField, FormSection, PanelHeader } from "./ui";
 
 export type HeroPanelProps = {
   record: HeroRecord | null;
@@ -138,157 +138,147 @@ export default function HeroPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
-          Hero
-        </h2>
-        <span className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">
-          Home page header
-        </span>
-      </div>
+      <PanelHeader
+        title="Hero"
+        subtitle="Home page header"
+        views={[]}
+        view="edit"
+        onViewChange={() => {}}
+      />
 
       <div className={sectionClass}>
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <div className="grid gap-4">
-            <label className={labelClass}>
-              Eyebrow
-              <input
-                className={inputClass}
-                value={form.eyebrow}
-                onChange={(e) => update({ eyebrow: e.target.value })}
-              />
-            </label>
-            <label className={labelClass}>
-              Headline
-              <input
-                className={inputClass}
-                value={form.headline}
-                onChange={(e) => update({ headline: e.target.value })}
-              />
-            </label>
-            <label className={labelClass}>
-              Body (Markdown)
-              <textarea
-                className={inputClass}
-                rows={5}
-                value={form.bodyMd}
-                onChange={(e) => update({ bodyMd: e.target.value })}
-              />
-            </label>
+          <div className="space-y-4">
+            <FormSection title="Header content">
+              <FormField label="Eyebrow">
+                <input
+                  className={inputClass}
+                  value={form.eyebrow}
+                  onChange={(e) => update({ eyebrow: e.target.value })}
+                />
+              </FormField>
+              <FormField label="Headline">
+                <input
+                  className={inputClass}
+                  value={form.headline}
+                  onChange={(e) => update({ headline: e.target.value })}
+                />
+              </FormField>
+              <FormField label="Body (Markdown)">
+                <textarea
+                  className={inputClass}
+                  rows={5}
+                  value={form.bodyMd}
+                  onChange={(e) => update({ bodyMd: e.target.value })}
+                />
+              </FormField>
+            </FormSection>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className={labelClass}>
-                Primary CTA label
+            <FormSection
+              title="Calls to action"
+              columns={2}
+              description="Up to three buttons. Leave a pair blank to hide it."
+            >
+              <FormField label="Primary CTA label">
                 <input
                   className={inputClass}
                   value={form.cta1Label}
                   placeholder="Get in touch"
                   onChange={(e) => update({ cta1Label: e.target.value })}
                 />
-              </label>
-              <label className={labelClass}>
-                Primary CTA link
+              </FormField>
+              <FormField label="Primary CTA link">
                 <input
                   className={inputClass}
                   value={form.cta1Href}
                   placeholder="/#contact"
                   onChange={(e) => update({ cta1Href: e.target.value })}
                 />
-              </label>
-              <label className={labelClass}>
-                Secondary CTA label
+              </FormField>
+              <FormField label="Secondary CTA label">
                 <input
                   className={inputClass}
                   value={form.cta2Label}
                   placeholder="Download CV"
                   onChange={(e) => update({ cta2Label: e.target.value })}
                 />
-              </label>
-              <label className={labelClass}>
-                Secondary CTA link
+              </FormField>
+              <FormField label="Secondary CTA link">
                 <input
                   className={inputClass}
                   value={form.cta2Href}
                   placeholder="/LatiTibabu_CV.pdf"
                   onChange={(e) => update({ cta2Href: e.target.value })}
                 />
-              </label>
-              <label className={labelClass}>
-                Tertiary CTA label
+              </FormField>
+              <FormField label="Tertiary CTA label">
                 <input
                   className={inputClass}
                   value={form.cta3Label}
                   placeholder="Hire me on Upwork"
                   onChange={(e) => update({ cta3Label: e.target.value })}
                 />
-              </label>
-              <label className={labelClass}>
-                Tertiary CTA link
+              </FormField>
+              <FormField label="Tertiary CTA link">
                 <input
                   className={inputClass}
                   value={form.cta3Href}
                   placeholder="https://upwork.com/..."
                   onChange={(e) => update({ cta3Href: e.target.value })}
                 />
+              </FormField>
+            </FormSection>
+
+            <FormSection title="Layout & image">
+              <FormField label="Layout">
+                <select
+                  className={inputClass}
+                  value={form.layout}
+                  onChange={(e) =>
+                    update({ layout: e.target.value as HeroForm["layout"] })
+                  }
+                >
+                  {layoutOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </FormField>
+              <label className="flex items-center gap-3 text-sm font-medium text-[var(--color-on-surface)]">
+                <input
+                  type="checkbox"
+                  checked={form.imageEnabled}
+                  disabled={form.layout === "centered"}
+                  onChange={(e) => update({ imageEnabled: e.target.checked })}
+                />
+                Show portrait image
+                {form.layout === "centered" ? (
+                  <span className="text-xs text-[var(--color-on-surface-variant)]">
+                    (disabled in centered layout)
+                  </span>
+                ) : null}
               </label>
-            </div>
-
-            <label className={labelClass}>
-              Layout
-              <select
-                className={inputClass}
-                value={form.layout}
-                onChange={(e) =>
-                  update({
-                    layout: e.target.value as HeroForm["layout"],
-                  })
-                }
-              >
-                {layoutOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex items-center gap-3 text-sm font-medium text-[var(--color-on-surface)]">
-              <input
-                type="checkbox"
-                checked={form.imageEnabled}
-                disabled={form.layout === "centered"}
-                onChange={(e) => update({ imageEnabled: e.target.checked })}
+              <ImageUploader
+                file={file}
+                onFileChange={setFile}
+                imageUrl={form.imageUrl}
+                onImageUrlChange={(value) => update({ imageUrl: value })}
+                title={form.headline}
+                description={form.imageAlt}
               />
-              Show portrait image
-              {form.layout === "centered" ? (
-                <span className="text-xs text-[var(--color-on-surface-variant)]">
-                  (disabled in centered layout)
-                </span>
-              ) : null}
-            </label>
+              <FormField label="Image alt text">
+                <input
+                  className={inputClass}
+                  value={form.imageAlt}
+                  placeholder="Lati Tibabu portrait"
+                  onChange={(e) => update({ imageAlt: e.target.value })}
+                />
+              </FormField>
+            </FormSection>
 
-            <ImageUploader
-              file={file}
-              onFileChange={setFile}
-              imageUrl={form.imageUrl}
-              onImageUrlChange={(value) => update({ imageUrl: value })}
-              title={form.headline}
-              description={form.imageAlt}
-            />
-
-            <label className={labelClass}>
-              Image alt text
-              <input
-                className={inputClass}
-                value={form.imageAlt}
-                placeholder="Lati Tibabu portrait"
-                onChange={(e) => update({ imageAlt: e.target.value })}
-              />
-            </label>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className={labelClass}>
-                Availability label
+            <FormSection title="Availability" columns={2}>
+              <FormField label="Availability label">
                 <input
                   className={inputClass}
                   value={form.availabilityLabel}
@@ -297,9 +287,8 @@ export default function HeroPanel({
                     update({ availabilityLabel: e.target.value })
                   }
                 />
-              </label>
-              <label className={labelClass}>
-                Availability value
+              </FormField>
+              <FormField label="Availability value">
                 <input
                   className={inputClass}
                   value={form.availabilityValue}
@@ -308,26 +297,16 @@ export default function HeroPanel({
                     update({ availabilityValue: e.target.value })
                   }
                 />
-              </label>
-            </div>
+              </FormField>
+            </FormSection>
 
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                className="rounded-lg border-2 border-[var(--color-on-surface)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-surface-container)] active:translate-y-0 disabled:opacity-60"
-                onClick={resetToStaticDefault}
-                disabled={busy}
-              >
+              <Button variant="secondary" onClick={resetToStaticDefault} disabled={busy}>
                 Reset to static default
-              </button>
-              <button
-                type="button"
-                className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60"
-                onClick={save}
-                disabled={busy}
-              >
+              </Button>
+              <Button variant="primary" onClick={save} disabled={busy}>
                 Save hero
-              </button>
+              </Button>
               {dirty ? (
                 <span className="self-center text-xs text-[var(--color-on-surface-variant)]">
                   Unsaved changes

@@ -18,6 +18,14 @@ export const slugify = (value: string) =>
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
+// Build a slug for a duplicated item. The final uniqueness check against the
+// DB still happens via ensureUniqueSlug at save time.
+export const duplicateSlug = (base: string) => {
+  const clean = slugify(base);
+  if (!clean) return "copy";
+  return clean.endsWith("-copy") ? `${clean}-2` : `${clean}-copy`;
+};
+
 export const joinList = (items: string[] | null | undefined) => (items ?? []).join(", ");
 
 export const textValue = (value: string | null | undefined) => value ?? "";

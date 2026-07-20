@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { supabaseBrowser } from "../../lib/supabase/browser";
-import { DEFAULT_PLACEHOLDER_IMAGE, inputClass, labelClass, sectionClass } from "../lib/constants";
+import { DEFAULT_PLACEHOLDER_IMAGE, inputClass } from "../lib/constants";
+import { useConfirmDialog } from "../lib/useConfirmDialog";
+import { useListState } from "../lib/useListState";
 import {
   emptyMarketplaceForm,
   joinList,
@@ -12,6 +15,19 @@ import {
 } from "../lib/forms";
 import { ensureUniqueSlug } from "../lib/crud";
 import type { MarketplaceForm, MarketplaceRecord } from "../lib/types";
+import {
+  Button,
+  BulkActionBar,
+  ConfirmDialog,
+  EmptyState,
+  FormField,
+  FormSection,
+  ListCard,
+  PanelHeader,
+  Pagination,
+  StatusPill,
+  Toolbar,
+} from "./ui";
 
 const PAGE_SIZE = 8;
 
@@ -32,15 +48,18 @@ export default function MarketplacePanel({
 }: MarketplacePanelProps) {
   const [form, setForm] = useState<MarketplaceForm>(emptyMarketplaceForm);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
-  const [metaExpanded, setMetaExpanded] = useState(false);
-  const [view, setView] = useState<"list" | "new">("list");
-  const [page, setPage] = useState(1);
+  const [view, setView] = useState<"list" | "edit">("list");
+  const { confirm, dialogProps } = useConfirmDialog();
 
-  const paged = useMemo(
-    () => records.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [records, page],
-  );
-  const pageCount = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
+  const list = useListState<MarketplaceRecord>({
+    records,
+    getId: (item) => item.id,
+    match: (item, query) =>
+      item.name.toLowerCase().includes(query) ||
+      item.slug.toLowerCase().includes(query) ||
+      item.category.toLowerCase().includes(query),
+    pageSize: PAGE_SIZE,
+  });
 
   useEffect(() => {
     if (slugManuallyEdited) {
@@ -48,6 +67,84 @@ export default function MarketplacePanel({
     }
     setForm((current) => ({ ...current, slug: slugify(current.name) }));
   }, [form.name, slugManuallyEdited]);
+
+  const resetForm = () => {
+    setForm(emptyMarketplaceForm());
+    setSlugManuallyEdited(false);
+    setView("list");
+  };
+
+  const startNew = () => {
+    setForm(emptyMarketplaceForm());
+    setSlugManuallyEdited(false);
+    list.clearSelection();
+    setView("edit");
+  };
+
+  const editRecord = (item: MarketplaceRecord) => {
+    setForm({
+      id: item.id,
+      slug: item.slug,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      category: item.category,
+      coverImageUrl: textValue(item.cover_image_url),
+      publishedAt: item.published_at,
+      detailsHtml: item.details_html,
+      version: item.version,
+      license: item.license,
+      technicalName: item.technical_name,
+      website: textValue(item.website),
+      compatibility: textValue(item.compatibility),
+      warning: textValue(item.warning),
+      livePreview: textValue(item.live_preview),
+      supportUrl: textValue(item.support_url),
+      contactEmail: textValue(item.contact_email),
+      link: item.link,
+      downloads: textValue(item.downloads),
+      upgradeUrl: textValue(item.upgrade_url),
+      highlightsText: joinList(item.highlights),
+      screenshotsText: joinList(item.screenshots),
+      authorName: item.author_name ?? "latitibabu",
+    });
+    setSlugManuallyEdited(true);
+    list.clearSelection();
+    setView("edit");
+  };
+
+  const duplicateRecord = (item: MarketplaceRecord) => {
+    const name = `${item.name} (copy)`;
+    setForm({
+      id: null,
+      slug: slugify(name),
+      name,
+      description: item.description,
+      price: item.price,
+      category: item.category,
+      coverImageUrl: textValue(item.cover_image_url),
+      publishedAt: item.published_at,
+      detailsHtml: item.details_html,
+      version: item.version,
+      license: item.license,
+      technicalName: item.technical_name,
+      website: textValue(item.website),
+      compatibility: textValue(item.compatibility),
+      warning: textValue(item.warning),
+      livePreview: textValue(item.live_preview),
+      supportUrl: textValue(item.support_url),
+      contactEmail: textValue(item.contact_email),
+      link: item.link,
+      downloads: textValue(item.downloads),
+      upgradeUrl: textValue(item.upgrade_url),
+      highlightsText: joinList(item.highlights),
+      screenshotsText: joinList(item.screenshots),
+      authorName: item.author_name ?? "latitibabu",
+    });
+    setSlugManuallyEdited(false);
+    list.clearSelection();
+    setView("edit");
+  };
 
   const save = async () => {
     const baseSlug = slugify(form.slug || form.name);
@@ -107,10 +204,7 @@ export default function MarketplacePanel({
           ? `Product updated (${uniqueSlug}).`
           : `Product created (${uniqueSlug}).`,
       );
-      setForm(emptyMarketplaceForm());
-      setSlugManuallyEdited(false);
-      setMetaExpanded(false);
-      setView("list");
+      resetForm();
       await reload();
     } catch (error) {
       setMessage(
@@ -121,496 +215,442 @@ export default function MarketplacePanel({
     }
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Delete this product?")) {
-      return;
-    }
+  const remove = (item: MarketplaceRecord) => {
+    confirm({
+      title: "Delete product?",
+      message: `"${item.name}" will be removed from the marketplace.`,
+      confirmLabel: "Delete",
+      onConfirm: async () => {
+        const { error } = await supabaseBrowser
+          .from("marketplace_items")
+          .delete()
+          .eq("id", item.id);
+        if (error) {
+          setMessage(error.message);
+          return;
+        }
+        setMessage("Product deleted.");
+        await reload();
+      },
+    });
+  };
 
-    setBusy(true);
-    const { error } = await supabaseBrowser
-      .from("marketplace_items")
-      .delete()
-      .eq("id", id);
-    setBusy(false);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setMessage("Product deleted.");
-    await reload();
+  const removeSelected = () => {
+    const ids = list.selectedIds;
+    if (ids.length === 0) return;
+    confirm({
+      title: `Delete ${ids.length} product${ids.length === 1 ? "" : "s"}?`,
+      message: "The selected products will be removed from the marketplace.",
+      confirmLabel: "Delete selected",
+      onConfirm: async () => {
+        const { error } = await supabaseBrowser
+          .from("marketplace_items")
+          .delete()
+          .in("id", ids);
+        if (error) {
+          setMessage(error.message);
+          return;
+        }
+        list.clearSelection();
+        setMessage(`${ids.length} product${ids.length === 1 ? "" : "s"} deleted.`);
+        await reload();
+      },
+    });
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
-          Products
-        </h2>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setView("list")}
-            className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-              view === "list"
-                ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
-                : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
-            }`}
-          >
-            List
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setForm(emptyMarketplaceForm());
-              setSlugManuallyEdited(false);
-              setMetaExpanded(false);
-              setView("new");
-            }}
-            className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-              view === "new"
-                ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
-                : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
-            }`}
-          >
-            New
-          </button>
-        </div>
-      </div>
+      <PanelHeader
+        title="Products"
+        subtitle="Apps and themes"
+        count={records.length}
+        views={[
+          { key: "list", label: "List" },
+          { key: "edit", label: "New" },
+        ]}
+        view={view}
+        onViewChange={(next) => (next === "edit" ? startNew() : setView("list"))}
+      />
+
       {view === "list" ? (
-        <div className={sectionClass}>
-          <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
-            Products
-          </h2>
-          <div className="mt-5 space-y-4">
-            {paged.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-xl border border-[var(--color-surface-border)] p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h3 className="font-semibold text-[var(--color-on-surface)]">
-                      {item.name}
-                    </h3>
-                    <p className="text-sm text-[var(--color-on-surface-variant)]">
-                      {item.slug}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)] transition-all duration-200"
-                      onClick={() => {
-                        setForm({
-                          id: item.id,
-                          slug: item.slug,
-                          name: item.name,
-                          description: item.description,
-                          price: item.price,
-                          category: item.category,
-                          coverImageUrl: textValue(item.cover_image_url),
-                          publishedAt: item.published_at,
-                          detailsHtml: item.details_html,
-                          version: item.version,
-                          license: item.license,
-                          technicalName: item.technical_name,
-                          website: textValue(item.website),
-                          compatibility: textValue(item.compatibility),
-                          warning: textValue(item.warning),
-                          livePreview: textValue(item.live_preview),
-                          supportUrl: textValue(item.support_url),
-                          contactEmail: textValue(item.contact_email),
-                          link: item.link,
-                          downloads: textValue(item.downloads),
-                          upgradeUrl: textValue(item.upgrade_url),
-                          highlightsText: joinList(item.highlights),
-                            screenshotsText: joinList(item.screenshots),
-                            authorName: item.author_name ?? "latitibabu",
-                        });
-                        setSlugManuallyEdited(true);
-                        setView("new");
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] text-[var(--color-error)] hover:bg-[var(--color-error)]/10 hover:text-[var(--color-error)] transition-all duration-200"
-                      onClick={() => remove(item.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-          <div className="mt-5 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
-            <span>
-              Page {page} of {pageCount}
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
-                disabled={page <= 1}
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-              >
-                Prev
-              </button>
-              <button
-                type="button"
-                className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
-                disabled={page >= pageCount}
-                onClick={() =>
-                  setPage((current) => Math.min(pageCount, current + 1))
+        <div className="space-y-4">
+          <Toolbar
+            query={list.query}
+            onQueryChange={list.setQuery}
+            resultCount={list.filtered.length}
+            total={records.length}
+            placeholder="Search name, slug, or category..."
+          >
+            <label className="flex items-center gap-2 text-xs text-[var(--color-on-surface-variant)]">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-[var(--color-electric-blue)]"
+                checked={list.allSelected}
+                onChange={() =>
+                  list.allSelected ? list.clearSelection() : list.selectAll()
                 }
-              >
-                Next
-              </button>
+                disabled={list.filtered.length === 0}
+              />
+              Select all
+            </label>
+          </Toolbar>
+
+          <BulkActionBar
+            selectedCount={list.selectedCount}
+            onClear={list.clearSelection}
+          >
+            <Button variant="danger" size="sm" onClick={removeSelected}>
+              Delete selected
+            </Button>
+          </BulkActionBar>
+
+          {list.filtered.length === 0 ? (
+            records.length === 0 ? (
+              <EmptyState
+                title="No products yet"
+                description="Add Odoo apps and themes to the marketplace."
+                action={<Button variant="primary" onClick={startNew}>New product</Button>}
+              />
+            ) : (
+              <EmptyState
+                title="No matches"
+                description={`No products match "${list.query}". Try a different search.`}
+              />
+            )
+          ) : (
+            <div className="space-y-3">
+              {list.paged.map((item) => (
+                <ListCard
+                  key={item.id}
+                  title={item.name}
+                  meta={`${item.slug} · ${item.price}`}
+                  pills={<StatusPill tone="info">{item.category}</StatusPill>}
+                  thumbnail={
+                    item.cover_image_url?.trim() &&
+                    item.cover_image_url.trim() !== DEFAULT_PLACEHOLDER_IMAGE ? (
+                      <Image
+                        src={item.cover_image_url.trim()}
+                        alt={item.name}
+                        width={56}
+                        height={56}
+                        className="h-14 w-14 rounded-md border border-[var(--color-surface-border)] object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-14 w-14 items-center justify-center rounded-md border border-[var(--color-surface-border)] text-[10px] uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
+                        No image
+                      </div>
+                    )
+                  }
+                  selectable
+                  selected={list.selected.has(item.id)}
+                  onSelectChange={(checked) => list.setSelected(item.id, checked)}
+                  onOpen={() => editRecord(item)}
+                  actions={
+                    <>
+                      <Button size="sm" onClick={() => duplicateRecord(item)}>
+                        Duplicate
+                      </Button>
+                      <Button size="sm" onClick={() => editRecord(item)}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="danger" onClick={() => remove(item)}>
+                        Delete
+                      </Button>
+                    </>
+                  }
+                />
+              ))}
             </div>
-          </div>
+          )}
+
+          <Pagination
+            page={list.page}
+            pageCount={list.pageCount}
+            onPageChange={list.setPage}
+          />
         </div>
       ) : (
-        <div className={sectionClass}>
-          <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
-            {form.id ? "Update product" : "Create product"}
-          </h2>
-          <div className="mt-5 grid gap-4">
-            <label className={labelClass}>
-              Name
+        <div className="space-y-4">
+          <FormSection
+            title={form.id ? "Update product" : "Create product"}
+            description="Core listing content shown on the product page."
+          >
+            <FormField label="Name">
               <input
                 className={inputClass}
                 value={form.name}
                 onChange={(event) =>
-                  setForm({
-                    ...form,
-                    name: event.target.value,
-                  })
+                  setForm({ ...form, name: event.target.value })
                 }
               />
-            </label>
-            <label className={labelClass}>
-              Slug
+            </FormField>
+            <FormField
+              label="Slug"
+              hint="Auto-generated from the name. A numeric suffix is added on conflict when saving."
+            >
               <input
                 className={inputClass}
                 value={form.slug}
                 onChange={(event) => {
                   setSlugManuallyEdited(true);
-                  setForm({
-                    ...form,
-                    slug: slugify(event.target.value),
-                  });
+                  setForm({ ...form, slug: slugify(event.target.value) });
                 }}
               />
-            </label>
-            <p className="text-xs text-[var(--color-on-surface-variant)]">
-              Slug is auto-generated from name. On conflict, a suffix is added when saving.
-            </p>
-            <label className={labelClass}>
-              Description
+            </FormField>
+            <FormField label="Description">
               <textarea
                 className={inputClass}
                 rows={3}
                 value={form.description}
                 onChange={(event) =>
-                  setForm({
-                    ...form,
-                    description: event.target.value,
-                  })
+                  setForm({ ...form, description: event.target.value })
                 }
               />
-            </label>
-            <label className={labelClass}>
-              HTML details
+            </FormField>
+            <FormField label="HTML details">
               <textarea
                 className={inputClass}
                 rows={8}
                 value={form.detailsHtml}
                 onChange={(event) =>
-                  setForm({
-                    ...form,
-                    detailsHtml: event.target.value,
-                  })
+                  setForm({ ...form, detailsHtml: event.target.value })
                 }
               />
-            </label>
-            <details
-              className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
-              open={metaExpanded}
-              onToggle={(event) =>
-                setMetaExpanded((event.target as HTMLDetailsElement).open)
-              }
-            >
-              <summary className="cursor-pointer text-sm font-semibold text-[var(--color-on-surface)]">
-                Other fields
-              </summary>
-              <div className="mt-4 grid gap-4">
-                <label className={labelClass}>
-                  Price
-                  <input
-                    className={inputClass}
-                    value={form.price}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        price: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Category
-                  <input
-                    className={inputClass}
-                    value={form.category}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        category: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Cover image URL
-                  <input
-                    className={inputClass}
-                    value={form.coverImageUrl}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        coverImageUrl: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Author name
-                  <input
-                    className={inputClass}
-                    value={form.authorName}
-                    placeholder="latitibabu"
-                    onChange={(event) =>
-                      setForm({ ...form, authorName: event.target.value })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Published date
-                  <input
-                    className={inputClass}
-                    type="date"
-                    value={form.publishedAt}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        publishedAt: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Version
-                  <input
-                    className={inputClass}
-                    value={form.version}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        version: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  License
-                  <input
-                    className={inputClass}
-                    value={form.license}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        license: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Technical name
-                  <input
-                    className={inputClass}
-                    value={form.technicalName}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        technicalName: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Website
-                  <input
-                    className={inputClass}
-                    value={form.website}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        website: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Compatibility
-                  <input
-                    className={inputClass}
-                    value={form.compatibility}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        compatibility: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Warning
-                  <input
-                    className={inputClass}
-                    value={form.warning}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        warning: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Live preview URL
-                  <input
-                    className={inputClass}
-                    value={form.livePreview}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        livePreview: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Support URL
-                  <input
-                    className={inputClass}
-                    value={form.supportUrl}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        supportUrl: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Contact email
-                  <input
-                    className={inputClass}
-                    value={form.contactEmail}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        contactEmail: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Listing URL
-                  <input
-                    className={inputClass}
-                    value={form.link}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        link: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Downloads
-                  <input
-                    className={inputClass}
-                    value={form.downloads}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        downloads: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Upgrade URL
-                  <input
-                    className={inputClass}
-                    value={form.upgradeUrl}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        upgradeUrl: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Highlights, comma separated
-                  <textarea
-                    className={inputClass}
-                    rows={3}
-                    value={form.highlightsText}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        highlightsText: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label className={labelClass}>
-                  Screenshots, comma separated
-                  <textarea
-                    className={inputClass}
-                    rows={3}
-                    value={form.screenshotsText}
-                    onChange={(event) =>
-                      setForm({
-                        ...form,
-                        screenshotsText: event.target.value,
-                      })
-                    }
-                  />
-                </label>
-              </div>
-            </details>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60 transition-all duration-200"
-                onClick={save}
+            </FormField>
+          </FormSection>
+
+          <FormSection
+            title="Pricing & category"
+            columns={2}
+            description="How the product is classified and priced."
+          >
+            <FormField label="Price">
+              <input
+                className={inputClass}
+                value={form.price}
+                onChange={(event) =>
+                  setForm({ ...form, price: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Category">
+              <input
+                className={inputClass}
+                value={form.category}
+                onChange={(event) =>
+                  setForm({ ...form, category: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Cover image URL" className="sm:col-span-2">
+              <input
+                className={inputClass}
+                value={form.coverImageUrl}
+                onChange={(event) =>
+                  setForm({ ...form, coverImageUrl: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Published date">
+              <input
+                className={inputClass}
+                type="date"
+                value={form.publishedAt}
+                onChange={(event) =>
+                  setForm({ ...form, publishedAt: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Author name">
+              <input
+                className={inputClass}
+                value={form.authorName}
+                placeholder="latitibabu"
+                onChange={(event) =>
+                  setForm({ ...form, authorName: event.target.value })
+                }
+              />
+            </FormField>
+          </FormSection>
+
+          <FormSection
+            title="Technical"
+            columns={2}
+            collapsible
+            defaultOpen={false}
+            description="Versioning and compatibility metadata."
+          >
+            <FormField label="Version">
+              <input
+                className={inputClass}
+                value={form.version}
+                onChange={(event) =>
+                  setForm({ ...form, version: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="License">
+              <input
+                className={inputClass}
+                value={form.license}
+                onChange={(event) =>
+                  setForm({ ...form, license: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Technical name">
+              <input
+                className={inputClass}
+                value={form.technicalName}
+                onChange={(event) =>
+                  setForm({ ...form, technicalName: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Website">
+              <input
+                className={inputClass}
+                value={form.website}
+                onChange={(event) =>
+                  setForm({ ...form, website: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Compatibility">
+              <input
+                className={inputClass}
+                value={form.compatibility}
+                onChange={(event) =>
+                  setForm({ ...form, compatibility: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Warning">
+              <input
+                className={inputClass}
+                value={form.warning}
+                onChange={(event) =>
+                  setForm({ ...form, warning: event.target.value })
+                }
+              />
+            </FormField>
+          </FormSection>
+
+          <FormSection
+            title="Links & support"
+            columns={2}
+            collapsible
+            defaultOpen={false}
+            description="External links shown on the product page."
+          >
+            <FormField label="Live preview URL">
+              <input
+                className={inputClass}
+                value={form.livePreview}
+                onChange={(event) =>
+                  setForm({ ...form, livePreview: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Support URL">
+              <input
+                className={inputClass}
+                value={form.supportUrl}
+                onChange={(event) =>
+                  setForm({ ...form, supportUrl: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Contact email">
+              <input
+                className={inputClass}
+                value={form.contactEmail}
+                onChange={(event) =>
+                  setForm({ ...form, contactEmail: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Listing URL">
+              <input
+                className={inputClass}
+                value={form.link}
+                onChange={(event) =>
+                  setForm({ ...form, link: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Downloads">
+              <input
+                className={inputClass}
+                value={form.downloads}
+                onChange={(event) =>
+                  setForm({ ...form, downloads: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Upgrade URL">
+              <input
+                className={inputClass}
+                value={form.upgradeUrl}
+                onChange={(event) =>
+                  setForm({ ...form, upgradeUrl: event.target.value })
+                }
+              />
+            </FormField>
+          </FormSection>
+
+          <FormSection
+            title="Lists"
+            collapsible
+            defaultOpen={false}
+            description="Comma-separated lists rendered as bullets on the product page."
+          >
+            <FormField label="Highlights" hint="Comma separated.">
+              <textarea
+                className={inputClass}
+                rows={3}
+                value={form.highlightsText}
+                onChange={(event) =>
+                  setForm({ ...form, highlightsText: event.target.value })
+                }
+              />
+            </FormField>
+            <FormField label="Screenshots" hint="Comma separated image URLs.">
+              <textarea
+                className={inputClass}
+                rows={3}
+                value={form.screenshotsText}
+                onChange={(event) =>
+                  setForm({ ...form, screenshotsText: event.target.value })
+                }
+              />
+            </FormField>
+          </FormSection>
+
+          <div className="flex flex-wrap gap-3">
+            <Button variant="primary" onClick={save} disabled={busy}>
+              {form.id ? "Update" : "Create"}
+            </Button>
+            <Button variant="secondary" onClick={resetForm} disabled={busy}>
+              Cancel
+            </Button>
+            {form.id ? (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  const editing = records.find((r) => r.id === form.id);
+                  if (editing) duplicateRecord(editing);
+                }}
                 disabled={busy}
               >
-                {form.id ? "Update" : "Create"}
-              </button>
-            </div>
+                Duplicate
+              </Button>
+            ) : null}
           </div>
         </div>
       )}
+
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 }

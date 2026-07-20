@@ -1,17 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { supabaseBrowser } from "../../lib/supabase/browser";
-import {
-  inputClass,
-  labelClass,
-  sectionClass,
-} from "../lib/constants";
+import { inputClass, sectionClass } from "../lib/constants";
+import { useConfirmDialog } from "../lib/useConfirmDialog";
+import { useListState } from "../lib/useListState";
 import { emptyTestimonialForm, textValue } from "../lib/forms";
 import { uploadTestimonialPhoto } from "../lib/crud";
 import type { TestimonialForm, TestimonialRecord } from "../lib/types";
 import ImageUploader from "./ImageUploader";
+import {
+  Button,
+  BulkActionBar,
+  ConfirmDialog,
+  EmptyState,
+  FormField,
+  FormSection,
+  ListCard,
+  PanelHeader,
+  Pagination,
+  StatusPill,
+  Toolbar,
+} from "./ui";
 
 const PAGE_SIZE = 8;
 
@@ -32,24 +43,64 @@ export default function TestimonialsPanel({
 }: TestimonialsPanelProps) {
   const [form, setForm] = useState<TestimonialForm>(emptyTestimonialForm);
   const [file, setFile] = useState<File | null>(null);
-  const [view, setView] = useState<"list" | "new" | "import">("list");
-  const [page, setPage] = useState(1);
+  const [view, setView] = useState<"list" | "edit" | "import">("list");
   const [importText, setImportText] = useState("");
   const [importResult, setImportResult] = useState<{
     created: number;
     errors: string[];
   } | null>(null);
+  const { confirm, dialogProps } = useConfirmDialog();
 
-  const paged = useMemo(
-    () => records.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [records, page],
-  );
-  const pageCount = Math.max(1, Math.ceil(records.length / PAGE_SIZE));
+  const list = useListState<TestimonialRecord>({
+    records,
+    getId: (item) => item.id,
+    match: (item, query) =>
+      item.name.toLowerCase().includes(query) ||
+      (item.role ?? "").toLowerCase().includes(query),
+    pageSize: PAGE_SIZE,
+  });
 
   const resetForm = () => {
     setForm(emptyTestimonialForm());
     setFile(null);
     setView("list");
+  };
+
+  const startNew = () => {
+    setForm(emptyTestimonialForm());
+    setFile(null);
+    list.clearSelection();
+    setView("edit");
+  };
+
+  const editRecord = (item: TestimonialRecord) => {
+    setForm({
+      id: item.id,
+      name: item.name,
+      role: textValue(item.role),
+      photoUrl: textValue(item.photo_url),
+      photoPath: textValue(item.photo_path),
+      quoteMd: item.quote_md,
+      isPublished: item.is_published,
+    });
+    setFile(null);
+    list.clearSelection();
+    setView("edit");
+  };
+
+  const duplicateRecord = (item: TestimonialRecord) => {
+    setForm({
+      id: null,
+      name: `${item.name} (copy)`,
+      role: textValue(item.role),
+      photoUrl: textValue(item.photo_url),
+      photoPath: textValue(item.photo_path),
+      quoteMd: item.quote_md,
+      isPublished: item.is_published,
+    });
+    setFile(null);
+    list.clearSelection();
+    setView("edit");
   };
 
   const save = async () => {
@@ -89,11 +140,7 @@ export default function TestimonialsPanel({
         throw error;
       }
 
-      setMessage(
-        form.id
-          ? "Testimonial updated."
-          : "Testimonial created.",
-      );
+      setMessage(form.id ? "Testimonial updated." : "Testimonial created.");
       resetForm();
       await reload();
     } catch (error) {
@@ -105,22 +152,47 @@ export default function TestimonialsPanel({
     }
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Delete this testimonial?")) {
-      return;
-    }
-    setBusy(true);
-    const { error } = await supabaseBrowser
-      .from("client_testimonials")
-      .delete()
-      .eq("id", id);
-    setBusy(false);
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-    setMessage("Testimonial deleted.");
-    await reload();
+  const remove = (item: TestimonialRecord) => {
+    confirm({
+      title: "Delete testimonial?",
+      message: `"${item.name}" will be removed from the public site.`,
+      confirmLabel: "Delete",
+      onConfirm: async () => {
+        const { error } = await supabaseBrowser
+          .from("client_testimonials")
+          .delete()
+          .eq("id", item.id);
+        if (error) {
+          setMessage(error.message);
+          return;
+        }
+        setMessage("Testimonial deleted.");
+        await reload();
+      },
+    });
+  };
+
+  const removeSelected = () => {
+    const ids = list.selectedIds;
+    if (ids.length === 0) return;
+    confirm({
+      title: `Delete ${ids.length} testimonial${ids.length === 1 ? "" : "s"}?`,
+      message: "The selected testimonials will be removed from the public site.",
+      confirmLabel: "Delete selected",
+      onConfirm: async () => {
+        const { error } = await supabaseBrowser
+          .from("client_testimonials")
+          .delete()
+          .in("id", ids);
+        if (error) {
+          setMessage(error.message);
+          return;
+        }
+        list.clearSelection();
+        setMessage(`${ids.length} testimonial${ids.length === 1 ? "" : "s"} deleted.`);
+        await reload();
+      },
+    });
   };
 
   const loadImportFile = (selected: File | null) => {
@@ -229,74 +301,84 @@ export default function TestimonialsPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
-          Testimonials
-        </h2>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              resetForm();
-              setView("list");
-            }}
-            className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-              view === "list"
-                ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
-                : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
-            }`}
-          >
-            List
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setForm(emptyTestimonialForm());
-              setFile(null);
-              setView("new");
-            }}
-            className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-              view === "new"
-                ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
-                : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
-            }`}
-          >
-            New
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setImportResult(null);
-              setView("import");
-            }}
-            className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
-              view === "import"
-                ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
-                : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
-            }`}
-          >
-            Import
-          </button>
-        </div>
-      </div>
+      <PanelHeader
+        title="Testimonials"
+        subtitle="Client feedback"
+        count={records.length}
+        views={[
+          { key: "list", label: "List" },
+          { key: "edit", label: "New" },
+          { key: "import", label: "Import" },
+        ]}
+        view={view}
+        onViewChange={(next) => {
+          if (next === "edit") startNew();
+          else if (next === "import") {
+            setImportResult(null);
+            setView("import");
+          } else setView("list");
+        }}
+      />
 
       {view === "list" ? (
-        <div className={sectionClass}>
-          <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
-            Client feedback
-          </h2>
-          <p className="mt-1 text-sm text-[var(--color-on-surface-variant)]">
-            Ordered by created date (newest first) on the public site.
-          </p>
-          <div className="mt-5 space-y-4">
-            {paged.map((item) => (
-              <article
-                key={item.id}
-                className="rounded-xl border border-[var(--color-surface-border)] p-4"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    {item.photo_url?.trim() ? (
+        <div className="space-y-4">
+          <Toolbar
+            query={list.query}
+            onQueryChange={list.setQuery}
+            resultCount={list.filtered.length}
+            total={records.length}
+            placeholder="Search by name or role..."
+          >
+            <label className="flex items-center gap-2 text-xs text-[var(--color-on-surface-variant)]">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-[var(--color-electric-blue)]"
+                checked={list.allSelected}
+                onChange={() =>
+                  list.allSelected ? list.clearSelection() : list.selectAll()
+                }
+                disabled={list.filtered.length === 0}
+              />
+              Select all
+            </label>
+          </Toolbar>
+
+          <BulkActionBar
+            selectedCount={list.selectedCount}
+            onClear={list.clearSelection}
+          >
+            <Button variant="danger" size="sm" onClick={removeSelected}>
+              Delete selected
+            </Button>
+          </BulkActionBar>
+
+          {list.filtered.length === 0 ? (
+            records.length === 0 ? (
+              <EmptyState
+                title="No testimonials yet"
+                description="Collect client feedback and publish it on the home page."
+                action={<Button variant="primary" onClick={startNew}>New testimonial</Button>}
+              />
+            ) : (
+              <EmptyState
+                title="No matches"
+                description={`No testimonials match "${list.query}". Try a different search.`}
+              />
+            )
+          ) : (
+            <div className="space-y-3">
+              {list.paged.map((item) => (
+                <ListCard
+                  key={item.id}
+                  title={item.name}
+                  meta={item.role || undefined}
+                  pills={
+                    <StatusPill tone={item.is_published ? "success" : "neutral"}>
+                      {item.is_published ? "Published" : "Hidden"}
+                    </StatusPill>
+                  }
+                  thumbnail={
+                    item.photo_url?.trim() ? (
                       <Image
                         src={item.photo_url.trim()}
                         alt={item.name}
@@ -309,86 +391,35 @@ export default function TestimonialsPanel({
                       <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] text-xs font-semibold text-[var(--color-on-surface-variant)]">
                         {item.name.slice(0, 1).toUpperCase()}
                       </div>
-                    )}
-                    <div className="min-w-0">
-                      <h3 className="font-semibold text-[var(--color-on-surface)]">
-                        {item.name}
-                      </h3>
-                      {item.role ? (
-                        <p className="text-xs text-[var(--color-on-surface-variant)]">
-                          {item.role}
-                        </p>
-                      ) : null}
-                      <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
-                        {item.is_published ? "Published" : "Hidden"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] transition-all duration-200 hover:bg-[var(--color-surface-container-low)]"
-                      onClick={() => {
-                        setForm({
-                          id: item.id,
-                          name: item.name,
-                          role: textValue(item.role),
-                          photoUrl: textValue(item.photo_url),
-                          photoPath: textValue(item.photo_path),
-                          quoteMd: item.quote_md,
-                          isPublished: item.is_published,
-                        });
-                        setFile(null);
-                        setView("new");
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-error)] transition-all duration-200 hover:bg-[var(--color-error)]/10"
-                      onClick={() => remove(item.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-                <p className="mt-3 line-clamp-2 text-sm text-[var(--color-on-surface-variant)]">
-                  {item.quote_md}
-                </p>
-              </article>
-            ))}
-            {paged.length === 0 ? (
-              <p className="text-sm text-[var(--color-on-surface-variant)]">
-                No testimonials yet. Click <strong>New</strong> to add one.
-              </p>
-            ) : null}
-          </div>
-          {pageCount > 1 ? (
-            <div className="mt-5 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
-              <span>
-                Page {page} of {pageCount}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
-                  disabled={page <= 1}
-                  onClick={() => setPage((c) => Math.max(1, c - 1))}
-                >
-                  Prev
-                </button>
-                <button
-                  type="button"
-                  className="rounded border border-[var(--color-surface-border)] px-3 py-1 disabled:opacity-50"
-                  disabled={page >= pageCount}
-                  onClick={() => setPage((c) => Math.min(pageCount, c + 1))}
-                >
-                  Next
-                </button>
-              </div>
+                    )
+                  }
+                  selectable
+                  selected={list.selected.has(item.id)}
+                  onSelectChange={(checked) => list.setSelected(item.id, checked)}
+                  onOpen={() => editRecord(item)}
+                  actions={
+                    <>
+                      <Button size="sm" onClick={() => duplicateRecord(item)}>
+                        Duplicate
+                      </Button>
+                      <Button size="sm" onClick={() => editRecord(item)}>
+                        Edit
+                      </Button>
+                      <Button size="sm" variant="danger" onClick={() => remove(item)}>
+                        Delete
+                      </Button>
+                    </>
+                  }
+                />
+              ))}
             </div>
-          ) : null}
+          )}
+
+          <Pagination
+            page={list.page}
+            pageCount={list.pageCount}
+            onPageChange={list.setPage}
+          />
         </div>
       ) : view === "import" ? (
         <div className={sectionClass}>
@@ -400,8 +431,7 @@ export default function TestimonialsPanel({
             file). Each entry is inserted into Supabase directly.
           </p>
           <div className="mt-5 grid gap-4">
-            <label className={labelClass}>
-              Load from file
+            <FormField label="Load from file">
               <input
                 className={inputClass}
                 type="file"
@@ -410,9 +440,8 @@ export default function TestimonialsPanel({
                   loadImportFile(event.target.files?.[0] ?? null)
                 }
               />
-            </label>
-            <label className={labelClass}>
-              JSON
+            </FormField>
+            <FormField label="JSON">
               <textarea
                 className={`${inputClass} font-mono text-xs`}
                 rows={12}
@@ -423,7 +452,7 @@ export default function TestimonialsPanel({
                   setImportResult(null);
                 }}
               />
-            </label>
+            </FormField>
             <p className="text-xs text-[var(--color-on-surface-variant)]">
               Required: <code>name</code>, <code>quote_md</code> (Markdown).
               Optional: <code>role</code>, <code>photo_url</code> (or{" "}
@@ -449,17 +478,15 @@ export default function TestimonialsPanel({
             ) : null}
 
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60"
+              <Button
+                variant="primary"
                 onClick={runImport}
                 disabled={busy || !importText.trim()}
               >
                 Import
-              </button>
-              <button
-                type="button"
-                className="rounded-lg border border-[var(--color-surface-border)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)] transition-all duration-200 hover:bg-[var(--color-surface-container-low)]"
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={() => {
                   setImportText("");
                   setImportResult(null);
@@ -468,88 +495,78 @@ export default function TestimonialsPanel({
                 disabled={busy}
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       ) : (
-        <div className={sectionClass}>
-          <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
-            {form.id ? "Update testimonial" : "Create testimonial"}
-          </h2>
-          <div className="mt-5 grid gap-4">
-            <ImageUploader
-              file={file}
-              onFileChange={setFile}
-              imageUrl={form.photoUrl}
-              onImageUrlChange={(value) =>
-                setForm({ ...form, photoUrl: value })
-              }
-              title={form.name}
-              description={form.role}
+        <FormSection title={form.id ? "Update testimonial" : "Create testimonial"}>
+          <ImageUploader
+            file={file}
+            onFileChange={setFile}
+            imageUrl={form.photoUrl}
+            onImageUrlChange={(value) => setForm({ ...form, photoUrl: value })}
+            title={form.name}
+            description={form.role}
+          />
+          <FormField label="Client name">
+            <input
+              className={inputClass}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
-            <label className={labelClass}>
-              Client name
-              <input
-                className={inputClass}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </label>
-            <label className={labelClass}>
-              Role / company (optional)
-              <input
-                className={inputClass}
-                value={form.role}
-                placeholder="Operations Lead, Aurora Distributors"
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-              />
-            </label>
-            <label className={labelClass}>
-              Comment (Markdown)
-              <textarea
-                className={inputClass}
-                rows={5}
-                value={form.quoteMd}
-                onChange={(e) =>
-                  setForm({ ...form, quoteMd: e.target.value })
-                }
-              />
-            </label>
-            <p className="text-xs text-[var(--color-on-surface-variant)]">
-              Supports Markdown — e.g. **bold**, *italic*, and links.
-            </p>
-            <label className="flex items-center gap-3 text-sm font-medium text-[var(--color-on-surface)]">
-              <input
-                type="checkbox"
-                checked={form.isPublished}
-                onChange={(e) =>
-                  setForm({ ...form, isPublished: e.target.checked })
-                }
-              />
-              Published (visible on the home page)
-            </label>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-all duration-200 hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60"
-                onClick={save}
+          </FormField>
+          <FormField label="Role / company (optional)">
+            <input
+              className={inputClass}
+              value={form.role}
+              placeholder="Operations Lead, Aurora Distributors"
+              onChange={(e) => setForm({ ...form, role: e.target.value })}
+            />
+          </FormField>
+          <FormField
+            label="Comment (Markdown)"
+            hint="Supports Markdown — e.g. **bold**, *italic*, and links."
+          >
+            <textarea
+              className={inputClass}
+              rows={5}
+              value={form.quoteMd}
+              onChange={(e) => setForm({ ...form, quoteMd: e.target.value })}
+            />
+          </FormField>
+          <label className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3 text-sm font-medium text-[var(--color-on-surface)]">
+            <input
+              type="checkbox"
+              checked={form.isPublished}
+              onChange={(e) => setForm({ ...form, isPublished: e.target.checked })}
+            />
+            Published (visible on the home page)
+          </label>
+          <div className="flex flex-wrap gap-3">
+            <Button variant="primary" onClick={save} disabled={busy}>
+              {form.id ? "Update" : "Create"}
+            </Button>
+            <Button variant="secondary" onClick={resetForm} disabled={busy}>
+              Cancel
+            </Button>
+            {form.id ? (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  const editing = records.find((r) => r.id === form.id);
+                  if (editing) duplicateRecord(editing);
+                }}
                 disabled={busy}
               >
-                {form.id ? "Update" : "Create"}
-              </button>
-              <button
-                type="button"
-                className="rounded-lg border border-[var(--color-surface-border)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)] transition-all duration-200 hover:bg-[var(--color-surface-container-low)]"
-                onClick={resetForm}
-                disabled={busy}
-              >
-                Cancel
-              </button>
-            </div>
+                Duplicate
+              </Button>
+            ) : null}
           </div>
-        </div>
+        </FormSection>
       )}
+
+      <ConfirmDialog {...dialogProps} />
     </div>
   );
 }
