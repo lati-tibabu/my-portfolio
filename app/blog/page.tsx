@@ -3,6 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { loadBlogPosts } from "../lib/content";
 
+// CMS content lives in Supabase; always render fresh so admin edits appear immediately.
+export const revalidate = 0;
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
 const canonicalUrl = `${siteUrl}/blog`;
 

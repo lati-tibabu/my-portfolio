@@ -4,6 +4,9 @@ import Link from "next/link";
 import Icon from "./components/Icon";
 import { loadMarketplaceItems } from "./lib/content";
 
+// CMS content lives in Supabase; always render fresh so admin edits appear immediately.
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
   description:

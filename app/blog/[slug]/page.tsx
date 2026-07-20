@@ -6,6 +6,9 @@ import Icon from "../../components/Icon";
 import BlogContent from "../../components/BlogContent";
 import { loadBlogPosts } from "../../lib/content";
 
+// CMS content lives in Supabase; always render fresh so admin edits appear immediately.
+export const revalidate = 0;
+
 type PageProps = {
   params: Promise<{ slug: string }>;
 };

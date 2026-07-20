@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import RichHtml from "../../components/RichHtml";
 import { loadMarketplaceItems } from "../../lib/content";
 
+// CMS content lives in Supabase; always render fresh so admin edits appear immediately.
+export const revalidate = 0;
+
 type PageProps = {
   params: Promise<{ slug: string }>;
 };

@@ -4,6 +4,9 @@ import Icon from "../components/Icon";
 import GraphicsCardsClient from "../components/GraphicsCardsClient";
 import { loadGraphicsItems } from "../lib/content";
 
+// CMS content lives in Supabase; always render fresh so admin edits appear immediately.
+export const revalidate = 0;
+
 const PAGE_SIZE = 6;
 
 export const metadata: Metadata = {
