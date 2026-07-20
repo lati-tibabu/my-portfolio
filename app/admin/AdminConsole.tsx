@@ -190,12 +190,12 @@ const splitList = (value: string) =>
     .filter(Boolean);
 
 const inputClass =
-  "w-full rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-3 py-2 text-sm text-[var(--color-on-surface)] outline-none focus:border-[var(--color-electric-blue)]";
+  "w-full rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-4 py-3 text-sm text-[var(--color-on-surface)] outline-none focus:border-[var(--color-electric-blue)] focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 transition-all duration-200";
 
-const labelClass = "space-y-2 text-sm text-[var(--color-on-surface-variant)]";
+const labelClass = "space-y-3 text-sm font-medium text-[var(--color-on-surface)]";
 
 const sectionClass =
-  "rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]";
+  "rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] hover:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)] transition-shadow duration-300";
 
 export default function AdminConsole() {
   const router = useRouter();
@@ -776,7 +776,7 @@ export default function AdminConsole() {
           </label>
           <button
             type="button"
-            className="inline-flex items-center rounded-lg bg-[var(--color-electric-blue)] px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60"
+            className="inline-flex items-center w-justify-center rounded-lg bg-[var(--color-electric-blue)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white disabled:opacity-60 hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 transition-all duration-200"
             onClick={signIn}
             disabled={busy}
           >

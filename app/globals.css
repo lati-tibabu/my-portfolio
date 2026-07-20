@@ -76,25 +76,45 @@ body {
     color 0.2s ease;
 }
 
-/* Grainy noise overlay — fixed, non-interactive, sits above the background
-   but below content. Tunable via the custom properties below. */
+/* A quiet construction grid gives the page a tactile, editorial backdrop. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.6;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Grainy noise overlay — fixed, non-interactive, sits above the grid and
+   content. Tunable via the custom properties below. */
 :root {
-  --grain-opacity: 0.035;
+  --grain-opacity: 0.022;
   --grain-blend: multiply;
 }
 
 body::before {
   content: "";
   position: fixed;
-  inset: -50%;
-  z-index: 0;
+  inset: -20%;
+  z-index: 3;
   pointer-events: none;
   opacity: var(--grain-opacity);
   mix-blend-mode: var(--grain-blend);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 160px 160px;
   /* Slow drift so the grain never looks like a frozen tile. */
-  animation: grainShift 8s steps(8) infinite;
+  animation: grainShift 12s steps(8) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    animation: none;
+  }
 }
 
 @keyframes grainShift {
@@ -216,10 +236,111 @@ footer {
   animation: fadeUp 0.7s ease-out both;
 }
 
+/* Monochrome section motion and depth. */
+.lively-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.lively-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 34rem;
+  height: 34rem;
+  top: -18rem;
+  right: -12rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.07), transparent 68%);
+  pointer-events: none;
+  animation: slowFloat 10s ease-in-out infinite;
+}
+
+.lively-section::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 24rem;
+  height: 24rem;
+  bottom: -16rem;
+  left: -10rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  animation: slowFloat 13s ease-in-out infinite reverse;
+}
+
+.lively-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  border-width: 2px;
+  box-shadow: 6px 6px 0 var(--color-on-surface);
+  transition: transform 350ms ease, box-shadow 350ms ease,
+    border-color 350ms ease;
+}
+
+.lively-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 12% auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-on-surface), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 350ms ease;
+}
+
+.lively-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-on-surface);
+  box-shadow: 10px 10px 0 var(--color-on-surface);
+}
+
+.lively-card:hover::before {
+  transform: scaleX(1);
+}
+
+.lively-card .lively-arrow {
+  border-radius: 4px;
+  transition: transform 350ms ease, background-color 350ms ease, color 350ms ease;
+}
+
+.lively-card:hover .lively-arrow {
+  transform: translate(3px, -3px);
+  background: var(--color-on-surface);
+  color: var(--color-background);
+}
+
+.stagger-up {
+  animation: fadeUp 700ms ease-out both;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+@keyframes slowFloat {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, 14px, 0) scale(1.04); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lively-section::before,
+  .lively-section::after,
+  .stagger-up {
+    animation: none;
+  }
+
+  .lively-card,
+  .lively-card::before,
+  .lively-card .lively-arrow {
+    transition: none;
+  }
+}
+
 .tag-chip {
   border: 1px solid var(--color-surface-border);
   color: var(--color-on-surface-variant);
-  border-radius: 9999px;
+  border-radius: 4px;
   padding: 0.25rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -227,3 +348,9 @@ footer {
   text-transform: uppercase;
   background: var(--color-surface-container-lowest);
 }
+
+/* Keep the interface crisp and structured rather than overly soft. */
+.rounded-lg { border-radius: 6px; }
+.rounded-xl { border-radius: 8px; }
+.rounded-2xl { border-radius: 10px; }
+.rounded-3xl { border-radius: 12px; }

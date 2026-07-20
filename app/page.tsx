@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "./components/Icon";
@@ -285,9 +286,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="marketplace" className="px-6 py-20">
-        <div className="max-w-[1280px] mx-auto space-y-10">
-          <div className="space-y-3">
+      <section id="marketplace" className="lively-section px-6 py-24">
+        <div className="relative z-[1] mx-auto max-w-[1280px] space-y-10">
+          <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
             <a
               href="https://www.fiverr.com/latitibabu"
               target="_blank"
@@ -307,9 +308,9 @@ export default async function Home() {
               with full details, screenshots, and support links.
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="font-heading text-[22px] text-[var(--color-on-surface)]">
+          <div className="lively-card group stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between [--stagger-delay:180ms] md:p-8">
+            <div className="relative z-[1]">
+              <p className="font-heading text-[22px] text-[var(--color-on-surface)] transition-transform duration-300 group-hover:translate-x-1">
                 Aura Odoo Marketplace
               </p>
               <p className="mt-2 text-[14px] text-[var(--color-on-surface-variant)]">
@@ -319,9 +320,9 @@ export default async function Home() {
             </div>
             <Link
               href="/marketplace"
-              className="inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white"
+              className="lively-arrow inline-flex items-center gap-2 self-start rounded-full border border-[var(--color-on-surface)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] md:self-auto"
             >
-              View marketplace
+              View marketplace <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>
@@ -472,9 +473,9 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="skills" className="px-6 py-20">
-        <div className="max-w-[1280px] mx-auto space-y-10">
-          <div className="space-y-3">
+      <section id="skills" className="lively-section bg-[var(--color-surface-container-low)] px-6 py-24">
+        <div className="relative z-[1] mx-auto max-w-[1280px] space-y-10">
+          <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
             <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
               03 / Skills
             </p>
@@ -487,12 +488,21 @@ export default async function Home() {
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {skills.map((skillGroup) => (
+            {skills.map((skillGroup, index) => (
               <article
                 key={skillGroup.title}
-                className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6"
+                className="lively-card stagger-up group rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 [--stagger-delay:calc(160ms+var(--index)*90ms)]"
+                style={{ "--index": index } as CSSProperties}
               >
-                <h3 className="font-heading text-[18px] text-[var(--color-on-surface)]">
+                <div className="flex items-start justify-between gap-4">
+                  <span className="font-label text-[10px] tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="lively-arrow flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-surface-border)] text-sm text-[var(--color-on-surface-variant)]">
+                    ↗
+                  </span>
+                </div>
+                <h3 className="mt-8 font-heading text-[18px] text-[var(--color-on-surface)] transition-transform duration-300 group-hover:translate-x-1">
                   {skillGroup.title}
                 </h3>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -510,10 +520,10 @@ export default async function Home() {
 
       <section
         id="about"
-        className="px-6 py-20 bg-[var(--color-surface-container-low)]"
+        className="lively-section px-6 py-24 bg-[var(--color-background)]"
       >
-        <div className="max-w-[1280px] mx-auto space-y-12">
-          <div className="space-y-3">
+        <div className="relative z-[1] mx-auto max-w-[1280px] space-y-12">
+          <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
             <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
               04 / About
             </p>
@@ -533,7 +543,7 @@ export default async function Home() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
+            <div className="lively-card stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-6 [--stagger-delay:160ms]">
               <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
                 Profile
               </h3>
@@ -545,22 +555,22 @@ export default async function Home() {
                 maintainable systems across the software development lifecycle.
               </p>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="relative aspect-square overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
+                <div className="group relative aspect-square overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
                   <Image
                     src="/static/about_image_pc.jpg"
                     alt="LATI team"
                     fill
                     sizes="(min-width: 1024px) 260px, 45vw"
-                    className="object-cover"
+                    className="object-cover grayscale transition duration-700 group-hover:scale-105"
                   />
                 </div>
-                <div className="relative aspect-square overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
+                <div className="group relative aspect-square overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
                   <Image
                     src="/static/colleagues-reading-company-documents.jpg"
                     alt="Collaboration"
                     fill
                     sizes="(min-width: 1024px) 260px, 45vw"
-                    className="object-cover"
+                    className="object-cover grayscale transition duration-700 group-hover:scale-105"
                   />
                 </div>
               </div>
@@ -603,7 +613,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
+            <div className="lively-card stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-6 [--stagger-delay:240ms]">
               <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
                 Experience
               </h3>
@@ -632,7 +642,7 @@ export default async function Home() {
                   </div>
                 ))}
               </div>
-              <div className="mt-6 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
+              <div className="mt-6 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 transition-colors duration-300 hover:bg-[var(--color-surface-container-high)]">
                 <p className="font-heading text-[16px] text-[var(--color-on-surface)]">
                   Built for impact. Designed for you.
                 </p>
