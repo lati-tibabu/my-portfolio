@@ -149,7 +149,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
         {hasCoverImage && (
           <div className="px-4 sm:px-6">
-            <div className="relative mx-auto aspect-[16/9] max-w-[1040px] overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] shadow-[0_24px_60px_-32px_rgba(15,23,42,0.3)]">
+            <div className="relative mx-auto aspect-[16/9] max-w-[1040px] overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] shadow-[0_24px_60px_-32px_rgba(0,0,0,0.3)]">
               <Image
                 src={post.coverImage}
                 alt=""

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Inter, JetBrains_Mono } from "next/font/google";
+import { Lexend, Playwrite_ID, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
+import CustomCursor from "./components/CustomCursor";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playwrite = Playwrite_ID({
+  variable: "--font-logo",
+});
+const lexend = Lexend({ subsets: ["latin"], variable: "--font-body" });
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
@@ -104,7 +107,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={`${geist.variable} ${inter.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-on-background)] antialiased transition-colors duration-200`}
+        className={`${playwrite.variable} ${lexend.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-on-background)] antialiased transition-colors duration-200`}
       >
         <Script
           id="person-structured-data"
@@ -116,6 +119,7 @@ export default function RootLayout({
         />
         <Header />
         <main className="flex-1">{children}</main>
+        <CustomCursor />
         <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">
           <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[var(--color-on-surface-variant)]">
             <p>

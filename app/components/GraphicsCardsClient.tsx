@@ -22,7 +22,7 @@ export default function GraphicsCardsClient({ items }: GraphicsCardsClientProps)
         {items.map((item) => (
           <article
             key={item.slug}
-            className="overflow-hidden rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] shadow-[0_20px_25px_-5px_rgba(15,23,42,0.05)]"
+            className="overflow-hidden rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]"
           >
             <button
               type="button"

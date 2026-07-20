@@ -21,7 +21,7 @@ export default function GraphicsGallery({ images }: GraphicsGalleryProps) {
             <button
               type="button"
               key={img.src}
-              className="mb-4 w-full overflow-hidden rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] transition hover:shadow-[0_20px_25px_-5px_rgba(15,23,42,0.08)]"
+              className="mb-4 w-full overflow-hidden rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] transition hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.08)]"
               onClick={() => setSelectedImage(img)}
             >
               <Image

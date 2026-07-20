@@ -76,7 +76,7 @@ export default async function BlogPage() {
             return (
             <article
               key={post.slug}
-              className="group overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_45px_-28px_rgba(15,23,42,0.35)]"
+              className="group overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_45px_-28px_rgba(0,0,0,0.35)]"
             >
               <Link
                 href={`/blog/${post.slug}`}

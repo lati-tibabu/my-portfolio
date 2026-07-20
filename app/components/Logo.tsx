@@ -20,7 +20,7 @@ const Logo = ({ size = "medium" }: LogoProps) => {
             : size === "xlarge"
             ? "text-5xl"
             : "text-lg"
-        } font-heading font-semibold tracking-tight`}
+        } font-logo font-semibold tracking-tight`}
       >
         <span className="text-[var(--color-on-surface)]">lati</span>
         <span className="text-[var(--color-electric-blue)]">tibabu</span>

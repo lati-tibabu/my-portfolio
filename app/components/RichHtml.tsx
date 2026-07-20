@@ -14,7 +14,7 @@ const shadowStyles = `
     width: 100%;
     min-width: 0;
     color: var(--color-on-surface-variant);
-    font-family: var(--font-inter), "Inter", "Segoe UI", Arial, sans-serif;
+    font-family: var(--font-body), "Lexend", "Segoe UI", Arial, sans-serif;
   }
 
   .rich-html {
@@ -35,7 +35,7 @@ const shadowStyles = `
   .rich-html h6 {
     margin: 0 0 0.75rem;
     color: var(--color-on-surface);
-    font-family: var(--font-geist), "Geist", "Segoe UI", Arial, sans-serif;
+    font-family: var(--font-body), "Lexend", "Segoe UI", Arial, sans-serif;
     line-height: 1.2;
   }
 

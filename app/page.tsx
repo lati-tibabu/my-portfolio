@@ -207,8 +207,7 @@ export default async function Home() {
               Full Stack & Odoo ERP Developer
             </p>
             <h1 className="font-heading text-[40px] leading-[1.1] tracking-tight text-[var(--color-on-surface)] md:text-[64px]">
-              Lati Tibabu builds modern ERP systems and enterprise web
-              platforms.
+              Building products people rely on.
             </h1>
             <p className="text-[18px] leading-[1.65] text-[var(--color-on-surface-variant)] max-w-[560px]">
               Available for freelance engagements worldwide. I specialize in
@@ -216,9 +215,9 @@ export default async function Home() {
               delivery backed by secure IAM integrations.
             </p>
             <p className="text-[15px] leading-[1.7] text-[var(--color-on-surface-variant)] max-w-[560px]">
-              LATI develops enterprise software, Odoo solutions, and modern
-              digital products focused on usability, scalability, and
-              performance.
+              I develop web applications, enterprise platforms, and Odoo
+              solutions that prioritize performance, usability, and long-term
+              maintainability.
             </p>
             <div className="flex flex-wrap items-center gap-3">
               <Link
@@ -247,7 +246,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="relative">
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.05)]">
+            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]">
               <div className="relative aspect-square overflow-hidden rounded-lg">
                 <Image
                   src="/me4.png"
@@ -270,10 +269,10 @@ export default async function Home() {
       </section>
 
       <section className="px-6">
-        <div className="max-w-[1280px] mx-auto rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-6 py-8 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.05)]">
+        <div className="max-w-[1280px] mx-auto">
           <div className="grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="space-y-2">
+              <div key={stat.label} className="flex flex-col items-center gap-3 p-6 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] transition-all duration-300 hover:bg-[var(--color-surface-container-lowest)] hover:-translate-y-1">
                 <p className="font-heading text-[28px] text-[var(--color-on-surface)]">
                   {stat.value}
                 </p>

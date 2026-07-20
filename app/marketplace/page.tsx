@@ -73,7 +73,7 @@ export default async function MarketplacePage() {
           {marketplaceItems.map((item) => (
             <article
               key={item.slug}
-              className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.05)]"
+              className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]"
             >
               <Link href={`/marketplace/${item.slug}`} className="block">
                 <div className="relative mb-5 aspect-[16/9] overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
