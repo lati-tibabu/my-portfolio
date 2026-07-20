@@ -21,7 +21,7 @@ export async function generateMetadata({
   const item = marketplaceItems.find((entry) => entry.slug === slug);
 
   if (!item) {
-    return { title: "Marketplace Item — Lati Tibabu" };
+    return { title: "Product — Lati Tibabu" };
   }
 
   return {
@@ -89,7 +89,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
             href="/marketplace"
             className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
           >
-            Back to marketplace
+            Back to products
           </Link>
           <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
             {item.category}

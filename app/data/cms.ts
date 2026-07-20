@@ -36,6 +36,7 @@ export type MarketplaceItem = {
 };
 
 export type BlogPost = {
+  id?: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -98,7 +99,7 @@ const buildMarketplaceDetailsHtml = (
   }
 
   const supportLinks = [
-    `<li><a href="${item.link}" target="_blank" rel="noopener noreferrer">Marketplace listing</a></li>`,
+    `<li><a href="${item.link}" target="_blank" rel="noopener noreferrer">Product listing</a></li>`,
     item.supportUrl
       ? `<li><a href="${item.supportUrl}" target="_blank" rel="noopener noreferrer">Support</a></li>`
       : "",

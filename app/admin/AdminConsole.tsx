@@ -4,12 +4,23 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import BlogContent from "../components/BlogContent";
+import Icon from "../components/Icon";
 import { supabaseBrowser } from "../lib/supabase/browser";
 
 const STORAGE_BUCKET = "portfolio-media";
 const DEFAULT_PLACEHOLDER_IMAGE = "https://placehold.co/600x400@2x.png";
 
 type TabKey = "graphics" | "marketplace" | "blog";
+
+const adminNavItems: Array<{
+  tab: TabKey;
+  label: string;
+  description: string;
+}> = [
+  { tab: "graphics", label: "Graphics", description: "Visual work" },
+  { tab: "marketplace", label: "Products", description: "Apps and themes" },
+  { tab: "blog", label: "Blog", description: "Articles and updates" },
+];
 
 type SessionUser = {
   email?: string | null;
@@ -224,6 +235,7 @@ export default function AdminConsole() {
     useState(false);
   const [marketplaceMetaExpanded, setMarketplaceMetaExpanded] = useState(false);
   const [blogForm, setBlogForm] = useState<BlogForm>(emptyBlogForm);
+  const [blogImageFile, setBlogImageFile] = useState<File | null>(null);
   const [showBlogPreview, setShowBlogPreview] = useState(false);
   const [graphicsView, setGraphicsView] = useState<"list" | "new">("list");
   const [marketplaceView, setMarketplaceView] = useState<"list" | "new">("list");
@@ -376,6 +388,25 @@ export default function AdminConsole() {
     if (uploadError) {
       throw uploadError;
     }
+
+    const { data } = supabaseBrowser.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(filePath);
+    return { imageUrl: data.publicUrl, imagePath: filePath };
+  };
+
+  const uploadContentImage = async (file: File, folder: string) => {
+    const extension = file.name.split(".").pop() || "png";
+    const filePath = `${folder}/${crypto.randomUUID()}.${extension}`;
+
+    const { error: uploadError } = await supabaseBrowser.storage
+      .from(STORAGE_BUCKET)
+      .upload(filePath, file, {
+        contentType: file.type || "image/png",
+        upsert: true,
+      });
+
+    if (uploadError) throw uploadError;
 
     const { data } = supabaseBrowser.storage
       .from(STORAGE_BUCKET)
@@ -536,7 +567,7 @@ export default function AdminConsole() {
 
     const baseSlug = slugify(marketplaceForm.slug || marketplaceForm.name);
     if (!baseSlug || !marketplaceForm.name) {
-      setMessage("Marketplace items need a name.");
+      setMessage("Products need a name.");
       return;
     }
     setBusy(true);
@@ -585,8 +616,8 @@ export default function AdminConsole() {
 
       setMessage(
         marketplaceForm.id
-          ? `Marketplace item updated (${uniqueSlug}).`
-          : `Marketplace item created (${uniqueSlug}).`,
+          ? `Product updated (${uniqueSlug}).`
+          : `Product created (${uniqueSlug}).`,
       );
       setMarketplaceForm(emptyMarketplaceForm());
       setMarketplaceSlugManuallyEdited(false);
@@ -597,7 +628,7 @@ export default function AdminConsole() {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Failed to save marketplace item.",
+          : "Failed to save product.",
       );
     } finally {
       setBusy(false);
@@ -605,7 +636,7 @@ export default function AdminConsole() {
   };
 
   const deleteMarketplace = async (id: string) => {
-    if (!confirm("Delete this marketplace item?")) {
+    if (!confirm("Delete this product?")) {
       return;
     }
 
@@ -621,11 +652,11 @@ export default function AdminConsole() {
       return;
     }
 
-    setMessage("Marketplace item deleted.");
+      setMessage("Product deleted.");
     await loadAll();
   };
 
-  const saveBlog = async () => {
+  const saveBlog = async (publishNow = false, unpublishNow = false) => {
     const ensureUniqueBlogSlug = async (initialSlug: string, postId?: string) => {
       let counter = 1;
       let candidate = initialSlug;
@@ -663,18 +694,23 @@ export default function AdminConsole() {
     setBusy(true);
     try {
       const uniqueSlug = await ensureUniqueBlogSlug(baseSlug, blogForm.id ?? undefined);
+      let coverImageUrl = blogForm.coverImageUrl;
+      if (blogImageFile) {
+        const uploaded = await uploadContentImage(blogImageFile, "blog");
+        coverImageUrl = uploaded.imageUrl;
+      }
       const payload = {
         slug: uniqueSlug,
         title: blogForm.title,
         excerpt: blogForm.excerpt,
-        cover_image_url: blogForm.useCoverImage
-          ? blogForm.coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE
+        cover_image_url: blogForm.useCoverImage || blogImageFile
+          ? coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE
           : DEFAULT_PLACEHOLDER_IMAGE,
         published_at: blogForm.publishedAt,
         tags: splitList(blogForm.tagsText),
         details_html: blogForm.detailsHtml,
         content_format: blogForm.contentFormat,
-        is_draft: blogForm.isDraft,
+        is_draft: publishNow ? false : unpublishNow ? true : blogForm.isDraft,
       };
 
       const query = blogForm.id
@@ -690,13 +726,18 @@ export default function AdminConsole() {
       }
 
       setMessage(
-        blogForm.isDraft
+        publishNow
+          ? `Blog post published (${uniqueSlug}).`
+          : unpublishNow
+            ? `Blog post unpublished (${uniqueSlug}).`
+          : blogForm.isDraft
           ? `Blog draft saved (${uniqueSlug}).`
           : blogForm.id
             ? `Blog post updated and published (${uniqueSlug}).`
             : `Blog post published (${uniqueSlug}).`,
       );
       setBlogForm(emptyBlogForm());
+      setBlogImageFile(null);
       setShowBlogPreview(false);
       setBlogSlugManuallyEdited(false);
       setBlogView("list");
@@ -752,7 +793,7 @@ export default function AdminConsole() {
         </h1>
         <p className="mt-2 text-[15px] leading-[1.7] text-[var(--color-on-surface-variant)]">
           Use a Supabase Auth user account to open the dashboard, then create,
-          edit, or delete marketplace items, graphics, and blog posts.
+          edit, or delete products, graphics, and blog posts.
         </p>
 
         <div className="mt-6 space-y-4">
@@ -793,31 +834,68 @@ export default function AdminConsole() {
   }
 
   return (
-    <div className="grid gap-6 px-6 py-8 lg:grid-cols-[220px_1fr]">
-      <aside className={`${sectionClass} h-fit`}>
-        <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-          CMS
-        </p>
-        <nav className="mt-4 space-y-2">
-          {(["graphics", "marketplace", "blog"] as TabKey[]).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`w-full rounded-lg px-3 py-2 text-left text-sm font-semibold uppercase tracking-[0.12em] ${
-                activeTab === tab
-                  ? "bg-[var(--color-electric-blue)] text-white"
-                  : "text-[var(--color-on-surface-variant)]"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+    <div className="mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_1fr] lg:gap-8 lg:px-8 lg:py-8">
+      <aside className="h-fit overflow-hidden rounded-xl border-2 border-[var(--color-on-surface)] bg-[var(--color-surface-container-lowest)] shadow-[6px_6px_0_var(--color-on-surface)] lg:sticky lg:top-24">
+        <div className="border-b-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] p-5 text-white">
+          <p className="font-label text-[10px] uppercase tracking-[0.24em] text-white/60">
+            Content studio
+          </p>
+          <h1 className="mt-2 font-heading text-[24px]">CMS dashboard</h1>
+          <p className="mt-2 truncate text-[12px] text-white/65">
+            {sessionUser?.email ?? "Authenticated editor"}
+          </p>
+        </div>
+        <nav className="p-3" aria-label="Content collections">
+          <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]">
+            Collections
+          </p>
+          <div className="space-y-1">
+            {adminNavItems.map((item, index) => (
+              <button
+                key={item.tab}
+                type="button"
+                onClick={() => setActiveTab(item.tab)}
+                className={`group relative flex w-full items-center gap-3 rounded-md border px-3 py-3 text-left transition-all duration-200 ${
+                  activeTab === item.tab
+                    ? "border-[var(--color-on-surface)] bg-[var(--color-on-surface)] text-white shadow-[3px_3px_0_var(--color-surface-border)]"
+                    : "border-transparent text-[var(--color-on-surface-variant)] hover:border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)] hover:text-[var(--color-on-surface)]"
+                }`}
+              >
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border border-current font-label text-[10px]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold">{item.label}</span>
+                  <span className={`mt-0.5 block text-[11px] ${activeTab === item.tab ? "text-white/60" : "text-[var(--color-on-surface-variant)]"}`}>
+                    {item.description}
+                  </span>
+                </span>
+                <span className="ml-auto text-lg leading-none opacity-50 transition-transform duration-200 group-hover:translate-x-0.5">
+                  →
+                </span>
+              </button>
+            ))}
+          </div>
         </nav>
+        <div className="border-t border-[var(--color-surface-border)] p-4">
+          <p className="text-[11px] leading-[1.5] text-[var(--color-on-surface-variant)]">
+            Changes publish to the portfolio after saving.
+          </p>
+        </div>
       </aside>
 
-      <div className="space-y-4">
-        <p className="text-sm text-[var(--color-on-surface-variant)]">{message}</p>
+      <div className="min-w-0 space-y-5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--color-surface-border)] pb-4">
+          <div>
+            <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+              Workspace / {adminNavItems.find((item) => item.tab === activeTab)?.label}
+            </p>
+            <p className="mt-1 text-sm text-[var(--color-on-surface-variant)]">{message}</p>
+          </div>
+          <span className="rounded-sm border border-[var(--color-surface-border)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">
+            {busy ? "Saving" : "Ready"}
+          </span>
+        </div>
 
       {activeTab === "graphics" && (
         <div className="space-y-4">
@@ -829,10 +907,10 @@ export default function AdminConsole() {
               <button
                 type="button"
                 onClick={() => setGraphicsView("list")}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   graphicsView === "list"
-                    ? "bg-[var(--color-electric-blue)] text-white"
-                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                    ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
                 }`}
               >
                 List
@@ -846,10 +924,10 @@ export default function AdminConsole() {
                   setGraphicsMetaExpanded(false);
                   setGraphicsView("new");
                 }}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   graphicsView === "new"
-                    ? "bg-[var(--color-electric-blue)] text-white"
-                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                    ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
                 }`}
               >
                 New
@@ -894,7 +972,7 @@ export default function AdminConsole() {
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]"
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)] transition-all duration-200"
                         onClick={() => {
                           setGraphicsForm({
                             id: item.id,
@@ -916,7 +994,7 @@ export default function AdminConsole() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-error)]"
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] text-[var(--color-error)] hover:bg-[var(--color-error)]/10 hover:text-[var(--color-error)] transition-all duration-200"
                         onClick={() => deleteGraphics(item.id)}
                       >
                         Delete
@@ -1123,7 +1201,7 @@ export default function AdminConsole() {
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
-                  className="rounded-lg bg-[var(--color-electric-blue)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white"
+                  className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60 transition-all duration-200"
                   onClick={saveGraphics}
                   disabled={busy}
                 >
@@ -1140,16 +1218,16 @@ export default function AdminConsole() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
-              Marketplace
+              Products
             </h2>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setMarketplaceView("list")}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   marketplaceView === "list"
-                    ? "bg-[var(--color-electric-blue)] text-white"
-                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                    ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
                 }`}
               >
                 List
@@ -1162,10 +1240,10 @@ export default function AdminConsole() {
                   setMarketplaceMetaExpanded(false);
                   setMarketplaceView("new");
                 }}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   marketplaceView === "new"
-                    ? "bg-[var(--color-electric-blue)] text-white"
-                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                    ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
                 }`}
               >
                 New
@@ -1175,7 +1253,7 @@ export default function AdminConsole() {
           {marketplaceView === "list" ? (
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
-              Marketplace items
+              Products
             </h2>
             <div className="mt-5 space-y-4">
               {pagedMarketplace.map((item) => (
@@ -1195,7 +1273,7 @@ export default function AdminConsole() {
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]"
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)] transition-all duration-200"
                         onClick={() => {
                           setMarketplaceForm({
                             id: item.id,
@@ -1230,7 +1308,7 @@ export default function AdminConsole() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-error)]"
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] text-[var(--color-error)] hover:bg-[var(--color-error)]/10 hover:text-[var(--color-error)] transition-all duration-200"
                         onClick={() => deleteMarketplace(item.id)}
                       >
                         Delete
@@ -1274,8 +1352,8 @@ export default function AdminConsole() {
           <div className={sectionClass}>
             <h2 className="font-heading text-[24px] text-[var(--color-on-surface)]">
               {marketplaceForm.id
-                ? "Update marketplace item"
-                : "Create marketplace item"}
+                ? "Update product"
+                : "Create product"}
             </h2>
             <div className="mt-5 grid gap-4">
               <label className={labelClass}>
@@ -1589,7 +1667,7 @@ export default function AdminConsole() {
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
-                  className="rounded-lg bg-[var(--color-electric-blue)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white"
+                  className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60 transition-all duration-200"
                   onClick={saveMarketplace}
                   disabled={busy}
                 >
@@ -1612,10 +1690,10 @@ export default function AdminConsole() {
               <button
                 type="button"
                 onClick={() => setBlogView("list")}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   blogView === "list"
-                    ? "bg-[var(--color-electric-blue)] text-white"
-                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                    ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
                 }`}
               >
                 List
@@ -1624,15 +1702,16 @@ export default function AdminConsole() {
                 type="button"
                 onClick={() => {
                   setBlogForm(emptyBlogForm());
+                  setBlogImageFile(null);
                   setShowBlogPreview(false);
                   setBlogSlugManuallyEdited(false);
                   setBlogMetaExpanded(false);
                   setBlogView("new");
                 }}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+                className={`flex-1 rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
                   blogView === "new"
-                    ? "bg-[var(--color-electric-blue)] text-white"
-                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)]"
+                    ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                    : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
                 }`}
               >
                 New
@@ -1676,7 +1755,7 @@ export default function AdminConsole() {
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em]"
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)] transition-all duration-200"
                         onClick={() => {
                           setBlogForm({
                             id: item.id,
@@ -1693,6 +1772,7 @@ export default function AdminConsole() {
                             contentFormat: item.content_format ?? "html",
                             isDraft: item.is_draft ?? false,
                           });
+                          setBlogImageFile(null);
                           setBlogSlugManuallyEdited(true);
                           setShowBlogPreview(false);
                           setBlogMetaExpanded(false);
@@ -1703,7 +1783,7 @@ export default function AdminConsole() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-lg border border-[var(--color-surface-border)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-error)]"
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] border border-[var(--color-surface-border)] text-[var(--color-error)] hover:bg-[var(--color-error)]/10 hover:text-[var(--color-error)] transition-all duration-200"
                         onClick={() => deleteBlog(item.id)}
                       >
                         Delete
@@ -1848,19 +1928,41 @@ export default function AdminConsole() {
                     />
                   </label>
                   {blogForm.useCoverImage && (
-                    <label className={labelClass}>
-                      Cover image URL
-                      <input
-                        className={inputClass}
-                        value={blogForm.coverImageUrl}
-                        onChange={(event) =>
-                          setBlogForm({
-                            ...blogForm,
-                            coverImageUrl: event.target.value,
-                          })
-                        }
-                      />
-                    </label>
+                    <>
+                      <label className={labelClass}>
+                        Cover image URL
+                        <input
+                          className={inputClass}
+                          value={blogForm.coverImageUrl}
+                          onChange={(event) =>
+                            setBlogForm({
+                              ...blogForm,
+                              coverImageUrl: event.target.value,
+                            })
+                          }
+                        />
+                      </label>
+                      <label className={labelClass}>
+                        Upload cover image
+                        <input
+                          className="block w-full cursor-pointer rounded-lg border border-dashed border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] px-4 py-3 text-sm text-[var(--color-on-surface-variant)] file:mr-3 file:rounded-md file:border-0 file:bg-[var(--color-on-surface)] file:px-3 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.1em] file:text-white"
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/gif"
+                          onChange={(event) => {
+                            const file = event.target.files?.[0] ?? null;
+                            setBlogImageFile(file);
+                            if (file) {
+                              setBlogForm({ ...blogForm, useCoverImage: true });
+                            }
+                          }}
+                        />
+                        <span className="text-xs font-normal text-[var(--color-on-surface-variant)]">
+                          {blogImageFile
+                            ? `Ready to upload: ${blogImageFile.name}`
+                            : "PNG, JPG, WEBP, or GIF. Uploaded when you save."}
+                        </span>
+                      </label>
+                    </>
                   )}
                   <label className={labelClass}>
                     Published date
@@ -1904,7 +2006,28 @@ export default function AdminConsole() {
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
-                  className="rounded-lg bg-[var(--color-electric-blue)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-white"
+                  className="rounded-lg bg-[var(--color-on-surface)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[3px_3px_0_var(--color-surface-border)] hover:bg-[var(--color-on-surface)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-on-surface)]/20 focus:ring-offset-2 transition-transform hover:-translate-y-0.5 disabled:opacity-60 transition-all duration-200"
+                  onClick={() => saveBlog(true)}
+                  disabled={busy}
+                >
+                  <>
+                    <Icon name="rocket" size={14} />
+                    Publish now
+                  </>
+                </button>
+                {blogForm.id && !blogForm.isDraft && (
+                  <button
+                    type="button"
+                    className="rounded-lg border-2 border-[var(--color-on-surface)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition-all duration-200 hover:bg-[var(--color-surface-container)] disabled:opacity-60"
+                    onClick={() => saveBlog(false, true)}
+                    disabled={busy}
+                  >
+                    ↩ Unpublish
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="rounded-lg bg-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white hover:bg-[var(--color-electric-blue)]/90 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 disabled:opacity-60 transition-all duration-200"
                   onClick={saveBlog}
                   disabled={busy}
                 >
@@ -1916,7 +2039,7 @@ export default function AdminConsole() {
                 </button>
                 <button
                   type="button"
-                  className="rounded-lg border border-[var(--color-electric-blue)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
+                  className="rounded-lg border border-[var(--color-electric-blue)] px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)] hover:bg-[var(--color-electric-blue)]/10 focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 focus:ring-offset-2 transition-all duration-200"
                   onClick={() => setShowBlogPreview((current) => !current)}
                 >
                   {showBlogPreview ? "Close right preview" : "Open right preview"}

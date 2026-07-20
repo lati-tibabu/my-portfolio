@@ -10,14 +10,14 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://latitibabu.com";
 const canonicalUrl = `${siteUrl}/marketplace`;
 
 export const metadata: Metadata = {
-  title: "Odoo Marketplace — Lati Tibabu",
+  title: "Products — Lati Tibabu",
   description:
     "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
   alternates: {
     canonical: "/marketplace",
   },
   openGraph: {
-    title: "Odoo Marketplace — Lati Tibabu",
+    title: "Products — Lati Tibabu",
     description:
       "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
     url: "/marketplace",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Odoo Marketplace — Lati Tibabu",
+    title: "Products — Lati Tibabu",
     description:
       "Explore all Aura Odoo apps and themes with full details, screenshots, pricing, and support links.",
   },
@@ -56,14 +56,14 @@ export default async function MarketplacePage() {
       <section className="px-6 pt-24 pb-12">
         <div className="max-w-[1200px] mx-auto space-y-4">
           <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-            Odoo Marketplace
+            Odoo Products
           </p>
           <h1 className="font-heading text-[36px] md:text-[52px] text-[var(--color-on-surface)]">
-            Aura apps and themes
+            Products for real workflows
           </h1>
           <p className="text-[16px] text-[var(--color-on-surface-variant)] max-w-[700px]">
-            All listings with pricing, compatibility notes, screenshots, and
-            direct links to Odoo Apps and support.
+            Explore Odoo apps and themes with pricing, compatibility notes,
+            screenshots, and direct links to Odoo Apps and support.
           </p>
         </div>
       </section>

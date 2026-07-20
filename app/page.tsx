@@ -11,11 +11,11 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
   description:
-    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
   keywords: [
     "Full Stack Developer",
     "Odoo ERP",
-    "Odoo Marketplace",
+    "Odoo Products",
     "Odoo Themes",
     "Next.js",
     "Python",
@@ -298,23 +298,23 @@ export default async function Home() {
               Fiverr
             </a>
             <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              01 / Odoo Marketplace
+              01 / Products
             </p>
             <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
-              Published Odoo apps & themes
+              Odoo products built for real workflows
             </h2>
             <p className="text-[16px] text-[var(--color-on-surface-variant)] max-w-[640px]">
-              Explore all Aura apps and themes in a dedicated marketplace page
-              with full details, screenshots, and support links.
+              Explore Aura apps and themes as practical products, with full
+              details, screenshots, and support links.
             </p>
           </div>
           <div className="lively-card group stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between [--stagger-delay:180ms] md:p-8">
             <div className="relative z-[1]">
               <p className="font-heading text-[22px] text-[var(--color-on-surface)] transition-transform duration-300 group-hover:translate-x-1">
-                Aura Odoo Marketplace
+                Aura Odoo Products
               </p>
               <p className="mt-2 text-[14px] text-[var(--color-on-surface-variant)]">
-                {marketplaceItems.length} listings with full specs, pricing,
+                {marketplaceItems.length} products with full specs, pricing,
                 screenshots, and support links.
               </p>
             </div>
@@ -322,7 +322,7 @@ export default async function Home() {
               href="/marketplace"
               className="lively-arrow inline-flex items-center gap-2 self-start rounded-full border border-[var(--color-on-surface)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] md:self-auto"
             >
-              View marketplace <span aria-hidden="true">↗</span>
+              View products <span aria-hidden="true">↗</span>
             </Link>
           </div>
         </div>

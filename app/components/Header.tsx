@@ -20,7 +20,7 @@ export default function Header() {
   );
 
   const navLinks = [
-    { name: "Marketplace", href: "/marketplace" },
+    { name: "Products", href: "/marketplace" },
     { name: "Blog", href: "/blog" },
     { name: "Services", href: "/#services" },
     { name: "Skills", href: "/#skills" },

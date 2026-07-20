@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Icon from "../../components/Icon";
 import BlogContent from "../../components/BlogContent";
+import BlogComments from "../../components/BlogComments";
 import { loadBlogPosts } from "../../lib/content";
 
 // CMS content lives in Supabase; always render fresh so admin edits appear immediately.
@@ -168,6 +169,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
               content={post.detailsHtml}
               format={post.contentFormat ?? "html"}
             />
+
+            <BlogComments postId={post.id} />
 
             <footer className="mt-14 border-t border-[var(--color-surface-border)] pt-7">
               <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">

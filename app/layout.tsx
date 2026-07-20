@@ -22,14 +22,14 @@ export const metadata: Metadata = {
     template: "%s | Lati Tibabu",
   },
   description:
-    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
   applicationName: "Lati Tibabu",
   keywords: [
     "Lati Tibabu",
     "Full Stack Developer",
     "Odoo ERP",
     "Odoo Themes",
-    "Odoo Marketplace",
+    "Odoo Products",
     "Next.js",
     "Python",
     "Ethiopia",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
     description:
-      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
     url: "/",
     siteName: "Lati Tibabu",
     images: [
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
     description:
-      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo Marketplace themes. Based in Ethiopia, available for freelance work globally.",
+      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
     images: ["/me4.png"],
   },
   robots: {

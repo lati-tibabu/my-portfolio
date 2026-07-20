@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * Custom cursor: a precise dot that tracks the pointer 1:1 and a larger ring
@@ -12,6 +13,7 @@ import { useEffect, useRef } from "react";
  * reduced motion — the native cursor stays untouched in those cases.
  */
 export default function CustomCursor() {
+  const pathname = usePathname();
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
 
@@ -23,7 +25,7 @@ export default function CustomCursor() {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    if (isTouch || reducedMotion) return;
+    if (isTouch || reducedMotion || pathname?.startsWith("/admin")) return;
 
     document.documentElement.dataset.cursor = "custom";
 
@@ -90,7 +92,9 @@ export default function CustomCursor() {
       window.removeEventListener("pointerup", onUp);
       delete document.documentElement.dataset.cursor;
     };
-  }, []);
+  }, [pathname]);
+
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <>

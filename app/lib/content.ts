@@ -41,6 +41,7 @@ type MarketplaceRow = {
 };
 
 type BlogRow = {
+  id: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -164,7 +165,7 @@ export async function loadBlogPosts(): Promise<BlogPost[]> {
   const { data, error } = await client
     .from("blog_posts")
     .select(
-      "slug,title,excerpt,cover_image_url,published_at,tags,details_html,content_format,is_draft",
+      "id,slug,title,excerpt,cover_image_url,published_at,tags,details_html,content_format,is_draft",
     )
     .eq("is_draft", false)
     .order("published_at", { ascending: false });
@@ -174,6 +175,7 @@ export async function loadBlogPosts(): Promise<BlogPost[]> {
   }
 
   return (data as BlogRow[]).map((row) => ({
+    id: row.id,
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
