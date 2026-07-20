@@ -1,4 +1,11 @@
-export type TabKey = "graphics" | "marketplace" | "blog" | "testimonials" | "hero";
+export type TabKey =
+  | "graphics"
+  | "marketplace"
+  | "blog"
+  | "testimonials"
+  | "hero"
+  | "dev-journey"
+  | "certifications";
 
 export type SessionUser = {
   email?: string | null;
@@ -70,6 +77,29 @@ export type TestimonialRecord = {
   quote_md: string;
   is_published: boolean;
   created_at: string;
+};
+
+export type DevJourneyLink = { label?: string; url: string };
+
+export type DevJourneyRecord = {
+  id: string;
+  title: string;
+  description: string;
+  links: DevJourneyLink[] | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CertificationRecord = {
+  id: string;
+  title: string;
+  issuer: string | null;
+  url: string | null;
+  issued_at: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
 };
 
 export type HeroRecord = {
@@ -175,4 +205,21 @@ export type HeroForm = {
   layout: "text-left-image-right" | "image-left-text-right" | "centered";
   availabilityLabel: string;
   availabilityValue: string;
+};
+
+export type DevJourneyForm = {
+  id: string | null;
+  title: string;
+  description: string;
+  linksText: string;
+  sortOrder: string;
+};
+
+export type CertificationForm = {
+  id: string | null;
+  title: string;
+  issuer: string;
+  url: string;
+  issuedAt: string;
+  sortOrder: string;
 };

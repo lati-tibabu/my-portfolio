@@ -64,6 +64,30 @@ export type Testimonial = {
   createdAt?: string;
 };
 
+export type DevJourneyLink = {
+  label?: string;
+  url: string;
+};
+
+export type DevJourneyItem = {
+  id?: string;
+  title: string;
+  description: string;
+  links: DevJourneyLink[];
+  sortOrder?: number;
+  createdAt?: string;
+};
+
+export type Certification = {
+  id?: string;
+  title: string;
+  issuer?: string;
+  url?: string;
+  issuedAt?: string;
+  sortOrder?: number;
+  createdAt?: string;
+};
+
 export type HeroLayout = "text-left-image-right" | "image-left-text-right" | "centered";
 
 export type HeroContent = {
@@ -447,3 +471,66 @@ export const heroContent: HeroContent = {
   availabilityLabel: "Availability",
   availabilityValue: "Open for freelance work",
 };
+
+export const devJourneyItems: DevJourneyItem[] = [
+  {
+    title: "SchoolStream — Education Management System",
+    description:
+      "A full-stack education platform for school, user, and student data management, built with role-based dashboards and reporting.",
+    links: [],
+    sortOrder: 1,
+  },
+  {
+    title: "Student Productivity Hub (BeNote)",
+    description:
+      "A student productivity app with notes, tasks, Pomodoro tools, and AI-assisted study features.",
+    links: [{ label: "Live Demo", url: "https://student-productivity-hub-mgis.vercel.app/" }],
+    sortOrder: 2,
+  },
+  {
+    title: "Faarfannaa Galata Waaqayyoo",
+    description:
+      "A digital hymn platform with offline access, search, and synchronized content across web and mobile.",
+    links: [{ label: "Live Demo", url: "https://faarfannaa.vercel.app" }],
+    sortOrder: 3,
+  },
+  {
+    title: "Otech ID Generator",
+    description:
+      "A professional ID card generator with dual-sided output, barcode/QR automation, and PDF export.",
+    links: [],
+    sortOrder: 4,
+  },
+  {
+    title: "Benote SSO",
+    description:
+      "An auth layer for secure access across Benote services and external platforms via JWT flows.",
+    links: [
+      { label: "Backend", url: "https://www.npmjs.com/package/@benote/sso-backend" },
+      { label: "Frontend", url: "https://www.npmjs.com/package/@benote/sso-frontend" },
+    ],
+    sortOrder: 5,
+  },
+  {
+    title: "PostaDesk",
+    description:
+      "A configurable PostgreSQL management and app-building tool with drag-and-drop workflows.",
+    links: [],
+    sortOrder: 6,
+  },
+];
+
+export const certifications: Certification[] = [
+  {
+    title: "A2SV 2024 AI for Impact Hackathon",
+    sortOrder: 1,
+  },
+  {
+    title: "Intro & Intermediate Machine Learning (Kaggle)",
+    sortOrder: 2,
+  },
+  {
+    title: "Responsive Web Design (freeCodeCamp)",
+    sortOrder: 3,
+  },
+];

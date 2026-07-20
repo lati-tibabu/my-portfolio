@@ -5,9 +5,23 @@ import Link from "next/link";
 import Icon from "./components/Icon";
 import MarkdownText from "./components/MarkdownText";
 import TestimonialsMarquee from "./components/TestimonialsMarquee";
-import { heroContent as defaultHeroContent } from "./data/cms";
-import type { HeroContent } from "./data/cms";
-import { loadHeroContent, loadMarketplaceItems, loadTestimonials } from "./lib/content";
+import {
+  certifications as defaultCertifications,
+  devJourneyItems as defaultDevJourneyItems,
+  heroContent as defaultHeroContent,
+} from "./data/cms";
+import type {
+  Certification,
+  DevJourneyItem,
+  HeroContent,
+} from "./data/cms";
+import {
+  loadCertifications,
+  loadDevJourneyItems,
+  loadHeroContent,
+  loadMarketplaceItems,
+  loadTestimonials,
+} from "./lib/content";
 
 // CMS content lives in Supabase; always render fresh so admin edits appear immediately.
 export const revalidate = 0;
@@ -146,47 +160,6 @@ const experience = [
   },
 ];
 
-const projects = [
-  {
-    title: "SchoolStream — Education Management System",
-    description:
-      "Full-stack education platform for school, user, and student management with dashboards and reporting.",
-  },
-  {
-    title: "Student Productivity Hub (BeNote)",
-    description:
-      "Notes, tasks, Pomodoro tools, and AI-assisted study features for students.",
-    link: "https://student-productivity-hub-mgis.vercel.app/",
-  },
-  {
-    title: "Faarfannaa Galata Waaqayyoo",
-    description:
-      "Digital hymn platform with offline access, search, and synchronized web/mobile content.",
-    link: "https://faarfannaa.vercel.app",
-  },
-  {
-    title: "Otech ID Generator",
-    description:
-      "Professional ID generator with barcode/QR automation and PDF export.",
-  },
-  {
-    title: "Benote SSO",
-    description: "Auth layer for secure access across services via JWT flows.",
-    link: "https://www.npmjs.com/package/@benote/sso-backend",
-  },
-  {
-    title: "PostaDesk",
-    description:
-      "Configurable PostgreSQL management and app-building tool with drag-and-drop workflows.",
-  },
-];
-
-const certifications = [
-  "A2SV 2024 AI for Impact Hackathon",
-  "Intro & Intermediate Machine Learning (Kaggle)",
-  "Responsive Web Design (freeCodeCamp)",
-];
-
 const graphicsPreview = [
   "/Images/Graphics/akkamitti_qophoofna_2025.png",
   "/Images/Graphics/duula_kadhannaa_2023.png",
@@ -196,11 +169,18 @@ const graphicsPreview = [
 
 export default async function Home() {
   const marketplaceItems = await loadMarketplaceItems();
-  const [heroFromCms, testimonials] = await Promise.all([
-    loadHeroContent(),
-    loadTestimonials(),
-  ]);
+  const [heroFromCms, testimonials, devJourneyFromCms, certificationsFromCms] =
+    await Promise.all([
+      loadHeroContent(),
+      loadTestimonials(),
+      loadDevJourneyItems(),
+      loadCertifications(),
+    ]);
   const hero: HeroContent = heroFromCms ?? defaultHeroContent;
+  const devJourney: DevJourneyItem[] =
+    devJourneyFromCms.length > 0 ? devJourneyFromCms : defaultDevJourneyItems;
+  const certifications: Certification[] =
+    certificationsFromCms.length > 0 ? certificationsFromCms : defaultCertifications;
   const stats = createStats(marketplaceItems.length);
 
   const heroCtas = [
@@ -333,14 +313,6 @@ export default async function Home() {
       <section id="marketplace" className="lively-section px-6 py-24">
         <div className="relative z-[1] mx-auto max-w-[1280px] space-y-10">
           <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
-            <a
-              href="https://www.fiverr.com/latitibabu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]"
-            >
-              Fiverr
-            </a>
             <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
               01 / Products
             </p>
@@ -716,9 +688,11 @@ export default async function Home() {
                 Development journey
               </h3>
               <div className="mt-4 grid gap-4 md:grid-cols-2">
-                {projects.map((project) => (
+                {devJourney.map((project) => {
+                  const primaryLink = project.links[0];
+                  return (
                   <article
-                    key={project.title}
+                    key={project.id ?? project.title}
                     className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
                   >
                     <h4 className="font-heading text-[16px] text-[var(--color-on-surface)]">
@@ -727,9 +701,9 @@ export default async function Home() {
                     <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
                       {project.description}
                     </p>
-                    {project.link && (
+                    {primaryLink && (
                       <a
-                        href={project.link}
+                        href={primaryLink.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-3 inline-flex text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
@@ -738,7 +712,8 @@ export default async function Home() {
                       </a>
                     )}
                   </article>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -748,9 +723,9 @@ export default async function Home() {
               </h3>
               <ul className="mt-4 space-y-3 text-[13px] text-[var(--color-on-surface-variant)]">
                 {certifications.map((cert) => (
-                  <li key={cert} className="flex items-start gap-2">
+                  <li key={cert.id ?? cert.title} className="flex items-start gap-2">
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--color-electric-blue)]" />
-                    <span>{cert}</span>
+                    <span>{cert.title}</span>
                   </li>
                 ))}
               </ul>

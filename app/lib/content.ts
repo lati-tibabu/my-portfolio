@@ -1,6 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import {
   type BlogPost,
+  type Certification,
+  type DevJourneyItem,
+  type DevJourneyLink,
   type GraphicItem,
   type HeroContent,
   type HeroLayout,
@@ -72,6 +75,25 @@ type TestimonialRow = {
   created_at: string;
 };
 
+type DevJourneyRow = {
+  id: string;
+  title: string;
+  description: string;
+  links: DevJourneyLink[] | string | null;
+  sort_order: number;
+  created_at: string;
+};
+
+type CertificationRow = {
+  id: string;
+  title: string;
+  issuer: string | null;
+  url: string | null;
+  issued_at: string | null;
+  sort_order: number;
+  created_at: string;
+};
+
 type HeroRow = {
   id: string;
   eyebrow: string;
@@ -124,6 +146,38 @@ const normalizeArray = (value: string[] | string | null | undefined) => {
 const normalizeImageUrl = (value: string | null | undefined) => {
   const trimmed = value?.trim();
   return trimmed ? trimmed : DEFAULT_COVER_IMAGE;
+};
+
+const normalizeLinks = (value: DevJourneyLink[] | string | null | undefined): DevJourneyLink[] => {
+  if (!value) {
+    return [];
+  }
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      if (Array.isArray(parsed)) {
+        return normalizeLinks(parsed as DevJourneyLink[]);
+      }
+    } catch {
+      return [];
+    }
+    return [];
+  }
+
+  return value
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") {
+        return null;
+      }
+      const url = String((entry as DevJourneyLink).url ?? "").trim();
+      if (!url) {
+        return null;
+      }
+      const label = String((entry as DevJourneyLink).label ?? "").trim();
+      return { url, ...(label ? { label } : {}) };
+    })
+    .filter((entry): entry is DevJourneyLink => entry !== null);
 };
 
 export async function loadGraphicsItems(): Promise<GraphicItem[]> {
@@ -301,4 +355,62 @@ export async function loadHeroContent(): Promise<HeroContent | null> {
     availabilityLabel: row.availability_label?.trim() || undefined,
     availabilityValue: row.availability_value?.trim() || undefined,
   };
+}
+
+export async function loadDevJourneyItems(): Promise<DevJourneyItem[]> {
+  const client = createReadClient();
+  if (!client) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("dev_journey_items")
+    .select("id,title,description,links,sort_order,created_at")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error || !data?.length) {
+    return [];
+  }
+
+  return (data as DevJourneyRow[]).map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    links: normalizeLinks(row.links),
+    sortOrder: row.sort_order,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function loadCertifications(): Promise<Certification[]> {
+  const client = createReadClient();
+  if (!client) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("certifications")
+    .select("id,title,issuer,url,issued_at,sort_order,created_at")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error || !data?.length) {
+    return [];
+  }
+
+  return (data as CertificationRow[]).map((row) => {
+    const issuer = row.issuer?.trim();
+    const url = row.url?.trim();
+    const issuedAt = row.issued_at?.trim();
+    return {
+      id: row.id,
+      title: row.title,
+      ...(issuer ? { issuer } : {}),
+      ...(url ? { url } : {}),
+      ...(issuedAt ? { issuedAt } : {}),
+      sortOrder: row.sort_order,
+      createdAt: row.created_at,
+    };
+  });
 }

@@ -14,6 +14,11 @@ export default function DialogModal ({isOpen, onClose, children}: DialogModalPro
 
     useEffect(() => {
         const dialog = dialogRef.current as HTMLDialogElement | null;
+        if (isOpen) {
+            document.documentElement.dataset.modalOpen = "true";
+        } else {
+            delete document.documentElement.dataset.modalOpen;
+        }
         if(isOpen) {
             if(!dialog?.open) dialog?.showModal();
         } else {
@@ -27,13 +32,16 @@ export default function DialogModal ({isOpen, onClose, children}: DialogModalPro
         // Add event listener for the 'cancel' event (e.g., pressing Escape)
         dialog?.addEventListener("cancel", handleCancel);
         // Clean up the event listener when the component unmounts or isOpen changes
-        return () => dialog?.removeEventListener("cancel", handleCancel)
+        return () => {
+            dialog?.removeEventListener("cancel", handleCancel);
+            delete document.documentElement.dataset.modalOpen;
+        };
     }, [isOpen, onClose]);
 
     return (
         <dialog
             ref={dialogRef}
-            className="w-fit m-auto p-10 bg-transparent"
+            className="dialog-modal"
             onClick={(e: React.MouseEvent<HTMLDialogElement>) => {
                 if (e.currentTarget === e.target) onClose();
             }}
@@ -41,7 +49,8 @@ export default function DialogModal ({isOpen, onClose, children}: DialogModalPro
             <div className="relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-[-30px] right-[-30px] text-[var(--color-on-surface)] hover:text-[var(--color-electric-blue)] text-2xl cursor-pointer bg-[var(--color-surface-container-lowest)] w-8 h-8 flex items-center justify-center rounded-full border border-[var(--color-surface-border)]"
+                    className="absolute right-3 top-3 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] text-2xl leading-none text-white shadow-[3px_3px_0_var(--color-surface-border)] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[4px_4px_0_var(--color-surface-border)] active:translate-y-0 active:shadow-none focus:outline-none focus:ring-2 focus:ring-[var(--color-on-surface)]/30"
+                    aria-label="Close preview"
                 >
                     &times;
                 </button>

@@ -1,5 +1,8 @@
 import type {
   BlogForm,
+  CertificationForm,
+  DevJourneyForm,
+  DevJourneyLink,
   GraphicsForm,
   HeroForm,
   MarketplaceForm,
@@ -24,6 +27,29 @@ export const splitList = (value: string) =>
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+
+// Dev journey links are edited as one `Label | URL` entry per line. The label
+// is optional; a bare URL is allowed. Returns structured {label,url} objects.
+export const parseLinksText = (value: string): DevJourneyLink[] =>
+  value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separator = line.indexOf("|");
+      if (separator === -1) {
+        return { url: line.trim() };
+      }
+      const label = line.slice(0, separator).trim();
+      const url = line.slice(separator + 1).trim();
+      return label ? { label, url } : { url };
+    })
+    .filter((link) => link.url);
+
+export const linksToText = (links: DevJourneyLink[] | null | undefined) =>
+  (links ?? [])
+    .map((link) => (link.label ? `${link.label} | ${link.url}` : link.url))
+    .join("\n");
 
 export const emptyGraphicsForm = (): GraphicsForm => ({
   id: null,
@@ -111,3 +137,20 @@ export const defaultHeroForm = (): HeroForm => ({
 });
 
 export const emptyHeroForm = (): HeroForm => defaultHeroForm();
+
+export const emptyDevJourneyForm = (): DevJourneyForm => ({
+  id: null,
+  title: "",
+  description: "",
+  linksText: "",
+  sortOrder: "1",
+});
+
+export const emptyCertificationForm = (): CertificationForm => ({
+  id: null,
+  title: "",
+  issuer: "",
+  url: "",
+  issuedAt: "",
+  sortOrder: "1",
+});

@@ -17,6 +17,8 @@ export const adminNavItems: Array<{
   { tab: "blog", label: "Blog", description: "Articles and updates" },
   { tab: "testimonials", label: "Testimonials", description: "Client feedback" },
   { tab: "hero", label: "Hero", description: "Home header" },
+  { tab: "dev-journey", label: "Dev Journey", description: "Project highlights" },
+  { tab: "certifications", label: "Certifications", description: "Credentials" },
 ];
 
 export const inputClass =

@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import Icon from "../components/Icon";
+import {
+  certifications as defaultCertifications,
+  devJourneyItems as defaultDevJourneyItems,
+} from "../data/cms";
+import type { Certification, DevJourneyItem } from "../data/cms";
+import { loadCertifications, loadDevJourneyItems } from "../lib/content";
 
 export const metadata: Metadata = {
   title: "About Lati Tibabu",
@@ -14,7 +20,19 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function About() {
+// CMS content lives in Supabase; always render fresh so admin edits appear immediately.
+export const revalidate = 0;
+
+export default async function About() {
+  const [devJourneyFromCms, certificationsFromCms] = await Promise.all([
+    loadDevJourneyItems(),
+    loadCertifications(),
+  ]);
+  const devJourney: DevJourneyItem[] =
+    devJourneyFromCms.length > 0 ? devJourneyFromCms : defaultDevJourneyItems;
+  const certifications: Certification[] =
+    certificationsFromCms.length > 0 ? certificationsFromCms : defaultCertifications;
+
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
       <section className="px-6 pt-24 pb-12 bg-[var(--color-deep-navy)] text-white">
@@ -157,51 +175,25 @@ export default function About() {
                 <div>
                   <h4 className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">Development Journey</h4>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <article className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                      <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">SchoolStream — Education Management System</h5>
-                      <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                        A full-stack education platform for school, user, and student data management, built with role-based dashboards and reporting.
-                      </p>
-                    </article>
-
-                    <article className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                      <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">Student Productivity Hub (BeNote)</h5>
-                      <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                        A student productivity app with notes, tasks, Pomodoro tools, and AI-assisted study features.
-                        <a href="https://student-productivity-hub-mgis.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-[var(--color-electric-blue)] font-semibold ml-1">Live Demo</a>
-                      </p>
-                    </article>
-
-                    <article className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                      <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">Faarfannaa Galata Waaqayyoo</h5>
-                      <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                        A digital hymn platform with offline access, search, and synchronized content across web and mobile.
-                        <a href="https://faarfannaa.vercel.app" target="_blank" rel="noopener noreferrer" className="text-[var(--color-electric-blue)] font-semibold ml-1">Live Demo</a>
-                      </p>
-                    </article>
-
-                    <article className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                      <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">Otech ID Generator</h5>
-                      <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                        A professional ID card generator with dual-sided output, barcode/QR automation, and PDF export.
-                      </p>
-                    </article>
-
-                    <article className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                      <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">Benote SSO</h5>
-                      <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                        An auth layer for secure access across Benote services and external platforms via JWT flows.
-                        <a href="https://www.npmjs.com/package/@benote/sso-backend" target="_blank" rel="noopener noreferrer" className="text-[var(--color-electric-blue)] font-semibold ml-1">Backend</a>
-                        <a href="https://www.npmjs.com/package/@benote/sso-frontend" target="_blank" rel="noopener noreferrer" className="text-[var(--color-electric-blue)] font-semibold ml-2">Frontend</a>
-                      </p>
-                    </article>
-
-                    <article className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                      <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">PostaDesk</h5>
-                      <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                        A configurable PostgreSQL management and app-building tool with drag-and-drop workflows.
-                      </p>
-                    </article>
+                    {devJourney.map((project) => (
+                      <article key={project.id ?? project.title} className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
+                        <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">{project.title}</h5>
+                        <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
+                          {project.description}
+                          {project.links.map((link, index) => (
+                            <a
+                              key={link.url}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`text-[var(--color-electric-blue)] font-semibold ${index === 0 ? "ml-1" : "ml-2"}`}
+                            >
+                              {link.label ?? "View"}
+                            </a>
+                          ))}
+                        </p>
+                      </article>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -210,15 +202,11 @@ export default function About() {
             <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
               <h3 className="font-heading text-[18px] text-[var(--color-on-surface)]">Certifications</h3>
               <div className="mt-4 grid gap-3 text-[13px] text-[var(--color-on-surface-variant)] sm:grid-cols-2">
-                <div className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3">
-                  A2SV 2024 AI for Impact Hackathon
-                </div>
-                <div className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3">
-                  Intro &amp; Intermediate Machine Learning (Kaggle)
-                </div>
-                <div className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3">
-                  Responsive Web Design (freeCodeCamp)
-                </div>
+                {certifications.map((cert) => (
+                  <div key={cert.id ?? cert.title} className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3">
+                    {cert.title}
+                  </div>
+                ))}
               </div>
             </div>
           </div>

@@ -3,6 +3,8 @@ import { supabaseBrowser } from "../../lib/supabase/browser";
 import { STORAGE_BUCKET } from "./constants";
 import type {
   BlogRecord,
+  CertificationRecord,
+  DevJourneyRecord,
   GraphicsRecord,
   HeroRecord,
   MarketplaceRecord,
@@ -68,6 +70,8 @@ export type LoadAllResult = {
   blog: BlogRecord[];
   testimonials: TestimonialRecord[];
   hero: HeroRecord | null;
+  devJourney: DevJourneyRecord[];
+  certifications: CertificationRecord[];
   message: string;
 };
 
@@ -78,6 +82,8 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
     blogResult,
     testimonialsResult,
     heroResult,
+    devJourneyResult,
+    certificationsResult,
   ] = await Promise.all([
     client
       .from("graphics_items")
@@ -100,6 +106,16 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
       .select("*")
       .order("updated_at", { ascending: false })
       .limit(1),
+    client
+      .from("dev_journey_items")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+    client
+      .from("certifications")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
   ]);
 
   const graphics = (graphicsResult.data as GraphicsRecord[]) ?? [];
@@ -107,21 +123,36 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
   const blog = (blogResult.data as BlogRecord[]) ?? [];
   const testimonials = (testimonialsResult.data as TestimonialRecord[]) ?? [];
   const hero = (heroResult.data?.[0] as HeroRecord | undefined) ?? null;
+  const devJourney = (devJourneyResult.data as DevJourneyRecord[]) ?? [];
+  const certifications = (certificationsResult.data as CertificationRecord[]) ?? [];
 
   const hasError =
     graphicsResult.error ||
     marketplaceResult.error ||
     blogResult.error ||
     testimonialsResult.error ||
-    heroResult.error;
+    heroResult.error ||
+    devJourneyResult.error ||
+    certificationsResult.error;
   const message = hasError
     ? graphicsResult.error?.message ||
       marketplaceResult.error?.message ||
       blogResult.error?.message ||
       testimonialsResult.error?.message ||
       heroResult.error?.message ||
+      devJourneyResult.error?.message ||
+      certificationsResult.error?.message ||
       "Loaded with some empty sections."
     : "Content loaded successfully.";
 
-  return { graphics, marketplace, blog, testimonials, hero, message };
+  return {
+    graphics,
+    marketplace,
+    blog,
+    testimonials,
+    hero,
+    devJourney,
+    certifications,
+    message,
+  };
 };

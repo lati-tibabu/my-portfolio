@@ -1,4 +1,26 @@
+dialog.dialog-modal {
+  z-index: 10001;
+  width: min(92vw, 1100px);
+  max-width: min(92vw, 1100px);
+  max-height: 90vh;
+  margin: auto;
+  padding: 1rem;
+  overflow: auto;
+  border: 2px solid var(--color-on-surface);
+  border-radius: 8px;
+  background: var(--color-surface-container-lowest);
+  box-shadow: 10px 10px 0 var(--color-on-surface);
+}
+
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(8px);
+}
+
+:root[data-modal-open="true"] .custom-cursor {
+  opacity: 0 !important;
+}
+
+:root[data-modal-open="true"] * {
+  cursor: auto !important;
 }

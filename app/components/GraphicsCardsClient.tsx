@@ -64,21 +64,31 @@ export default function GraphicsCardsClient({ items }: GraphicsCardsClientProps)
 
       <DialogModal isOpen={!!selected} onClose={() => setSelected(null)}>
         {selected && (
-          <div className="space-y-3">
-            <Image
-              src={selected.image?.trim() || "https://placehold.co/600x400@2x.png"}
-              alt={selected.title}
-              width={1400}
-              height={1000}
-              className="max-h-[78vh] w-auto max-w-full rounded-lg object-contain"
-              draggable={false}
-              onContextMenu={blockDownloadActions}
-              onDragStart={blockDownloadActions}
-            />
-            <p className="text-xs text-[var(--color-on-surface-variant)]">
-              Preview only.
-            </p>
-          </div>
+          <figure className="space-y-4">
+            <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-md border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3">
+              <Image
+                src={selected.image?.trim() || "https://placehold.co/600x400@2x.png"}
+                alt={selected.title}
+                width={1400}
+                height={1000}
+                className="max-h-[72vh] w-auto max-w-full rounded-sm object-contain"
+                draggable={false}
+                onContextMenu={blockDownloadActions}
+                onDragStart={blockDownloadActions}
+              />
+            </div>
+            <figcaption className="flex flex-wrap items-end justify-between gap-3 border-t border-[var(--color-surface-border)] pt-3">
+              <div>
+                <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
+                  {selected.category}
+                </p>
+                <h2 className="mt-1 font-heading text-[24px] text-[var(--color-on-surface)]">
+                  {selected.title}
+                </h2>
+              </div>
+              <p className="text-xs text-[var(--color-on-surface-variant)]">Preview only.</p>
+            </figcaption>
+          </figure>
         )}
       </DialogModal>
     </>

@@ -167,6 +167,36 @@ create table if not exists public.hero_content (
   constraint hero_content_headline_not_blank check (btrim(headline) <> '')
 );
 
+create table if not exists public.dev_journey_items (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text not null,
+  links jsonb not null default '[]'::jsonb,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint dev_journey_items_title_not_blank check (btrim(title) <> ''),
+  constraint dev_journey_items_description_not_blank check (btrim(description) <> '')
+);
+
+create index if not exists dev_journey_items_sort_idx
+  on public.dev_journey_items (sort_order asc, created_at asc);
+
+create table if not exists public.certifications (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  issuer text,
+  url text,
+  issued_at date,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint certifications_title_not_blank check (btrim(title) <> '')
+);
+
+create index if not exists certifications_sort_idx
+  on public.certifications (sort_order asc, created_at asc);
+
 insert into storage.buckets (id, name, public)
 values ('portfolio-media', 'portfolio-media', true)
 on conflict (id) do update
@@ -178,6 +208,8 @@ alter table public.blog_posts enable row level security;
 alter table public.blog_comments enable row level security;
 alter table public.client_testimonials enable row level security;
 alter table public.hero_content enable row level security;
+alter table public.dev_journey_items enable row level security;
+alter table public.certifications enable row level security;
 
 drop policy if exists "Public can read graphics items" on public.graphics_items;
 create policy "Public can read graphics items"
@@ -364,6 +396,64 @@ with check (true);
 drop policy if exists "Authenticated can delete hero content" on public.hero_content;
 create policy "Authenticated can delete hero content"
 on public.hero_content
+for delete
+to authenticated
+using (true);
+
+drop policy if exists "Public can read dev journey items" on public.dev_journey_items;
+create policy "Public can read dev journey items"
+on public.dev_journey_items
+for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "Authenticated can insert dev journey items" on public.dev_journey_items;
+create policy "Authenticated can insert dev journey items"
+on public.dev_journey_items
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists "Authenticated can update dev journey items" on public.dev_journey_items;
+create policy "Authenticated can update dev journey items"
+on public.dev_journey_items
+for update
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Authenticated can delete dev journey items" on public.dev_journey_items;
+create policy "Authenticated can delete dev journey items"
+on public.dev_journey_items
+for delete
+to authenticated
+using (true);
+
+drop policy if exists "Public can read certifications" on public.certifications;
+create policy "Public can read certifications"
+on public.certifications
+for select
+to anon, authenticated
+using (true);
+
+drop policy if exists "Authenticated can insert certifications" on public.certifications;
+create policy "Authenticated can insert certifications"
+on public.certifications
+for insert
+to authenticated
+with check (true);
+
+drop policy if exists "Authenticated can update certifications" on public.certifications;
+create policy "Authenticated can update certifications"
+on public.certifications
+for update
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Authenticated can delete certifications" on public.certifications;
+create policy "Authenticated can delete certifications"
+on public.certifications
 for delete
 to authenticated
 using (true);

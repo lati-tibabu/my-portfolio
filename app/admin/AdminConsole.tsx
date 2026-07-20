@@ -7,6 +7,8 @@ import { loadAll } from "./lib/crud";
 import { useAdminAuth } from "./lib/useAdminAuth";
 import type {
   BlogRecord,
+  CertificationRecord,
+  DevJourneyRecord,
   GraphicsRecord,
   HeroRecord,
   MarketplaceRecord,
@@ -21,6 +23,8 @@ import MarketplacePanel from "./components/MarketplacePanel";
 import BlogPanel from "./components/BlogPanel";
 import TestimonialsPanel from "./components/TestimonialsPanel";
 import HeroPanel from "./components/HeroPanel";
+import DevJourneyPanel from "./components/DevJourneyPanel";
+import CertificationsPanel from "./components/CertificationsPanel";
 
 export default function AdminConsole() {
   const auth = useAdminAuth();
@@ -34,6 +38,8 @@ export default function AdminConsole() {
   const [blog, setBlog] = useState<BlogRecord[]>([]);
   const [testimonials, setTestimonials] = useState<TestimonialRecord[]>([]);
   const [hero, setHero] = useState<HeroRecord | null>(null);
+  const [devJourney, setDevJourney] = useState<DevJourneyRecord[]>([]);
+  const [certifications, setCertifications] = useState<CertificationRecord[]>([]);
 
   const reload = async () => {
     setBusy(true);
@@ -45,6 +51,8 @@ export default function AdminConsole() {
       setBlog(result.blog);
       setTestimonials(result.testimonials);
       setHero(result.hero);
+      setDevJourney(result.devJourney);
+      setCertifications(result.certifications);
       setMessage(result.message);
     } catch (error) {
       setMessage(
@@ -142,6 +150,26 @@ export default function AdminConsole() {
         {activeTab === "hero" && (
           <HeroPanel
             record={hero}
+            reload={reload}
+            busy={busy}
+            setBusy={setBusy}
+            setMessage={setMessage}
+          />
+        )}
+
+        {activeTab === "dev-journey" && (
+          <DevJourneyPanel
+            records={devJourney}
+            reload={reload}
+            busy={busy}
+            setBusy={setBusy}
+            setMessage={setMessage}
+          />
+        )}
+
+        {activeTab === "certifications" && (
+          <CertificationsPanel
+            records={certifications}
             reload={reload}
             busy={busy}
             setBusy={setBusy}

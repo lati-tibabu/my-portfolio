@@ -5,6 +5,8 @@ import { readFile } from "node:fs/promises";
 import { createClient } from "@supabase/supabase-js";
 import {
   blogPosts,
+  certifications,
+  devJourneyItems,
   graphicsItems,
   heroContent,
   marketplaceItems,
@@ -245,6 +247,49 @@ async function seedHero() {
   }
 }
 
+async function seedDevJourney() {
+  console.log(`Seeding ${devJourneyItems.length} dev journey items...`);
+
+  const rows = devJourneyItems.map((item) => ({
+    title: item.title,
+    description: item.description,
+    links: item.links ?? [],
+    sort_order: item.sortOrder ?? 0,
+  }));
+
+  // No unique natural key on this table, so re-seeding by upsert is not safe.
+  // Replace the seeded set (by title) and leave any admin-added rows intact.
+  const seededTitles = rows.map((row) => row.title);
+  await supabase.from("dev_journey_items").delete().in("title", seededTitles);
+
+  const { error } = await supabase.from("dev_journey_items").insert(rows);
+
+  if (error) {
+    throw new Error(`Failed to seed dev journey: ${error.message}`);
+  }
+}
+
+async function seedCertifications() {
+  console.log(`Seeding ${certifications.length} certifications...`);
+
+  const rows = certifications.map((item) => ({
+    title: item.title,
+    issuer: item.issuer ?? null,
+    url: item.url ?? null,
+    issued_at: item.issuedAt ?? null,
+    sort_order: item.sortOrder ?? 0,
+  }));
+
+  const seededTitles = rows.map((row) => row.title);
+  await supabase.from("certifications").delete().in("title", seededTitles);
+
+  const { error } = await supabase.from("certifications").insert(rows);
+
+  if (error) {
+    throw new Error(`Failed to seed certifications: ${error.message}`);
+  }
+}
+
 async function main() {
   await ensureBucket();
   await seedGraphics();
@@ -252,6 +297,8 @@ async function main() {
   await seedBlog();
   await seedTestimonials();
   await seedHero();
+  await seedDevJourney();
+  await seedCertifications();
   console.log("Supabase migration complete.");
 }
 
