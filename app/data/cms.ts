@@ -108,6 +108,15 @@ export type HeroContent = {
   availabilityValue?: string;
 };
 
+export type StatItem = {
+  id?: string;
+  label: string;
+  value: string;
+  sortOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 const toListItems = (items: string[]) =>
   items.map((item) => `<li>${item}</li>`).join("");
 
@@ -532,5 +541,28 @@ export const certifications: Certification[] = [
   {
     title: "Responsive Web Design (freeCodeCamp)",
     sortOrder: 3,
+  },
+];
+
+export const stats: StatItem[] = [
+  {
+    label: "Odoo apps/themes published",
+    value: "3",
+    sortOrder: 1,
+  },
+  {
+    label: "Odoo app adopters",
+    value: "170+",
+    sortOrder: 2,
+  },
+  {
+    label: "Years of experience",
+    value: "4+",
+    sortOrder: 3,
+  },
+  {
+    label: "Stack size",
+    value: "20+ tools",
+    sortOrder: 4,
   },
 ];

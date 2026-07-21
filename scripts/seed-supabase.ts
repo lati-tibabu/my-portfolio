@@ -10,6 +10,7 @@ import {
   graphicsItems,
   heroContent,
   marketplaceItems,
+  stats,
   testimonials,
 } from "../app/data/cms";
 
@@ -290,6 +291,25 @@ async function seedCertifications() {
   }
 }
 
+async function seedStats() {
+  console.log(`Seeding ${stats.length} stats...`);
+
+  const rows = stats.map((item) => ({
+    label: item.label,
+    value: item.value,
+    sort_order: item.sortOrder ?? 0,
+  }));
+
+  const seededLabels = rows.map((row) => row.label);
+  await supabase.from("stats").delete().in("label", seededLabels);
+
+  const { error } = await supabase.from("stats").insert(rows);
+
+  if (error) {
+    throw new Error(`Failed to seed stats: ${error.message}`);
+  }
+}
+
 async function main() {
   await ensureBucket();
   await seedGraphics();
@@ -299,6 +319,7 @@ async function main() {
   await seedHero();
   await seedDevJourney();
   await seedCertifications();
+  await seedStats();
   console.log("Supabase migration complete.");
 }
 

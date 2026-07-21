@@ -37,6 +37,7 @@ export type MarketplacePanelProps = {
   busy: boolean;
   setBusy: (value: boolean) => void;
   setMessage: (value: string) => void;
+  adminName: string;
 };
 
 export default function MarketplacePanel({
@@ -45,6 +46,7 @@ export default function MarketplacePanel({
   busy,
   setBusy,
   setMessage,
+  adminName,
 }: MarketplacePanelProps) {
   const [form, setForm] = useState<MarketplaceForm>(emptyMarketplaceForm);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
@@ -106,7 +108,6 @@ export default function MarketplacePanel({
       upgradeUrl: textValue(item.upgrade_url),
       highlightsText: joinList(item.highlights),
       screenshotsText: joinList(item.screenshots),
-      authorName: item.author_name ?? "latitibabu",
     });
     setSlugManuallyEdited(true);
     list.clearSelection();
@@ -139,7 +140,6 @@ export default function MarketplacePanel({
       upgradeUrl: textValue(item.upgrade_url),
       highlightsText: joinList(item.highlights),
       screenshotsText: joinList(item.screenshots),
-      authorName: item.author_name ?? "latitibabu",
     });
     setSlugManuallyEdited(false);
     list.clearSelection();
@@ -170,7 +170,7 @@ export default function MarketplacePanel({
           form.coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE,
         published_at: form.publishedAt,
         details_html: form.detailsHtml,
-        author_name: form.authorName.trim() || "latitibabu",
+        author_name: adminName.trim() || "latitibabu",
         version: form.version,
         license: form.license,
         technical_name: form.technicalName,
@@ -458,16 +458,6 @@ export default function MarketplacePanel({
                 value={form.publishedAt}
                 onChange={(event) =>
                   setForm({ ...form, publishedAt: event.target.value })
-                }
-              />
-            </FormField>
-            <FormField label="Author name">
-              <input
-                className={inputClass}
-                value={form.authorName}
-                placeholder="latitibabu"
-                onChange={(event) =>
-                  setForm({ ...form, authorName: event.target.value })
                 }
               />
             </FormField>

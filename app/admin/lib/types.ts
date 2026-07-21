@@ -5,9 +5,12 @@ export type TabKey =
   | "testimonials"
   | "hero"
   | "dev-journey"
-  | "certifications";
+  | "certifications"
+  | "stats"
+  | "users";
 
 export type SessionUser = {
+  id?: string;
   email?: string | null;
 };
 
@@ -102,6 +105,15 @@ export type CertificationRecord = {
   updated_at: string;
 };
 
+export type StatsRecord = {
+  id: string;
+  label: string;
+  value: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type HeroRecord = {
   id: string;
   eyebrow: string;
@@ -133,7 +145,6 @@ export type GraphicsForm = {
   imagePath: string;
   publishedAt: string;
   detailsHtml: string;
-  authorName: string;
 };
 
 export type MarketplaceForm = {
@@ -160,7 +171,6 @@ export type MarketplaceForm = {
   upgradeUrl: string;
   highlightsText: string;
   screenshotsText: string;
-  authorName: string;
 };
 
 export type BlogForm = {
@@ -175,7 +185,6 @@ export type BlogForm = {
   detailsHtml: string;
   contentFormat: "html" | "md";
   isDraft: boolean;
-  authorName: string;
 };
 
 export type TestimonialForm = {
@@ -221,5 +230,12 @@ export type CertificationForm = {
   issuer: string;
   url: string;
   issuedAt: string;
+  sortOrder: string;
+};
+
+export type StatsForm = {
+  id: string | null;
+  label: string;
+  value: string;
   sortOrder: string;
 };

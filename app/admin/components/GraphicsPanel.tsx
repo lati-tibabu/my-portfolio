@@ -36,6 +36,7 @@ export type GraphicsPanelProps = {
   busy: boolean;
   setBusy: (value: boolean) => void;
   setMessage: (value: string) => void;
+  adminName: string;
 };
 
 export default function GraphicsPanel({
@@ -44,6 +45,7 @@ export default function GraphicsPanel({
   busy,
   setBusy,
   setMessage,
+  adminName,
 }: GraphicsPanelProps) {
   const [form, setForm] = useState<GraphicsForm>(emptyGraphicsForm);
   const [file, setFile] = useState<File | null>(null);
@@ -94,7 +96,6 @@ export default function GraphicsPanel({
       imagePath: textValue(item.image_path),
       publishedAt: item.published_at,
       detailsHtml: item.details_html,
-      authorName: item.author_name ?? "latitibabu",
     });
     setFile(null);
     setSlugManuallyEdited(true);
@@ -114,7 +115,6 @@ export default function GraphicsPanel({
       imagePath: textValue(item.image_path),
       publishedAt: item.published_at,
       detailsHtml: item.details_html,
-      authorName: item.author_name ?? "latitibabu",
     });
     setFile(null);
     setSlugManuallyEdited(false);
@@ -154,7 +154,7 @@ export default function GraphicsPanel({
         image_path: imagePath,
         published_at: form.publishedAt,
         details_html: form.detailsHtml,
-        author_name: form.authorName.trim() || "latitibabu",
+        author_name: adminName.trim() || "latitibabu",
       };
 
       const query = form.id
@@ -397,16 +397,6 @@ export default function GraphicsPanel({
                 value={form.category}
                 onChange={(event) =>
                   setForm({ ...form, category: event.target.value })
-                }
-              />
-            </FormField>
-            <FormField label="Author name">
-              <input
-                className={inputClass}
-                value={form.authorName}
-                placeholder="latitibabu"
-                onChange={(event) =>
-                  setForm({ ...form, authorName: event.target.value })
                 }
               />
             </FormField>

@@ -197,6 +197,88 @@ create table if not exists public.certifications (
 create index if not exists certifications_sort_idx
   on public.certifications (sort_order asc, created_at asc);
 
+-- Stats cards shown on the home page. Ordered by sort_order ascending.
+create table if not exists public.stats (
+  id uuid primary key default gen_random_uuid(),
+  label text not null,
+  value text not null,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint stats_label_not_blank check (btrim(label) <> ''),
+  constraint stats_value_not_blank check (btrim(value) <> '')
+);
+
+create index if not exists stats_sort_idx
+  on public.stats (sort_order asc, created_at asc);
+
+-- Profiles extend auth.users with a display name and role for the admin CMS.
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  display_name text not null,
+  role text not null default 'admin'
+    check (role in ('admin', 'editor')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint profiles_display_name_not_blank check (btrim(display_name) <> '')
+);
+
+-- Auto-create a profile row whenever a new auth.user is created.
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, display_name, role)
+  values (
+    new.id,
+    coalesce(
+      new.raw_user_meta_data ->> 'name',
+      new.raw_user_meta_data ->> 'full_name',
+      split_part(new.email, '@', 1)
+    ),
+    'admin'
+  );
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- Helper: true for authenticated admins or service_role requests.
+create or replace function public.is_admin_or_service_role()
+returns boolean as $$
+declare
+  jwt_role text;
+begin
+  jwt_role := current_setting('request.jwt.claims', true)::jsonb->>'role';
+  if jwt_role = 'service_role' then
+    return true;
+  end if;
+  return exists (
+    select 1 from public.profiles
+    where id = auth.uid() and role = 'admin'
+  );
+end;
+$$ language plpgsql stable security definer;
+
+-- Prevent editors from escalating their own role.
+create or replace function public.prevent_role_self_escalation()
+returns trigger as $$
+begin
+  if new.role <> old.role and not public.is_admin_or_service_role() then
+    raise exception 'Only admins can change roles.';
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists prevent_role_self_escalation on public.profiles;
+create trigger prevent_role_self_escalation
+  before update on public.profiles
+  for each row execute function public.prevent_role_self_escalation();
+
 insert into storage.buckets (id, name, public)
 values ('portfolio-media', 'portfolio-media', true)
 on conflict (id) do update
@@ -210,6 +292,8 @@ alter table public.client_testimonials enable row level security;
 alter table public.hero_content enable row level security;
 alter table public.dev_journey_items enable row level security;
 alter table public.certifications enable row level security;
+alter table public.stats enable row level security;
+alter table public.profiles enable row level security;
 
 drop policy if exists "Public can read graphics items" on public.graphics_items;
 create policy "Public can read graphics items"
@@ -383,22 +467,22 @@ create policy "Authenticated can insert hero content"
 on public.hero_content
 for insert
 to authenticated
-with check (true);
+with check (public.is_admin_or_service_role());
 
 drop policy if exists "Authenticated can update hero content" on public.hero_content;
 create policy "Authenticated can update hero content"
 on public.hero_content
 for update
 to authenticated
-using (true)
-with check (true);
+using (public.is_admin_or_service_role())
+with check (public.is_admin_or_service_role());
 
 drop policy if exists "Authenticated can delete hero content" on public.hero_content;
 create policy "Authenticated can delete hero content"
 on public.hero_content
 for delete
 to authenticated
-using (true);
+using (public.is_admin_or_service_role());
 
 drop policy if exists "Public can read dev journey items" on public.dev_journey_items;
 create policy "Public can read dev journey items"
@@ -412,22 +496,22 @@ create policy "Authenticated can insert dev journey items"
 on public.dev_journey_items
 for insert
 to authenticated
-with check (true);
+with check (public.is_admin_or_service_role());
 
 drop policy if exists "Authenticated can update dev journey items" on public.dev_journey_items;
 create policy "Authenticated can update dev journey items"
 on public.dev_journey_items
 for update
 to authenticated
-using (true)
-with check (true);
+using (public.is_admin_or_service_role())
+with check (public.is_admin_or_service_role());
 
 drop policy if exists "Authenticated can delete dev journey items" on public.dev_journey_items;
 create policy "Authenticated can delete dev journey items"
 on public.dev_journey_items
 for delete
 to authenticated
-using (true);
+using (public.is_admin_or_service_role());
 
 drop policy if exists "Public can read certifications" on public.certifications;
 create policy "Public can read certifications"
@@ -441,22 +525,73 @@ create policy "Authenticated can insert certifications"
 on public.certifications
 for insert
 to authenticated
-with check (true);
+with check (public.is_admin_or_service_role());
 
 drop policy if exists "Authenticated can update certifications" on public.certifications;
 create policy "Authenticated can update certifications"
 on public.certifications
 for update
 to authenticated
-using (true)
-with check (true);
+using (public.is_admin_or_service_role())
+with check (public.is_admin_or_service_role());
 
 drop policy if exists "Authenticated can delete certifications" on public.certifications;
 create policy "Authenticated can delete certifications"
 on public.certifications
 for delete
 to authenticated
+using (public.is_admin_or_service_role());
+
+drop policy if exists "Public can read stats" on public.stats;
+create policy "Public can read stats"
+on public.stats
+for select
+to anon, authenticated
 using (true);
+
+drop policy if exists "Authenticated can insert stats" on public.stats;
+create policy "Authenticated can insert stats"
+on public.stats
+for insert
+to authenticated
+with check (public.is_admin_or_service_role());
+
+drop policy if exists "Authenticated can update stats" on public.stats;
+create policy "Authenticated can update stats"
+on public.stats
+for update
+to authenticated
+using (public.is_admin_or_service_role())
+with check (public.is_admin_or_service_role());
+
+drop policy if exists "Authenticated can delete stats" on public.stats;
+create policy "Authenticated can delete stats"
+on public.stats
+for delete
+to authenticated
+using (public.is_admin_or_service_role());
+
+drop policy if exists "Authenticated can read all profiles" on public.profiles;
+create policy "Authenticated can read own or admin profiles"
+on public.profiles
+for select
+to authenticated
+using (id = auth.uid() or public.is_admin_or_service_role());
+
+drop policy if exists "Authenticated can insert own profile" on public.profiles;
+create policy "Authenticated can insert own or admin profiles"
+on public.profiles
+for insert
+to authenticated
+with check (id = auth.uid() or public.is_admin_or_service_role());
+
+drop policy if exists "Authenticated can update own profile" on public.profiles;
+create policy "Authenticated can update own or admin profiles"
+on public.profiles
+for update
+to authenticated
+using (id = auth.uid() or public.is_admin_or_service_role())
+with check (id = auth.uid() or public.is_admin_or_service_role());
 
 drop policy if exists "Public can read portfolio media" on storage.objects;
 create policy "Public can read portfolio media"

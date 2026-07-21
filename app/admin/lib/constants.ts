@@ -7,6 +7,15 @@ export const DEFAULT_PLACEHOLDER_IMAGE = "https://placehold.co/600x400@2x.png";
 // always target the same single row instead of creating duplicates.
 export const HERO_SINGLETON_ID = "00000000-0000-0000-0000-000000000001";
 
+export type AdminRole = "admin" | "editor";
+
+export const editorAllowedTabs: TabKey[] = [
+  "graphics",
+  "marketplace",
+  "blog",
+  "testimonials",
+];
+
 export const adminNavItems: Array<{
   tab: TabKey;
   label: string;
@@ -19,7 +28,14 @@ export const adminNavItems: Array<{
   { tab: "hero", label: "Hero", description: "Home header" },
   { tab: "dev-journey", label: "Dev Journey", description: "Project highlights" },
   { tab: "certifications", label: "Certifications", description: "Credentials" },
+  { tab: "stats", label: "Stats", description: "Home page cards" },
+  { tab: "users", label: "Users", description: "Admin accounts" },
 ];
+
+export const isTabAllowedForRole = (tab: TabKey, role: AdminRole) => {
+  if (role === "admin") return true;
+  return editorAllowedTabs.includes(tab);
+};
 
 export const inputClass =
   "w-full rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-4 py-3 text-sm text-[var(--color-on-surface)] outline-none focus:border-[var(--color-electric-blue)] focus:ring-2 focus:ring-[var(--color-electric-blue)]/20 transition-all duration-200";

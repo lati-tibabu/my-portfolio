@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:supabase": "tsx scripts/seed-supabase.ts"
+    "seed:supabase": "tsx scripts/seed-supabase.ts",
+    "seed:stats": "tsx scripts/seed-stats-only.ts",
+    "seed:dev-journey": "tsx scripts/seed-dev-journey-only.ts",
+    "seed:certifications": "tsx scripts/seed-certifications-only.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",

@@ -13,6 +13,7 @@ export type ListCardProps = {
   onSelectChange?: (selected: boolean) => void;
   /** Clicking the card body opens the editor. */
   onOpen?: () => void;
+  children?: ReactNode;
 };
 
 export default function ListCard({
@@ -25,6 +26,7 @@ export default function ListCard({
   selected,
   onSelectChange,
   onOpen,
+  children,
 }: ListCardProps) {
   return (
     <article
@@ -68,6 +70,11 @@ export default function ListCard({
         </div>
         <div className="flex shrink-0 items-center gap-2">{actions}</div>
       </div>
+      {children ? (
+        <div className="mt-4 border-t border-[var(--color-surface-border)] pt-4">
+          {children}
+        </div>
+      ) : null}
     </article>
   );
 }

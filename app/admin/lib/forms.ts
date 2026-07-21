@@ -6,6 +6,7 @@ import type {
   GraphicsForm,
   HeroForm,
   MarketplaceForm,
+  StatsForm,
   TestimonialForm,
 } from "./types";
 
@@ -69,7 +70,6 @@ export const emptyGraphicsForm = (): GraphicsForm => ({
   imagePath: "",
   publishedAt: new Date().toISOString().slice(0, 10),
   detailsHtml: "",
-  authorName: "",
 });
 
 export const emptyMarketplaceForm = (): MarketplaceForm => ({
@@ -96,7 +96,6 @@ export const emptyMarketplaceForm = (): MarketplaceForm => ({
   upgradeUrl: "",
   highlightsText: "",
   screenshotsText: "",
-  authorName: "",
 });
 
 export const emptyBlogForm = (): BlogForm => ({
@@ -111,7 +110,6 @@ export const emptyBlogForm = (): BlogForm => ({
   detailsHtml: "",
   contentFormat: "html",
   isDraft: true,
-  authorName: "",
 });
 
 export const emptyTestimonialForm = (): TestimonialForm => ({
@@ -160,5 +158,12 @@ export const emptyCertificationForm = (): CertificationForm => ({
   issuer: "",
   url: "",
   issuedAt: "",
+  sortOrder: "1",
+});
+
+export const emptyStatsForm = (): StatsForm => ({
+  id: null,
+  label: "",
+  value: "",
   sortOrder: "1",
 });

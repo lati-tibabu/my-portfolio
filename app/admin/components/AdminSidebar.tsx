@@ -1,19 +1,26 @@
 "use client";
 
-import { adminNavItems } from "../lib/constants";
+import { adminNavItems, isTabAllowedForRole } from "../lib/constants";
+import type { AdminRole } from "../lib/constants";
 import type { TabKey } from "../lib/types";
 
 type AdminSidebarProps = {
   activeTab: TabKey;
   onChange: (tab: TabKey) => void;
   userEmail?: string | null;
+  userRole?: AdminRole;
 };
 
 export default function AdminSidebar({
   activeTab,
   onChange,
   userEmail,
+  userRole = "admin",
 }: AdminSidebarProps) {
+  const visibleNavItems = adminNavItems.filter((item) =>
+    isTabAllowedForRole(item.tab, userRole),
+  );
+
   return (
     <aside className="h-fit overflow-hidden rounded-xl border-2 border-[var(--color-on-surface)] bg-[var(--color-surface-container-lowest)] shadow-[6px_6px_0_var(--color-on-surface)] lg:sticky lg:top-24">
       <div className="border-b-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] p-5 text-white">
@@ -24,13 +31,16 @@ export default function AdminSidebar({
         <p className="mt-2 truncate text-[12px] text-white/65">
           {userEmail ?? "Authenticated editor"}
         </p>
+        <p className="mt-1 truncate text-[10px] text-white/50 uppercase tracking-[0.12em]">
+          {userRole}
+        </p>
       </div>
       <nav className="p-3" aria-label="Content collections">
         <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--color-on-surface-variant)]">
           Collections
         </p>
         <div className="space-y-1">
-          {adminNavItems.map((item, index) => (
+          {visibleNavItems.map((item, index) => (
             <button
               key={item.tab}
               type="button"
@@ -59,7 +69,7 @@ export default function AdminSidebar({
       </nav>
       <div className="border-t border-[var(--color-surface-border)] p-4">
         <p className="text-[11px] leading-[1.5] text-[var(--color-on-surface-variant)]">
-          Changes publish to the portfolio after saving.
+          Changes publish to the portfolio after signing out.
         </p>
       </div>
     </aside>

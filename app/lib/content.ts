@@ -8,6 +8,7 @@ import {
   type HeroContent,
   type HeroLayout,
   type MarketplaceItem,
+  type StatItem,
   type Testimonial,
 } from "../data/cms";
 
@@ -92,6 +93,15 @@ type CertificationRow = {
   issued_at: string | null;
   sort_order: number;
   created_at: string;
+};
+
+type StatsRow = {
+  id: string;
+  label: string;
+  value: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type HeroRow = {
@@ -413,4 +423,30 @@ export async function loadCertifications(): Promise<Certification[]> {
       createdAt: row.created_at,
     };
   });
+}
+
+export async function loadStats(): Promise<StatItem[]> {
+  const client = createReadClient();
+  if (!client) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("stats")
+    .select("id,label,value,sort_order,created_at,updated_at")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error || !data?.length) {
+    return [];
+  }
+
+  return (data as StatsRow[]).map((row) => ({
+    id: row.id,
+    label: row.label,
+    value: row.value,
+    sortOrder: row.sort_order,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
 }

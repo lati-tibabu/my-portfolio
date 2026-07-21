@@ -8,6 +8,7 @@ import type {
   GraphicsRecord,
   HeroRecord,
   MarketplaceRecord,
+  StatsRecord,
   TestimonialRecord,
 } from "./types";
 
@@ -72,6 +73,7 @@ export type LoadAllResult = {
   hero: HeroRecord | null;
   devJourney: DevJourneyRecord[];
   certifications: CertificationRecord[];
+  stats: StatsRecord[];
   message: string;
 };
 
@@ -84,6 +86,7 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
     heroResult,
     devJourneyResult,
     certificationsResult,
+    statsResult,
   ] = await Promise.all([
     client
       .from("graphics_items")
@@ -116,6 +119,11 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
       .select("*")
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true }),
+    client
+      .from("stats")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
   ]);
 
   const graphics = (graphicsResult.data as GraphicsRecord[]) ?? [];
@@ -125,6 +133,7 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
   const hero = (heroResult.data?.[0] as HeroRecord | undefined) ?? null;
   const devJourney = (devJourneyResult.data as DevJourneyRecord[]) ?? [];
   const certifications = (certificationsResult.data as CertificationRecord[]) ?? [];
+  const stats = (statsResult.data as StatsRecord[]) ?? [];
 
   const hasError =
     graphicsResult.error ||
@@ -133,7 +142,8 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
     testimonialsResult.error ||
     heroResult.error ||
     devJourneyResult.error ||
-    certificationsResult.error;
+    certificationsResult.error ||
+    statsResult.error;
   const message = hasError
     ? graphicsResult.error?.message ||
       marketplaceResult.error?.message ||
@@ -142,6 +152,7 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
       heroResult.error?.message ||
       devJourneyResult.error?.message ||
       certificationsResult.error?.message ||
+      statsResult.error?.message ||
       "Loaded with some empty sections."
     : "Content loaded successfully.";
 
@@ -153,6 +164,7 @@ export const loadAll = async (client: SupabaseClient): Promise<LoadAllResult> =>
     hero,
     devJourney,
     certifications,
+    stats,
     message,
   };
 };

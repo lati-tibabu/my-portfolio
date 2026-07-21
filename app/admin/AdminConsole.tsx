@@ -5,6 +5,8 @@ import { supabaseBrowser } from "../lib/supabase/browser";
 import { sectionClass } from "./lib/constants";
 import { loadAll } from "./lib/crud";
 import { useAdminAuth } from "./lib/useAdminAuth";
+import { isTabAllowedForRole } from "./lib/constants";
+import type { AdminRole } from "./lib/constants";
 import type {
   BlogRecord,
   CertificationRecord,
@@ -12,6 +14,7 @@ import type {
   GraphicsRecord,
   HeroRecord,
   MarketplaceRecord,
+  StatsRecord,
   TabKey,
   TestimonialRecord,
 } from "./lib/types";
@@ -25,10 +28,18 @@ import TestimonialsPanel from "./components/TestimonialsPanel";
 import HeroPanel from "./components/HeroPanel";
 import DevJourneyPanel from "./components/DevJourneyPanel";
 import CertificationsPanel from "./components/CertificationsPanel";
+import StatsPanel from "./components/StatsPanel";
+import UsersPanel from "./components/UsersPanel";
 
 export default function AdminConsole() {
   const auth = useAdminAuth();
   const [activeTab, setActiveTab] = useState<TabKey>("graphics");
+
+  const handleTabChange = (tab: TabKey) => {
+    if (isTabAllowedForRole(tab, auth.adminRole as AdminRole)) {
+      setActiveTab(tab);
+    }
+  };
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState(
     "Sign in to manage content.",
@@ -40,6 +51,7 @@ export default function AdminConsole() {
   const [hero, setHero] = useState<HeroRecord | null>(null);
   const [devJourney, setDevJourney] = useState<DevJourneyRecord[]>([]);
   const [certifications, setCertifications] = useState<CertificationRecord[]>([]);
+  const [stats, setStats] = useState<StatsRecord[]>([]);
 
   const reload = async () => {
     setBusy(true);
@@ -53,6 +65,7 @@ export default function AdminConsole() {
       setHero(result.hero);
       setDevJourney(result.devJourney);
       setCertifications(result.certifications);
+      setStats(result.stats);
       setMessage(result.message);
     } catch (error) {
       setMessage(
@@ -72,11 +85,17 @@ export default function AdminConsole() {
     // reload is a stable-enough closure over setState setters; only re-run on sign-in.
   }, [auth.signedIn]);
 
-  if (auth.loadingSession) {
+  useEffect(() => {
+    if (!isTabAllowedForRole(activeTab, auth.adminRole as AdminRole)) {
+      setActiveTab("graphics");
+    }
+  }, [activeTab, auth.adminRole]);
+
+  if (auth.loadingSession || auth.loadingProfile) {
     return (
       <div className={sectionClass}>
         <p className="text-sm text-[var(--color-on-surface-variant)]">
-          Loading admin session...
+          {auth.loadingSession ? "Loading admin session..." : "Loading admin profile..."}
         </p>
       </div>
     );
@@ -100,8 +119,9 @@ export default function AdminConsole() {
     <div className="mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_1fr] lg:gap-8 lg:px-8 lg:py-8">
       <AdminSidebar
         activeTab={activeTab}
-        onChange={setActiveTab}
+        onChange={handleTabChange}
         userEmail={auth.sessionUser?.email}
+        userRole={auth.adminRole as AdminRole}
       />
 
       <div className="min-w-0 space-y-5">
@@ -114,6 +134,7 @@ export default function AdminConsole() {
             busy={busy}
             setBusy={setBusy}
             setMessage={setMessage}
+            adminName={auth.adminName}
           />
         )}
 
@@ -124,6 +145,7 @@ export default function AdminConsole() {
             busy={busy}
             setBusy={setBusy}
             setMessage={setMessage}
+            adminName={auth.adminName}
           />
         )}
 
@@ -134,6 +156,7 @@ export default function AdminConsole() {
             busy={busy}
             setBusy={setBusy}
             setMessage={setMessage}
+            adminName={auth.adminName}
           />
         )}
 
@@ -147,7 +170,7 @@ export default function AdminConsole() {
           />
         )}
 
-        {activeTab === "hero" && (
+        {activeTab === "hero" && auth.adminRole === "admin" && (
           <HeroPanel
             record={hero}
             reload={reload}
@@ -157,7 +180,7 @@ export default function AdminConsole() {
           />
         )}
 
-        {activeTab === "dev-journey" && (
+        {activeTab === "dev-journey" && auth.adminRole === "admin" && (
           <DevJourneyPanel
             records={devJourney}
             reload={reload}
@@ -167,7 +190,7 @@ export default function AdminConsole() {
           />
         )}
 
-        {activeTab === "certifications" && (
+        {activeTab === "certifications" && auth.adminRole === "admin" && (
           <CertificationsPanel
             records={certifications}
             reload={reload}
@@ -175,6 +198,36 @@ export default function AdminConsole() {
             setBusy={setBusy}
             setMessage={setMessage}
           />
+        )}
+
+        {activeTab === "stats" && auth.adminRole === "admin" && (
+          <StatsPanel
+            records={stats}
+            reload={reload}
+            busy={busy}
+            setBusy={setBusy}
+            setMessage={setMessage}
+          />
+        )}
+
+        {activeTab === "users" && auth.adminRole === "admin" && (
+          <UsersPanel
+            currentUserId={auth.sessionUser?.id}
+            currentUserEmail={auth.sessionUser?.email}
+            adminName={auth.adminName}
+            onAdminNameChange={auth.updateDisplayName}
+            busy={busy}
+            setBusy={setBusy}
+            setMessage={setMessage}
+          />
+        )}
+
+        {!isTabAllowedForRole(activeTab, auth.adminRole as AdminRole) && (
+          <div className={sectionClass}>
+            <p className="text-sm text-[var(--color-on-surface-variant)]">
+              You do not have access to this section.
+            </p>
+          </div>
         )}
       </div>
     </div>

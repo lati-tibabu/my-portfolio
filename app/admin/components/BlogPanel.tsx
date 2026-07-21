@@ -38,6 +38,7 @@ export type BlogPanelProps = {
   busy: boolean;
   setBusy: (value: boolean) => void;
   setMessage: (value: string) => void;
+  adminName: string;
 };
 
 export default function BlogPanel({
@@ -46,6 +47,7 @@ export default function BlogPanel({
   busy,
   setBusy,
   setMessage,
+  adminName,
 }: BlogPanelProps) {
   const [form, setForm] = useState<BlogForm>(emptyBlogForm);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -102,7 +104,6 @@ export default function BlogPanel({
       detailsHtml: item.details_html,
       contentFormat: item.content_format ?? "html",
       isDraft: item.is_draft ?? false,
-      authorName: item.author_name ?? "latitibabu",
     });
     setImageFile(null);
     setSlugManuallyEdited(true);
@@ -126,7 +127,6 @@ export default function BlogPanel({
       detailsHtml: item.details_html,
       contentFormat: item.content_format ?? "html",
       isDraft: true,
-      authorName: item.author_name ?? "latitibabu",
     });
     setImageFile(null);
     setSlugManuallyEdited(false);
@@ -167,7 +167,7 @@ export default function BlogPanel({
         details_html: form.detailsHtml,
         content_format: form.contentFormat,
         is_draft: publishNow ? false : unpublishNow ? true : form.isDraft,
-        author_name: form.authorName.trim() || "latitibabu",
+        author_name: adminName.trim() || "latitibabu",
       };
 
       const query = form.id
@@ -483,16 +483,6 @@ export default function BlogPanel({
                   value={form.tagsText}
                   onChange={(event) =>
                     setForm({ ...form, tagsText: event.target.value })
-                  }
-                />
-              </FormField>
-              <FormField label="Author name">
-                <input
-                  className={inputClass}
-                  value={form.authorName}
-                  placeholder="latitibabu"
-                  onChange={(event) =>
-                    setForm({ ...form, authorName: event.target.value })
                   }
                 />
               </FormField>

@@ -9,6 +9,7 @@ import {
   certifications as defaultCertifications,
   devJourneyItems as defaultDevJourneyItems,
   heroContent as defaultHeroContent,
+  stats as defaultStats,
 } from "./data/cms";
 import type {
   Certification,
@@ -20,6 +21,7 @@ import {
   loadDevJourneyItems,
   loadHeroContent,
   loadMarketplaceItems,
+  loadStats,
   loadTestimonials,
 } from "./lib/content";
 
@@ -39,13 +41,6 @@ export const metadata: Metadata = {
     "Python",
   ],
 };
-
-const createStats = (marketplaceCount: number) => [
-  { label: "Odoo apps/themes published", value: `${marketplaceCount}` },
-  { label: "Odoo app adopters", value: "170+" },
-  { label: "Years of experience", value: "4+" },
-  { label: "Stack size", value: "20+ tools" },
-];
 
 const solutions = [
   {
@@ -169,19 +164,20 @@ const graphicsPreview = [
 
 export default async function Home() {
   const marketplaceItems = await loadMarketplaceItems();
-  const [heroFromCms, testimonials, devJourneyFromCms, certificationsFromCms] =
+  const [heroFromCms, testimonials, devJourneyFromCms, certificationsFromCms, statsFromCms] =
     await Promise.all([
       loadHeroContent(),
       loadTestimonials(),
       loadDevJourneyItems(),
       loadCertifications(),
+      loadStats(),
     ]);
   const hero: HeroContent = heroFromCms ?? defaultHeroContent;
   const devJourney: DevJourneyItem[] =
     devJourneyFromCms.length > 0 ? devJourneyFromCms : defaultDevJourneyItems;
   const certifications: Certification[] =
     certificationsFromCms.length > 0 ? certificationsFromCms : defaultCertifications;
-  const stats = createStats(marketplaceItems.length);
+  const stats = statsFromCms.length > 0 ? statsFromCms : defaultStats;
 
   const heroCtas = [
     { label: hero.cta1Label, href: hero.cta1Href, primary: true },
