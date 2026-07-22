@@ -7,8 +7,7 @@ export type TabKey =
   | "dev-journey"
   | "certifications"
   | "stats"
-  | "users"
-  | "analytics";
+  | "users";
 
 export type VisitorEvent = {
   id: string;
@@ -25,6 +24,11 @@ export type VisitorEvent = {
   device: string;
   language: string | null;
   timezone: string | null;
+  color_scheme: string | null;
+  screen_width: number | null;
+  screen_height: number | null;
+  pixel_ratio: number | null;
+  query: string | null;
   page: string;
   referrer: string | null;
 };

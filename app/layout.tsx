@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Lexend, Playwrite_ID, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
+import Link from "next/link";
 import "./globals.css";
 import Header from "./components/Header";
 import CustomCursor from "./components/CustomCursor";
@@ -124,9 +125,10 @@ export default function RootLayout({
         <CustomCursor />
         <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">
           <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[var(--color-on-surface-variant)]">
-            <p>
-              &copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.
-            </p>
+            <p>&copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.</p>
+            <Link href="/privacy" className="underline-offset-4 hover:text-[var(--color-on-surface)] hover:underline">
+              Privacy policy
+            </Link>
           </div>
         </footer>
       </body>

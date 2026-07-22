@@ -1,6 +1,7 @@
 "use client";
 
 import { adminNavItems, isTabAllowedForRole } from "../lib/constants";
+import Link from "next/link";
 import type { AdminRole } from "../lib/constants";
 import type { TabKey } from "../lib/types";
 
@@ -67,6 +68,20 @@ export default function AdminSidebar({
           ))}
         </div>
       </nav>
+      {userRole === "admin" && (
+        <div className="border-t border-[var(--color-surface-border)] p-3">
+          <Link
+            href="/admin/analytics"
+            className="flex items-center gap-3 rounded-md border border-transparent px-3 py-3 text-left text-[var(--color-on-surface-variant)] transition-all hover:border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)] hover:text-[var(--color-on-surface)]"
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-sm border border-current font-label text-[10px]">↗</span>
+            <span>
+              <span className="block text-sm font-semibold">Analytics</span>
+              <span className="mt-0.5 block text-[11px]">Visitor insights</span>
+            </span>
+          </Link>
+        </div>
+      )}
       <div className="border-t border-[var(--color-surface-border)] p-4">
         <p className="text-[11px] leading-[1.5] text-[var(--color-on-surface-variant)]">
           Changes publish to the portfolio after signing out.

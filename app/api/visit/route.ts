@@ -4,6 +4,14 @@ import { createClient } from "@supabase/supabase-js";
 
 const optionalText = (value: unknown, max = 500) =>
   typeof value === "string" ? value.slice(0, max) || null : null;
+const optionalGeoText = (value: string | null, max = 500) => {
+  if (!value) return null;
+  try {
+    return decodeURIComponent(value.replace(/\+/g, " ")).slice(0, max) || null;
+  } catch {
+    return value.slice(0, max) || null;
+  }
+};
 const optionalUuid = (value: unknown) =>
   typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
     ? value
@@ -31,9 +39,9 @@ export async function POST(request: Request) {
       visitor_id: optionalUuid(body.visitorId),
       session_id: optionalUuid(body.sessionId),
       ip_hash: ip ? crypto.createHash("sha256").update(ip).digest("hex") : null,
-      country: optionalText(request.headers.get("x-vercel-ip-country"), 100),
-      region: optionalText(request.headers.get("x-vercel-ip-country-region"), 100),
-      city: optionalText(request.headers.get("x-vercel-ip-city"), 150),
+      country: optionalGeoText(request.headers.get("x-vercel-ip-country"), 100),
+      region: optionalGeoText(request.headers.get("x-vercel-ip-country-region"), 100),
+      city: optionalGeoText(request.headers.get("x-vercel-ip-city"), 150),
       browser: optionalText(ua.browser.name, 80),
       browser_version: optionalText(ua.browser.version, 40),
       engine: optionalText(ua.engine.name, 80),
