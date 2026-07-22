@@ -64,7 +64,7 @@ export default function AdminLoginScreen({
         </label>
         <button
           type="submit"
-          className="inline-flex w-full items-center justify-center rounded-lg border-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[4px_4px_0_var(--color-surface-border)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--color-surface-border)] active:translate-y-0 active:shadow-none focus:outline-none focus:ring-2 focus:ring-[var(--color-on-surface)]/30 disabled:opacity-60"
+          className="inline-flex m-top-to-bottom-3 w-full items-center justify-center rounded-lg border-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[4px_4px_0_var(--color-surface-border)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--color-surface-border)] active:translate-y-0 active:shadow-none focus:outline-none focus:ring-2 focus:ring-[var(--color-on-surface)]/30 disabled:opacity-60"
           disabled={busy}
         >
           {busy ? "Signing in..." : "Sign in"}

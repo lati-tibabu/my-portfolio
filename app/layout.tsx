@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
 import CustomCursor from "./components/CustomCursor";
+import VisitorTracker from "./components/VisitorTracker";
 
 const playwrite = Playwrite_ID({
   variable: "--font-logo",
@@ -118,6 +119,7 @@ export default function RootLayout({
           }}
         />
         <Header />
+        <VisitorTracker />
         <main className="flex-1">{children}</main>
         <CustomCursor />
         <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">

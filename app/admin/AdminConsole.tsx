@@ -30,6 +30,7 @@ import DevJourneyPanel from "./components/DevJourneyPanel";
 import CertificationsPanel from "./components/CertificationsPanel";
 import StatsPanel from "./components/StatsPanel";
 import UsersPanel from "./components/UsersPanel";
+import AnalyticsPanel from "./components/AnalyticsPanel";
 
 export default function AdminConsole() {
   const auth = useAdminAuth();
@@ -221,6 +222,8 @@ export default function AdminConsole() {
             setMessage={setMessage}
           />
         )}
+
+        {activeTab === "analytics" && auth.adminRole === "admin" && <AnalyticsPanel />}
 
         {!isTabAllowedForRole(activeTab, auth.adminRole as AdminRole) && (
           <div className={sectionClass}>

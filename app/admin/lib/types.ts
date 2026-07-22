@@ -7,7 +7,27 @@ export type TabKey =
   | "dev-journey"
   | "certifications"
   | "stats"
-  | "users";
+  | "users"
+  | "analytics";
+
+export type VisitorEvent = {
+  id: string;
+  visited_at: string;
+  visitor_id: string | null;
+  session_id: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
+  browser: string | null;
+  browser_version: string | null;
+  os: string | null;
+  os_version: string | null;
+  device: string;
+  language: string | null;
+  timezone: string | null;
+  page: string;
+  referrer: string | null;
+};
 
 export type SessionUser = {
   id?: string;

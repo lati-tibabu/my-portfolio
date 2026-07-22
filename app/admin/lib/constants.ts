@@ -30,6 +30,7 @@ export const adminNavItems: Array<{
   { tab: "certifications", label: "Certifications", description: "Credentials" },
   { tab: "stats", label: "Stats", description: "Home page cards" },
   { tab: "users", label: "Users", description: "Admin accounts" },
+  { tab: "analytics", label: "Analytics", description: "Visitor insights" },
 ];
 
 export const isTabAllowedForRole = (tab: TabKey, role: AdminRole) => {
