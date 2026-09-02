@@ -1,3 +1,5 @@
+import { hasSupabaseBrowserConfig, supabaseBrowser } from "./supabase/browser";
+
 const visitorStorageKey = "portfolio-visitor-id";
 const sessionStorageKey = "portfolio-session-id";
 
@@ -12,6 +14,17 @@ const getId = (storage: Storage, key: string) => {
 
 export async function trackVisit(pathname: string, search: string) {
   if (pathname.startsWith("/admin")) return;
+
+  if (supabaseBrowser && hasSupabaseBrowserConfig()) {
+    try {
+      const { data } = await supabaseBrowser.auth.getSession();
+      if (data.session?.user) {
+        return;
+      }
+    } catch {
+      // Ignore auth error and continue
+    }
+  }
 
   const visitorId = getId(localStorage, visitorStorageKey);
   const sessionId = getId(sessionStorage, sessionStorageKey);

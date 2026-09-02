@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { UAParser } from "ua-parser-js";
 import { createClient } from "@supabase/supabase-js";
+import { createServerSupabaseClient } from "../../lib/supabase/server";
 
 const optionalText = (value: unknown, max = 500) =>
   typeof value === "string" ? value.slice(0, max) || null : null;
@@ -13,7 +14,10 @@ const optionalGeoText = (value: string | null, max = 500) => {
   }
 };
 const optionalUuid = (value: unknown) =>
-  typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+  typeof value === "string" &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  )
     ? value
     : null;
 
@@ -25,10 +29,27 @@ export async function POST(request: Request) {
       return Response.json({ success: false }, { status: 400 });
     }
 
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      try {
+        const serverSupabase = await createServerSupabaseClient();
+        const {
+          data: { user },
+        } = await serverSupabase.auth.getUser();
+        if (user) {
+          return Response.json({ success: true, skipped: "authenticated" });
+        }
+      } catch {
+        // Ignore session verification errors and proceed
+      }
+    }
+
     const userAgent = request.headers.get("user-agent") || "";
     const ua = new UAParser(userAgent).getResult();
     const forwardedFor = request.headers.get("x-forwarded-for") || "";
-    const ip = forwardedFor.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "";
+    const ip =
+      forwardedFor.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "";
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -40,7 +61,10 @@ export async function POST(request: Request) {
       session_id: optionalUuid(body.sessionId),
       ip_hash: ip ? crypto.createHash("sha256").update(ip).digest("hex") : null,
       country: optionalGeoText(request.headers.get("x-vercel-ip-country"), 100),
-      region: optionalGeoText(request.headers.get("x-vercel-ip-country-region"), 100),
+      region: optionalGeoText(
+        request.headers.get("x-vercel-ip-country-region"),
+        100,
+      ),
       city: optionalGeoText(request.headers.get("x-vercel-ip-city"), 150),
       browser: optionalText(ua.browser.name, 80),
       browser_version: optionalText(ua.browser.version, 40),
@@ -56,7 +80,9 @@ export async function POST(request: Request) {
       timezone: optionalText(body.timezone, 100),
       color_scheme: optionalText(body.colorScheme, 20),
       screen_width: Number.isFinite(body.screenWidth) ? body.screenWidth : null,
-      screen_height: Number.isFinite(body.screenHeight) ? body.screenHeight : null,
+      screen_height: Number.isFinite(body.screenHeight)
+        ? body.screenHeight
+        : null,
       pixel_ratio: Number.isFinite(body.pixelRatio) ? body.pixelRatio : null,
       page,
       query: optionalText(body.query, 1000),
