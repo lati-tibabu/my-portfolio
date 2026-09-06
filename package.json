@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint app scripts next.config.ts",
     "seed:supabase": "tsx scripts/seed-supabase.ts",
     "seed:stats": "tsx scripts/seed-stats-only.ts",
     "seed:dev-journey": "tsx scripts/seed-dev-journey-only.ts",

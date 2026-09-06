@@ -119,9 +119,10 @@ export default function RootLayout({
             __html: JSON.stringify(personStructuredData),
           }}
         />
+        <a className="skip-link" href="#main-content">Skip to content</a>
         <Header />
         <VisitorTracker />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
         <CustomCursor />
         <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">
           <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[var(--color-on-surface-variant)]">

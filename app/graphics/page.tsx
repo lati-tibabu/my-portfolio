@@ -1,3 +1,4 @@
+import CollectionEmptyState from "../components/CollectionEmptyState";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Icon from "../components/Icon";
@@ -52,14 +53,16 @@ export default async function GraphicsPage({ searchParams }: PageProps) {
       </section>
 
       <section className="px-6 pb-20">
+        {graphicsItems.length === 0 && <CollectionEmptyState title="New work is on the way" description="Check back for posters, event artwork, and brand visuals, or get in touch about a design project." />}
         <GraphicsCardsClient items={pageItems} />
 
-        <div className="max-w-[1100px] mx-auto mt-10 flex flex-wrap items-center justify-center gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
+        {totalPages > 1 && <nav aria-label="Graphics pages" className="max-w-[1100px] mx-auto mt-10 flex flex-wrap items-center justify-center gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
           {Array.from({ length: totalPages }, (_, index) => index + 1).map(
             (pageNumber) => (
               <Link
                 key={pageNumber}
                 href={`/graphics?page=${pageNumber}`}
+                aria-current={pageNumber === safePage ? "page" : undefined}
                 className={`rounded-full border px-4 py-2 transition ${
                   pageNumber === safePage
                     ? "border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)] text-white"
@@ -70,7 +73,7 @@ export default async function GraphicsPage({ searchParams }: PageProps) {
               </Link>
             ),
           )}
-        </div>
+        </nav>}
       </section>
     </div>
   );

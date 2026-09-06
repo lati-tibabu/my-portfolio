@@ -263,7 +263,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
-      <section className="relative overflow-hidden px-6 pt-28 pb-16">
+      <section className="relative overflow-hidden px-6 pt-14 pb-12 sm:pt-20 lg:pt-24 lg:pb-16">
         <div className="absolute -top-32 right-[-10%] h-[420px] w-[420px] rounded-full bg-[var(--color-primary-fixed)] blur-3xl opacity-70" />
         <div className="absolute -bottom-40 left-[-5%] h-[420px] w-[420px] rounded-full bg-[var(--color-secondary-fixed)] blur-3xl opacity-50" />
         <div className="max-w-[1280px] mx-auto">
@@ -291,9 +291,9 @@ export default async function Home() {
 
       <section className="px-6">
         <div className="max-w-[1280px] mx-auto">
-          <div className="grid gap-6 text-center sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 text-center sm:gap-6 lg:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-3 p-6 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] transition-all duration-300 hover:bg-[var(--color-surface-container-lowest)] hover:-translate-y-1">
+              <div key={stat.label} className="flex flex-col items-center gap-3 px-3 py-6 sm:p-6 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] transition-all duration-300 hover:bg-[var(--color-surface-container-lowest)] hover:-translate-y-1">
                 <p className="font-heading text-[28px] text-[var(--color-on-surface)]">
                   {stat.value}
                 </p>
@@ -678,53 +678,70 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
-              <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                Development journey
-              </h3>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="space-y-6">
+            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
+                  Development journey
+                </h3>
+                <span className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
+                  Core Projects
+                </span>
+              </div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {devJourney.map((project) => {
                   const primaryLink = project.links[0];
                   return (
-                  <article
-                    key={project.id ?? project.title}
-                    className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4"
-                  >
-                    <h4 className="font-heading text-[16px] text-[var(--color-on-surface)]">
-                      {project.title}
-                    </h4>
-                    <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                      {project.description}
-                    </p>
-                    {primaryLink && (
-                      <a
-                        href={primaryLink.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-3 inline-flex text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
-                      >
-                        View project →
-                      </a>
-                    )}
-                  </article>
+                    <article
+                      key={project.id ?? project.title}
+                      className="flex flex-col justify-between rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-electric-blue)]/40 hover:shadow-md"
+                    >
+                      <div>
+                        <h4 className="font-heading text-[16px] font-semibold text-[var(--color-on-surface)]">
+                          {project.title}
+                        </h4>
+                        <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-on-surface-variant)]">
+                          {project.description}
+                        </p>
+                      </div>
+                      {primaryLink && (
+                        <a
+                          href={primaryLink.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-4 inline-flex items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)] transition hover:gap-2"
+                        >
+                          View project →
+                        </a>
+                      )}
+                    </article>
                   );
                 })}
               </div>
             </div>
 
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
-              <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                Certifications
-              </h3>
-              <ul className="mt-4 space-y-3 text-[13px] text-[var(--color-on-surface-variant)]">
+            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
+                  Certifications
+                </h3>
+                <span className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
+                  Verified Credentials
+                </span>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {certifications.map((cert) => (
-                  <li key={cert.id ?? cert.title} className="flex items-start gap-2">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--color-electric-blue)]" />
-                    <span>{cert.title}</span>
-                  </li>
+                  <div
+                    key={cert.id ?? cert.title}
+                    className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4 transition hover:border-[var(--color-electric-blue)]/40"
+                  >
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--color-electric-blue)]" />
+                    <span className="text-[13px] font-medium text-[var(--color-on-surface)]">
+                      {cert.title}
+                    </span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         </div>

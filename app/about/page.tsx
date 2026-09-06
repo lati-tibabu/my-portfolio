@@ -201,7 +201,7 @@ export default async function About() {
 
             <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
               <h3 className="font-heading text-[18px] text-[var(--color-on-surface)]">Certifications</h3>
-              <div className="mt-4 grid gap-3 text-[13px] text-[var(--color-on-surface-variant)] sm:grid-cols-2">
+              <div className="mt-4 grid gap-3 text-[13px] text-[var(--color-on-surface-variant)] sm:grid-cols-2 lg:grid-cols-3">
                 {certifications.map((cert) => (
                   <div key={cert.id ?? cert.title} className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3">
                     {cert.title}

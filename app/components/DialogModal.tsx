@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, useEffect, useRef } from "react";
 import "./DialogModal.css";
 
@@ -6,11 +8,12 @@ type DialogModalProps = {
     isOpen: boolean;
     onClose: () => void;
     children: ReactNode;
+    label?: string;
 }
 
-export default function DialogModal ({isOpen, onClose, children}: DialogModalProps){
+export default function DialogModal ({isOpen, onClose, children, label = "Image preview"}: DialogModalProps){
     
-    const dialogRef = useRef(null);
+    const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
         const dialog = dialogRef.current as HTMLDialogElement | null;
@@ -41,6 +44,7 @@ export default function DialogModal ({isOpen, onClose, children}: DialogModalPro
     return (
         <dialog
             ref={dialogRef}
+            aria-label={label}
             className="dialog-modal"
             onClick={(e: React.MouseEvent<HTMLDialogElement>) => {
                 if (e.currentTarget === e.target) onClose();

@@ -9,12 +9,21 @@ type TestimonialsMarqueeProps = {
   items: Testimonial[];
 };
 
-export default function TestimonialsMarquee({ items }: TestimonialsMarqueeProps) {
+export default function TestimonialsMarquee({
+  items,
+}: TestimonialsMarqueeProps) {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [animate, setAnimate] = useState(false);
 
+  const shouldRotate = items.length >= 3;
+
   useEffect(() => {
+    if (!shouldRotate) {
+      setAnimate(false);
+      return;
+    }
+
     const viewport = viewportRef.current;
     const track = trackRef.current;
     if (!viewport || !track) {
@@ -33,16 +42,17 @@ export default function TestimonialsMarquee({ items }: TestimonialsMarqueeProps)
     ro.observe(viewport);
     ro.observe(track);
     return () => ro.disconnect();
-  }, [items]);
+  }, [items, shouldRotate]);
 
   if (!items.length) {
     return null;
   }
 
-  const cards = [...items, ...items];
+  // Only duplicate items for continuous marquee rotation when there are 3+ testimonials
+  const cards = shouldRotate ? [...items, ...items] : items;
 
   const Card = ({ item }: { item: Testimonial }) => (
-    <article className="flex w-[320px] shrink-0 snap-start flex-col gap-4 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]">
+    <article className="flex w-[320px] max-w-full shrink-0 snap-start flex-col gap-4 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]">
       <div className="flex items-center gap-3">
         {item.photo ? (
           <Image
@@ -76,14 +86,20 @@ export default function TestimonialsMarquee({ items }: TestimonialsMarqueeProps)
     </article>
   );
 
+  const isAnimated = shouldRotate && animate;
+
   return (
     <div
       ref={viewportRef}
-      className="testimonials-marquee overflow-hidden"
+      className={`overflow-hidden ${isAnimated ? "testimonials-marquee" : ""}`}
     >
       <div
         ref={trackRef}
-        className={`flex w-max gap-6 ${animate ? "testimonials-track--animated" : "justify-center"}`}
+        className={`flex gap-6 ${
+          isAnimated
+            ? "w-max testimonials-track--animated"
+            : "w-full flex-wrap justify-center"
+        }`}
       >
         {cards.map((item, index) => (
           <Card key={`${item.id ?? item.name}-${index}`} item={item} />

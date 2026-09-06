@@ -1,3 +1,4 @@
+import CollectionEmptyState from "../components/CollectionEmptyState";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -69,6 +70,7 @@ export default async function MarketplacePage() {
       </section>
 
       <section className="px-6 pb-20">
+        {marketplaceItems.length === 0 && <CollectionEmptyState title="Products are on the way" description="Have an Odoo project in mind? Get in touch to discuss apps, themes, or a custom solution." />}
         <div className="max-w-[1200px] mx-auto grid gap-6 md:grid-cols-2">
           {marketplaceItems.map((item) => (
             <article

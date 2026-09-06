@@ -24,3 +24,5 @@ dialog::backdrop {
 :root[data-modal-open="true"] * {
   cursor: auto !important;
 }
+
+:root[data-modal-open="true"] { overflow: hidden; }

@@ -83,7 +83,7 @@ body::after {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.22;
   background-image:
     linear-gradient(rgba(0, 0, 0, 0.055) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
@@ -132,7 +132,6 @@ body::before {
 }
 
 /* Keep content above the grain layer. */
-header,
 main,
 footer {
   position: relative;
@@ -392,3 +391,30 @@ footer {
 .rounded-xl { border-radius: 8px; }
 .rounded-2xl { border-radius: 10px; }
 .rounded-3xl { border-radius: 12px; }
+
+/* Shared navigation and keyboard affordances. */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-on-surface);
+  outline-offset: 4px;
+}
+section[id] { scroll-margin-top: 6rem; }
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 10002;
+  transform: translateY(-180%);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  background: var(--color-on-surface);
+  color: var(--color-surface-container-lowest);
+}
+.skip-link:focus { transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

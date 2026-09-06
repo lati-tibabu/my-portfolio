@@ -1,3 +1,4 @@
+import CollectionEmptyState from "../components/CollectionEmptyState";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -89,6 +90,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
       </section>
 
       <section className="px-6 pb-24">
+        {blogPosts.length === 0 && <CollectionEmptyState title="New notes are on the way" description="Check back for articles on Odoo, web development, and the details behind the work." />}
         <div className="mx-auto grid max-w-[980px] gap-6">
           {pagePosts.map((post) => {
             const hasCoverImage =
@@ -149,6 +151,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
             <Link
               href={safePage > 1 ? `/blog?page=${safePage - 1}` : "#"}
               aria-disabled={safePage <= 1}
+              tabIndex={safePage <= 1 ? -1 : undefined}
               className={`rounded-full border px-4 py-2 transition ${
                 safePage <= 1
                   ? "pointer-events-none border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] opacity-40"
@@ -162,6 +165,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
                 <Link
                   key={pageNumber}
                   href={`/blog?page=${pageNumber}`}
+                  aria-current={pageNumber === safePage ? "page" : undefined}
                   className={`rounded-full border px-4 py-2 transition ${
                     pageNumber === safePage
                       ? "border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)] text-white"
@@ -175,6 +179,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
             <Link
               href={safePage < totalPages ? `/blog?page=${safePage + 1}` : "#"}
               aria-disabled={safePage >= totalPages}
+              tabIndex={safePage >= totalPages ? -1 : undefined}
               className={`rounded-full border px-4 py-2 transition ${
                 safePage >= totalPages
                   ? "pointer-events-none border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] opacity-40"

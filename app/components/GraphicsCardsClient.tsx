@@ -36,7 +36,7 @@ export default function GraphicsCardsClient({ items }: GraphicsCardsClientProps)
                 alt={item.title}
                 fill
                 sizes="(min-width: 1024px) 360px, (min-width: 640px) 45vw, 90vw"
-                className="object-cover grayscale transition-[filter] duration-300 ease-out group-hover:grayscale-0"
+                className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] group-focus-visible:scale-[1.03]"
                 draggable={false}
                 onContextMenu={blockDownloadActions}
                 onDragStart={blockDownloadActions}

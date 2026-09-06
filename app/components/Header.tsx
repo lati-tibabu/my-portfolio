@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Logo from "./Logo";
@@ -12,6 +12,19 @@ export default function Header() {
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [mobileOpen]);
   const isAdminRoute = pathname?.startsWith("/admin");
   const adminName = useMemo(
     () => (adminEmail ? adminEmail.split("@")[0] : "Admin"),
@@ -67,30 +80,32 @@ export default function Header() {
     <header className="sticky top-0 z-[9999] isolate bg-[rgba(255,255,255,0.85)] backdrop-blur-md border-b border-[var(--color-surface-border)]">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16 gap-4">
         {/* Logo */}
-        <Link href="/" onClick={() => setMobileOpen(false)}>
+        <Link href="/" aria-label="Lati Tibabu home" onClick={() => setMobileOpen(false)}>
           <Logo size="medium" />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--color-on-surface-variant)]">
+        <nav aria-label="Main navigation" className="hidden xl:flex items-center gap-5 text-sm font-medium text-[var(--color-on-surface-variant)]">
           {visibleNavLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="hover:text-[var(--color-on-surface)] transition"
+              aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
+              className="rounded-md px-2 py-2 hover:bg-[var(--color-surface-container-low)] hover:text-[var(--color-on-surface)] aria-[current=page]:bg-[var(--color-on-surface)] aria-[current=page]:text-white transition"
             >
               {link.name}
             </Link>
           ))}
           <Link
             href="/graphics"
-            className="hover:text-[var(--color-on-surface)] transition"
+            aria-current={pathname === "/graphics" ? "page" : undefined}
+            className="rounded-md px-2 py-2 hover:bg-[var(--color-surface-container-low)] aria-[current=page]:bg-[var(--color-on-surface)] aria-[current=page]:text-white transition"
           >
             Graphics
           </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           {isAdminRoute && adminEmail && (
             <div className="relative z-[100] flex items-center gap-2">
               <span className="hidden text-xs text-[var(--color-on-surface-variant)] sm:inline">
@@ -153,9 +168,13 @@ export default function Header() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] text-2xl transition"
+          ref={menuButtonRef}
+          type="button"
+          aria-expanded={mobileOpen}
+          aria-controls="mobile-navigation"
+          className="xl:hidden flex h-11 w-11 items-center justify-center rounded-md border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] text-2xl transition"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
         >
           {mobileOpen ? (
             <Icon name="close" size={28} />
@@ -167,12 +186,13 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-[var(--color-surface-container-lowest)] border-t border-[var(--color-surface-border)] px-4 sm:px-6 py-4 space-y-4">
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="max-h-[calc(100dvh-4rem)] overflow-y-auto xl:hidden bg-[var(--color-surface-container-lowest)] border-t border-[var(--color-surface-border)] px-4 sm:px-6 py-4 space-y-1">
           {visibleNavLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="block text-sm font-medium text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]"
+              aria-current={pathname === link.href || pathname.startsWith(`${link.href}/`) ? "page" : undefined}
+              className="block rounded-md px-3 py-3 text-sm font-medium aria-[current=page]:bg-[var(--color-surface-container-low)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]"
               onClick={() => setMobileOpen(false)}
             >
               {link.name}
@@ -180,7 +200,8 @@ export default function Header() {
           ))}
           <Link
             href="/graphics"
-            className="block text-sm font-medium text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]"
+            aria-current={pathname === "/graphics" ? "page" : undefined}
+            className="aria-[current=page]:bg-[var(--color-surface-container-low)] block rounded-md px-3 py-3 text-sm font-medium text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]"
             onClick={() => setMobileOpen(false)}
           >
             Graphics
@@ -195,6 +216,7 @@ export default function Header() {
           <div className="flex gap-4 pt-2">
             <a
               href="https://linkedin.com/in/lati-tibabu"
+              aria-label="LinkedIn"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
@@ -203,6 +225,7 @@ export default function Header() {
             </a>
             <a
               href="https://github.com/lati-tibabu"
+              aria-label="GitHub"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
@@ -211,6 +234,7 @@ export default function Header() {
             </a>
             <a
               href="https://t.me/latitibabu"
+              aria-label="Telegram"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition"
@@ -227,7 +251,7 @@ export default function Header() {
               <Icon name="whatsapp" size={20} />
             </a>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );
