@@ -33,7 +33,7 @@ export const textValue = (value: string | null | undefined) => value ?? "";
 
 export const splitList = (value: string) =>
   value
-    .split(",")
+    .split(/[,\n]/)
     .map((item) => item.trim())
     .filter(Boolean);
 

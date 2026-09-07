@@ -1,6 +1,12 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname === "/admin" || pathname?.startsWith("/admin/")) return null;
+
   return (
     <footer id="contact" className="site-footer px-6 pb-6 pt-16">
       <div className="mx-auto max-w-[1280px]">

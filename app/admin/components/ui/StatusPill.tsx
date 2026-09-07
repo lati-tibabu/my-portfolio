@@ -11,11 +11,11 @@ export type StatusPillProps = {
 };
 
 const toneClass: Record<PillTone, string> = {
-  success: "bg-[var(--color-success-teal)] text-white",
+  success: "bg-[var(--color-success-teal)]/10 text-[var(--color-success-teal)]",
   neutral:
     "bg-[var(--color-surface-container)] text-[var(--color-on-surface-variant)]",
-  warning: "bg-amber-500/15 text-amber-600",
-  info: "bg-[var(--color-electric-blue)]/15 text-[var(--color-electric-blue)]",
+  warning: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+  info: "bg-[var(--studio-accent-soft)] text-[var(--studio-accent-text)]",
 };
 
 export default function StatusPill({

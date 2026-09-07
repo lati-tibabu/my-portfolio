@@ -22,8 +22,8 @@ export default function AdminAnalyticsConsole() {
   }
 
   return (
-    <div className="mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_1fr] lg:gap-8 lg:px-8 lg:py-8">
-      <AdminSidebar activeTab="graphics" onChange={() => undefined} userEmail={auth.sessionUser?.email} userRole="admin" />
+    <div className="admin-workspace mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_1fr] lg:gap-8 lg:px-8 lg:py-8">
+      <AdminSidebar activeTab="analytics" userEmail={auth.sessionUser?.email} userRole="admin" />
       <div className="min-w-0"><AnalyticsPanel /></div>
     </div>
   );

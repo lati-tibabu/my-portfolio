@@ -12,12 +12,13 @@ export default function ProjectJourney({ projects }: { projects: DevJourneyItem[
   useEffect(() => {
     const root = section.current;
     if (!root || projects.length === 0) return;
-    const media = window.matchMedia("(min-width: 768px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)");
+    const media = window.matchMedia("(max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (min-height: 650px) and (prefers-reduced-motion: no-preference)");
     let frame = 0;
     const update = () => {
       frame = 0;
       if (!media.matches) return;
-      const distance = root.getBoundingClientRect().height - (window.innerHeight - 80);
+      const stageHeight = root.querySelector<HTMLElement>(".journey-stage")?.getBoundingClientRect().height ?? window.innerHeight - 80;
+      const distance = root.getBoundingClientRect().height - stageHeight;
       const progress = Math.max(0, Math.min(1, (80 - root.getBoundingClientRect().top) / Math.max(1, distance)));
       const rawPosition = progress * Math.max(0, projects.length - 1);
       const step = Math.floor(rawPosition);
@@ -55,7 +56,8 @@ export default function ProjectJourney({ projects }: { projects: DevJourneyItem[
   const goToProject = (index: number) => {
     const root = section.current;
     if (!root) return;
-    const distance = root.getBoundingClientRect().height - (window.innerHeight - 80);
+    const stageHeight = root.querySelector<HTMLElement>(".journey-stage")?.getBoundingClientRect().height ?? window.innerHeight - 80;
+    const distance = root.getBoundingClientRect().height - stageHeight;
     window.scrollTo({ top: window.scrollY + root.getBoundingClientRect().top - 80 + distance * index / Math.max(1, projects.length - 1), behavior: "smooth" });
   };
 

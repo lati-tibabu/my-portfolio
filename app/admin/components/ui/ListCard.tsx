@@ -30,14 +30,14 @@ export default function ListCard({
 }: ListCardProps) {
   return (
     <article
-      className={`rounded-xl border p-4 transition-colors ${
+      className={`studio-list-card rounded-xl border p-5 transition-colors ${
         selected
           ? "border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)]/5"
           : "border-[var(--color-surface-border)] hover:bg-[var(--color-surface-container-low)]"
       }`}
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 max-w-full items-center gap-3">
           {selectable ? (
             <input
               type="checkbox"
@@ -68,7 +68,7 @@ export default function ListCard({
             ) : null}
           </button>
         </div>
-        <div className="flex shrink-0 items-center gap-2">{actions}</div>
+        <div className="flex flex-wrap items-center gap-2">{actions}</div>
       </div>
       {children ? (
         <div className="mt-4 border-t border-[var(--color-surface-border)] pt-4">

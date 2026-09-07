@@ -38,15 +38,6 @@ const formatDate = (date: string) =>
     year: "numeric",
   }).format(new Date(`${date}T00:00:00`));
 
-const formatCreatedDate = (date?: string) =>
-  date
-    ? new Intl.DateTimeFormat("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(date))
-    : "";
-
 type PageProps = {
   searchParams: Promise<{ page?: string }>;
 };
@@ -74,12 +65,12 @@ export default async function BlogPage({ searchParams }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogStructuredData) }}
       />
-      <section className="px-6 pb-12 pt-20 md:pb-16 md:pt-28">
-        <div className="mx-auto max-w-[760px]">
+      <section className="editorial-intro">
+        <div className="mx-auto max-w-[1120px]">
           <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
             Portfolio · Writing
           </p>
-          <h1 className="mt-4 font-heading text-[44px] tracking-[-0.04em] text-[var(--color-on-surface)] md:text-[64px]">
+          <h1 className="editorial-title">
             Notes from the work
           </h1>
           <p className="mt-5 max-w-[640px] text-[17px] leading-[1.75] text-[var(--color-on-surface-variant)]">
@@ -89,9 +80,13 @@ export default async function BlogPage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      <section className="px-6 pb-24">
+      <section className="px-6 pb-24 pt-10">
+        <div className="mx-auto mb-8 flex max-w-[1120px] items-center justify-between gap-4 border-b border-[var(--color-surface-border)] pb-5">
+          <h2 className="section-kicker">The journal</h2>
+          <span className="text-xs text-[var(--color-on-surface-variant)]">{blogPosts.length} {blogPosts.length === 1 ? "article" : "articles"}</span>
+        </div>
         {blogPosts.length === 0 && <CollectionEmptyState title="New notes are on the way" description="Check back for articles on Odoo, web development, and the details behind the work." />}
-        <div className="mx-auto grid max-w-[980px] gap-6">
+        <div className="mx-auto grid max-w-[1120px] gap-6 md:grid-cols-2">
           {pagePosts.map((post) => {
             const hasCoverImage =
               !!post.coverImage?.trim() &&
@@ -99,24 +94,24 @@ export default async function BlogPage({ searchParams }: PageProps) {
             return (
             <article
               key={post.slug}
-              className="group overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_45px_-28px_rgba(0,0,0,0.35)]"
+              className="writing-card group"
             >
               <Link
                 href={`/blog/${post.slug}`}
-                className={hasCoverImage ? "grid md:grid-cols-[260px_1fr]" : "block"}
+                className="flex h-full flex-col"
               >
                 {hasCoverImage && (
-                  <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[230px]">
+                  <div className="relative aspect-[16/9] overflow-hidden border-b border-[var(--color-surface-border)]">
                     <Image
                       src={post.coverImage}
                       alt={post.title}
                       fill
-                      sizes="(min-width: 768px) 260px, 90vw"
+                      sizes="(min-width: 1200px) 548px, (min-width: 768px) 46vw, 90vw"
                       className="object-cover transition duration-500 group-hover:scale-[1.03]"
                     />
                   </div>
                 )}
-                <div className="flex flex-col justify-center p-6 md:p-8">
+                <div className="flex flex-1 flex-col p-6 md:p-8">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-2 font-label text-[10px] uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">
                     <time dateTime={post.publishedAt}>
                       {formatDate(post.publishedAt)}
@@ -133,12 +128,10 @@ export default async function BlogPage({ searchParams }: PageProps) {
                   <p className="mt-3 text-[15px] leading-[1.75] text-[var(--color-on-surface-variant)]">
                     {post.excerpt}
                   </p>
-                  <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-electric-blue)]">
-                    Read article →
-                  </p>
-                  <p className="mt-3 text-[11px] text-[var(--color-on-surface-variant)]">
-                    By {post.authorName || "latitibabu"} · Created {formatCreatedDate(post.createdAt)}
-                  </p>
+                  <div className="mt-auto flex items-center justify-between gap-4 pt-8 text-xs">
+                    <span className="text-[var(--color-on-surface-variant)]">By {post.authorName || "Lati Tibabu"}</span>
+                    <span className="shrink-0 font-medium">Read article <span aria-hidden="true">↗</span></span>
+                  </div>
                 </div>
               </Link>
             </article>
@@ -147,7 +140,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
         </div>
 
         {totalPages > 1 && (
-          <div className="mx-auto mt-10 flex max-w-[980px] flex-wrap items-center justify-center gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
+          <nav aria-label="Article pages" className="mx-auto mt-10 flex max-w-[1120px] flex-wrap items-center justify-center gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
             <Link
               href={safePage > 1 ? `/blog?page=${safePage - 1}` : "#"}
               aria-disabled={safePage <= 1}
@@ -168,7 +161,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
                   aria-current={pageNumber === safePage ? "page" : undefined}
                   className={`rounded-full border px-4 py-2 transition ${
                     pageNumber === safePage
-                      ? "border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)] text-white"
+                      ? "border-[var(--color-electric-blue)] bg-[var(--color-on-surface)] text-[var(--color-background)]"
                       : "border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:border-[var(--color-electric-blue)] hover:text-[var(--color-on-surface)]"
                   }`}
                 >
@@ -188,7 +181,7 @@ export default async function BlogPage({ searchParams }: PageProps) {
             >
               Next →
             </Link>
-          </div>
+          </nav>
         )}
       </section>
     </div>

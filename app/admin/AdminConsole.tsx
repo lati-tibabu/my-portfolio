@@ -5,7 +5,7 @@ import { supabaseBrowser } from "../lib/supabase/browser";
 import { sectionClass } from "./lib/constants";
 import { loadAll } from "./lib/crud";
 import { useAdminAuth } from "./lib/useAdminAuth";
-import { isTabAllowedForRole } from "./lib/constants";
+import { adminNavItems, isTabAllowedForRole } from "./lib/constants";
 import type { AdminRole } from "./lib/constants";
 import type {
   BlogRecord,
@@ -35,9 +35,20 @@ export default function AdminConsole() {
   const auth = useAdminAuth();
   const [activeTab, setActiveTab] = useState<TabKey>("graphics");
 
+  useEffect(() => {
+    const syncTab = () => {
+      const tab = window.location.hash.slice(1) as TabKey;
+      if (adminNavItems.some((item) => item.tab === tab) && isTabAllowedForRole(tab, auth.adminRole as AdminRole)) setActiveTab(tab);
+    };
+    syncTab();
+    window.addEventListener("hashchange", syncTab);
+    return () => window.removeEventListener("hashchange", syncTab);
+  }, [auth.adminRole]);
+
   const handleTabChange = (tab: TabKey) => {
     if (isTabAllowedForRole(tab, auth.adminRole as AdminRole)) {
       setActiveTab(tab);
+      window.history.replaceState(null, "", `/admin#${tab}`);
     }
   };
   const [busy, setBusy] = useState(false);
@@ -116,7 +127,7 @@ export default function AdminConsole() {
   }
 
   return (
-    <div className="mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_1fr] lg:gap-8 lg:px-8 lg:py-8">
+    <div className="admin-workspace mx-auto grid max-w-[1440px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_1fr] lg:gap-8 lg:px-8 lg:py-8">
       <AdminSidebar
         activeTab={activeTab}
         onChange={handleTabChange}

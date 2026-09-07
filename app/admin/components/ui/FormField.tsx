@@ -1,6 +1,12 @@
 "use client";
 
-import type { ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useId,
+  type ReactNode,
+} from "react";
 import { labelClass } from "../../lib/constants";
 
 export type FormFieldProps = {
@@ -16,15 +22,30 @@ export default function FormField({
   children,
   className = "",
 }: FormFieldProps) {
+  const id = useId();
   return (
-    <label className={`${labelClass} ${className}`}>
-      <span>{label}</span>
-      {children}
+    <div className={`${labelClass} ${className}`}>
+      <label htmlFor={id} className="block">
+        {label}
+      </label>
+      {Children.map(children, (child) =>
+        isValidElement<{ id?: string; "aria-describedby"?: string }>(child) &&
+        typeof child.type === "string" &&
+        ["input", "textarea", "select"].includes(child.type)
+          ? cloneElement(child, {
+              id,
+              "aria-describedby": hint ? `${id}-hint` : undefined,
+            })
+          : child,
+      )}
       {hint ? (
-        <span className="text-xs font-normal text-[var(--color-on-surface-variant)]">
+        <span
+          id={`${id}-hint`}
+          className="block text-xs font-normal text-[var(--color-on-surface-variant)]"
+        >
           {hint}
         </span>
       ) : null}
-    </label>
+    </div>
   );
 }

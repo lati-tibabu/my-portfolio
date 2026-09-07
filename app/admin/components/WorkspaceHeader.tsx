@@ -20,9 +20,9 @@ export default function WorkspaceHeader({
         <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
           Workspace / {adminNavItems.find((item) => item.tab === activeTab)?.label}
         </p>
-        <p className="mt-1 text-sm text-[var(--color-on-surface-variant)]">{message}</p>
+        <p role="status" aria-live="polite" className="mt-1 text-sm text-[var(--color-on-surface-variant)]">{message}</p>
       </div>
-      <span className="rounded-sm border border-[var(--color-surface-border)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">
+      <span className="rounded-full bg-[var(--studio-accent-soft)] border border-[var(--color-surface-border)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--color-on-surface-variant)]">
         {busy ? "Saving" : "Ready"}
       </span>
     </div>

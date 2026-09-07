@@ -1,5 +1,9 @@
 "use client";
 
+import ImageUploader from "./ImageUploader";
+import ListInput from "./ListInput";
+import ContentEditor from "./ContentEditor";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { supabaseBrowser } from "../../lib/supabase/browser";
@@ -8,12 +12,10 @@ import { useConfirmDialog } from "../lib/useConfirmDialog";
 import { useListState } from "../lib/useListState";
 import {
   emptyMarketplaceForm,
-  joinList,
   slugify,
-  splitList,
   textValue,
 } from "../lib/forms";
-import { ensureUniqueSlug } from "../lib/crud";
+import { ensureUniqueSlug, uploadContentImage } from "../lib/crud";
 import type { MarketplaceForm, MarketplaceRecord } from "../lib/types";
 import {
   Button,
@@ -49,6 +51,7 @@ export default function MarketplacePanel({
   adminName,
 }: MarketplacePanelProps) {
   const [form, setForm] = useState<MarketplaceForm>(emptyMarketplaceForm);
+  const [file, setFile] = useState<File | null>(null);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [view, setView] = useState<"list" | "edit">("list");
   const { confirm, dialogProps } = useConfirmDialog();
@@ -71,12 +74,14 @@ export default function MarketplacePanel({
   }, [form.name, slugManuallyEdited]);
 
   const resetForm = () => {
+    setFile(null);
     setForm(emptyMarketplaceForm());
     setSlugManuallyEdited(false);
     setView("list");
   };
 
   const startNew = () => {
+    setFile(null);
     setForm(emptyMarketplaceForm());
     setSlugManuallyEdited(false);
     list.clearSelection();
@@ -84,6 +89,7 @@ export default function MarketplacePanel({
   };
 
   const editRecord = (item: MarketplaceRecord) => {
+    setFile(null);
     setForm({
       id: item.id,
       slug: item.slug,
@@ -106,8 +112,8 @@ export default function MarketplacePanel({
       link: item.link,
       downloads: textValue(item.downloads),
       upgradeUrl: textValue(item.upgrade_url),
-      highlightsText: joinList(item.highlights),
-      screenshotsText: joinList(item.screenshots),
+      highlightsText: (item.highlights ?? []).join("\n"),
+      screenshotsText: (item.screenshots ?? []).join("\n"),
     });
     setSlugManuallyEdited(true);
     list.clearSelection();
@@ -116,6 +122,7 @@ export default function MarketplacePanel({
 
   const duplicateRecord = (item: MarketplaceRecord) => {
     const name = `${item.name} (copy)`;
+    setFile(null);
     setForm({
       id: null,
       slug: slugify(name),
@@ -138,8 +145,8 @@ export default function MarketplacePanel({
       link: item.link,
       downloads: textValue(item.downloads),
       upgradeUrl: textValue(item.upgrade_url),
-      highlightsText: joinList(item.highlights),
-      screenshotsText: joinList(item.screenshots),
+      highlightsText: (item.highlights ?? []).join("\n"),
+      screenshotsText: (item.screenshots ?? []).join("\n"),
     });
     setSlugManuallyEdited(false);
     list.clearSelection();
@@ -154,6 +161,13 @@ export default function MarketplacePanel({
     }
     setBusy(true);
     try {
+      let coverImageUrl = form.coverImageUrl;
+      if (file) {
+        const uploaded = await uploadContentImage(file, "products");
+        coverImageUrl = uploaded.imageUrl;
+        setForm((current) => ({ ...current, coverImageUrl }));
+        setFile(null);
+      }
       const uniqueSlug = await ensureUniqueSlug(
         supabaseBrowser,
         "marketplace_items",
@@ -167,7 +181,7 @@ export default function MarketplacePanel({
         price: form.price,
         category: form.category,
         cover_image_url:
-          form.coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE,
+          coverImageUrl.trim() || DEFAULT_PLACEHOLDER_IMAGE,
         published_at: form.publishedAt,
         details_html: form.detailsHtml,
         author_name: adminName.trim() || "latitibabu",
@@ -183,8 +197,8 @@ export default function MarketplacePanel({
         link: form.link,
         downloads: form.downloads,
         upgrade_url: form.upgradeUrl,
-        highlights: splitList(form.highlightsText),
-        screenshots: splitList(form.screenshotsText),
+        highlights: form.highlightsText.split("\n").map((item) => item.trim()).filter(Boolean),
+        screenshots: form.screenshotsText.split("\n").map((item) => item.trim()).filter(Boolean),
       };
 
       const query = form.id
@@ -266,7 +280,7 @@ export default function MarketplacePanel({
         count={records.length}
         views={[
           { key: "list", label: "List" },
-          { key: "edit", label: "New" },
+          { key: "edit", label: "+ Add product" },
         ]}
         view={view}
         onViewChange={(next) => (next === "edit" ? startNew() : setView("list"))}
@@ -331,6 +345,7 @@ export default function MarketplacePanel({
                       <Image
                         src={item.cover_image_url.trim()}
                         alt={item.name}
+                        unoptimized
                         width={56}
                         height={56}
                         className="h-14 w-14 rounded-md border border-[var(--color-surface-border)] object-cover"
@@ -375,7 +390,7 @@ export default function MarketplacePanel({
             title={form.id ? "Update product" : "Create product"}
             description="Core listing content shown on the product page."
           >
-            <FormField label="Name">
+            <FormField label="Product name" hint="Start with a clear, recognizable name.">
               <input
                 className={inputClass}
                 value={form.name}
@@ -407,15 +422,8 @@ export default function MarketplacePanel({
                 }
               />
             </FormField>
-            <FormField label="HTML details">
-              <textarea
-                className={inputClass}
-                rows={8}
-                value={form.detailsHtml}
-                onChange={(event) =>
-                  setForm({ ...form, detailsHtml: event.target.value })
-                }
-              />
+            <FormField label="Detailed content">
+              <ContentEditor key={form.id ?? "new"} value={form.detailsHtml} onChange={(detailsHtml) => setForm({ ...form, detailsHtml })} />
             </FormField>
           </FormSection>
 
@@ -424,7 +432,7 @@ export default function MarketplacePanel({
             columns={2}
             description="How the product is classified and priced."
           >
-            <FormField label="Price">
+            <FormField label="Price" hint="For example: Free or $29.99.">
               <input
                 className={inputClass}
                 value={form.price}
@@ -442,15 +450,7 @@ export default function MarketplacePanel({
                 }
               />
             </FormField>
-            <FormField label="Cover image URL" className="sm:col-span-2">
-              <input
-                className={inputClass}
-                value={form.coverImageUrl}
-                onChange={(event) =>
-                  setForm({ ...form, coverImageUrl: event.target.value })
-                }
-              />
-            </FormField>
+            <div className="sm:col-span-2"><ImageUploader file={file} onFileChange={setFile} imageUrl={form.coverImageUrl} onImageUrlChange={(coverImageUrl) => setForm({ ...form, coverImageUrl })} title={form.name || "Product cover"} description="Upload a cover image or paste an existing image URL." /></div>
             <FormField label="Published date">
               <input
                 className={inputClass}
@@ -590,34 +590,20 @@ export default function MarketplacePanel({
           </FormSection>
 
           <FormSection
-            title="Lists"
+            title="Highlights & screenshots"
             collapsible
             defaultOpen={false}
-            description="Comma-separated lists rendered as bullets on the product page."
+            description="Add a feature or preview image in each row."
           >
-            <FormField label="Highlights" hint="Comma separated.">
-              <textarea
-                className={inputClass}
-                rows={3}
-                value={form.highlightsText}
-                onChange={(event) =>
-                  setForm({ ...form, highlightsText: event.target.value })
-                }
-              />
+            <FormField label="Highlights">
+              <ListInput key={`${form.id}-highlightsText`} label="Highlight" placeholder="e.g. Easy to customize" value={form.highlightsText} onChange={(highlightsText) => setForm({ ...form, highlightsText })} />
             </FormField>
-            <FormField label="Screenshots" hint="Comma separated image URLs.">
-              <textarea
-                className={inputClass}
-                rows={3}
-                value={form.screenshotsText}
-                onChange={(event) =>
-                  setForm({ ...form, screenshotsText: event.target.value })
-                }
-              />
+            <FormField label="Screenshots">
+              <ListInput key={`${form.id}-screenshotsText`} label="Screenshot" placeholder="https://…" value={form.screenshotsText} onChange={(screenshotsText) => setForm({ ...form, screenshotsText })} />
             </FormField>
           </FormSection>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="studio-save-bar">
             <Button variant="primary" onClick={save} disabled={busy}>
               {form.id ? "Update" : "Create"}
             </Button>

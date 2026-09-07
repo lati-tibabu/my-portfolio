@@ -1,5 +1,7 @@
 "use client";
 
+import { FiGrid } from "react-icons/fi";
+
 import { inputClass, labelClass } from "../lib/constants";
 
 type AdminLoginScreenProps = {
@@ -22,16 +24,16 @@ export default function AdminLoginScreen({
   signIn,
 }: AdminLoginScreenProps) {
   return (
-    <div className="mx-auto max-w-[560px] overflow-hidden rounded-xl border-2 border-[var(--color-on-surface)] bg-[var(--color-surface-container-lowest)] shadow-[7px_7px_0_var(--color-on-surface)]">
-      <div className="bg-[var(--color-on-surface)] px-6 py-5 text-white">
-        <p className="font-label text-[10px] uppercase tracking-[0.24em] text-white/60">
-          Private workspace / 01
+    <div className="admin-workspace mx-auto my-12 max-w-[480px] overflow-hidden rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)]">
+      <div className="border-b border-[var(--color-surface-border)] bg-[var(--studio-accent-soft)] px-8 py-8 text-[var(--studio-accent-text)]">
+        <p className="font-label text-[10px] uppercase tracking-[0.24em] text-[var(--studio-accent-text)]">
+          Content studio
         </p>
-        <h1 className="mt-2 font-heading text-[32px]">Sign in to continue</h1>
+        <FiGrid size={28} className="my-5" aria-hidden /><h1 className="mt-2 font-heading text-[32px]">Sign in to continue</h1>
       </div>
 
       <form
-        className="space-y-5 p-6"
+        className="space-y-5 p-8"
         onSubmit={(event) => {
           event.preventDefault();
           void signIn();
@@ -64,13 +66,13 @@ export default function AdminLoginScreen({
         </label>
         <button
           type="submit"
-          className="inline-flex m-top-to-bottom-3 w-full items-center justify-center rounded-lg border-2 border-[var(--color-on-surface)] bg-[var(--color-on-surface)] px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-[4px_4px_0_var(--color-surface-border)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[5px_5px_0_var(--color-surface-border)] active:translate-y-0 active:shadow-none focus:outline-none focus:ring-2 focus:ring-[var(--color-on-surface)]/30 disabled:opacity-60"
+          className="studio-primary inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold disabled:opacity-60"
           disabled={busy}
         >
           {busy ? "Signing in..." : "Sign in"}
         </button>
         {authMessage && (
-          <p className="text-sm text-[var(--color-on-surface-variant)]">
+          <p role="status" className="text-sm text-[var(--color-on-surface-variant)]">
             {authMessage}
           </p>
         )}

@@ -25,7 +25,7 @@ export default function PanelHeader({
 }: PanelHeaderProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <h2 className="font-heading text-[28px] text-[var(--color-on-surface)]">
           {title}
         </h2>
@@ -46,9 +46,10 @@ export default function PanelHeader({
             key={item.key}
             type="button"
             onClick={() => onViewChange(item.key)}
-            className={`rounded-lg px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] ${
+            aria-pressed={view === item.key}
+            className={`rounded-lg px-4 py-2 text-xs font-medium ${
               view === item.key
-                ? "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90"
+                ? "studio-primary"
                 : "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)]"
             }`}
           >

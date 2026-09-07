@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import ProductImage from "../../components/ProductImage";
+import {
+  FiArrowLeft,
+  FiArrowUpRight,
+  FiCheck,
+  FiBox,
+  FiExternalLink,
+} from "react-icons/fi";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import RichHtml from "../../components/RichHtml";
@@ -72,180 +79,220 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
       "@type": "Offer",
       url: item.link,
       priceCurrency: "USD",
-      price: item.price === "Free" ? "0" : item.price.replace(/[^0-9.]/g, "") || "0",
+      price:
+        item.price === "Free" ? "0" : item.price.replace(/[^0-9.]/g, "") || "0",
       availability: "https://schema.org/InStock",
     },
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
+    <div className="product-space min-h-screen bg-[var(--color-background)] px-5 py-10 text-[var(--color-on-surface)] sm:px-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productStructuredData).replace(
+            /</g,
+            "\\u003c",
+          ),
+        }}
       />
-      <section className="px-6 pt-24 pb-10">
-        <div className="mx-auto max-w-[1200px] space-y-4">
-          <Link
-            href="/marketplace"
-            className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)]"
-          >
-            Back to products
-          </Link>
-          <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
+      <div className="mx-auto max-w-[1200px]">
+        <Link
+          href="/marketplace"
+          className="mb-10 inline-flex items-center gap-2 text-sm text-[var(--color-on-surface-variant)]"
+        >
+          <FiArrowLeft aria-hidden /> All products
+        </Link>
+        <header className="mb-8 max-w-3xl">
+          <p className="product-eyebrow">
+            <FiBox aria-hidden />
             {item.category}
           </p>
-          <h1 className="font-heading text-[34px] text-[var(--color-on-surface)] md:text-[48px]">
+          <h1 className="mt-4 font-heading text-3xl leading-tight tracking-tight sm:text-5xl">
             {item.name}
           </h1>
-          <p className="max-w-[760px] text-[16px] text-[var(--color-on-surface-variant)]">
+          <p className="mt-5 text-base leading-8 text-[var(--color-on-surface-variant)]">
             {item.description}
           </p>
-        </div>
-      </section>
-
-      <section className="px-6 pb-16">
-        <div className="mx-auto flex max-w-[1200px] flex-col gap-8">
-          <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5">
-            <div className="relative aspect-[16/9] overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
-              {item.coverImage?.trim() ? (
-                <Image
-                  src={item.coverImage}
-                  alt={`${item.name} preview`}
-                  fill
-                  sizes="(min-width: 1024px) 720px, 90vw"
-                  className="object-cover"
-                  unoptimized
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,var(--color-surface-container-highest),var(--color-surface-container-low))] p-6 text-center">
-                  <div>
-                    <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                      No preview image
-                    </p>
-                    <p className="mt-2 font-heading text-[18px] text-[var(--color-on-surface)]">
-                      {item.name}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {item.highlights && item.highlights.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {item.highlights.map((highlight) => (
-                  <span key={highlight} className="tag-chip">
-                    {highlight}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5">
-            <h2 className="font-heading text-[18px] text-[var(--color-on-surface)]">
-              Product details
-            </h2>
-            <div className="mt-4 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-              <RichHtml
-                html={item.detailsHtml}
-                className="text-[14px] leading-[1.8] text-[var(--color-on-surface-variant)]"
+          <p className="mt-4 text-xs text-[var(--color-on-surface-variant)]">
+            Made by {item.authorName || "Lati Tibabu"}
+            {item.version ? ` · Version ${item.version}` : ""}
+          </p>
+        </header>
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="order-2 min-w-0 space-y-8 lg:order-1">
+            <div className="product-image rounded-2xl border border-[var(--color-surface-border)]">
+              <ProductImage
+                src={item.coverImage}
+                name={item.name}
+                sizes="(min-width: 1024px) 760px, 90vw"
               />
             </div>
-            <div className="mt-4 grid gap-2 break-words text-[13px] text-[var(--color-on-surface-variant)]">
-              <p>Created by: {item.authorName || "latitibabu"}</p>
-              {item.createdAt && (
-                <p>Created: {new Date(item.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
-              )}
-              {item.version && <p>Version: {item.version}</p>}
-              <p>Price: {item.price}</p>
-              {item.license && <p>License: {item.license}</p>}
-              {item.technicalName && <p>Technical name: {item.technicalName}</p>}
-              {item.website && <p>
-                Website:{" "}
+            {!!item.highlights?.length && (
+              <section className="product-panel">
+                <h2 className="font-heading text-xl">
+                  Built to make a difference
+                </h2>
+                <ul className="mt-5 grid gap-4 sm:grid-cols-2">
+                  {item.highlights.map((highlight, index) => (
+                    <li
+                      key={index}
+                      className="flex items-start gap-3 text-sm leading-6"
+                    >
+                      <FiCheck
+                        className="mt-1 shrink-0 text-[var(--color-success-teal)]"
+                        aria-hidden
+                      />
+                      {highlight}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            {item.detailsHtml && (
+              <section className="product-panel">
+                <h2 className="mb-6 font-heading text-2xl">A closer look</h2>
+                <RichHtml html={item.detailsHtml} />
+              </section>
+            )}
+            {!!item.screenshots?.length && (
+              <section>
+                <h2 className="mb-5 font-heading text-2xl">
+                  Inside the product
+                </h2>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {item.screenshots.map((src, index) => (
+                    <a
+                      href={src}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      key={`${src}-${index}`}
+                      className="product-image block rounded-xl border border-[var(--color-surface-border)]"
+                      aria-label={`Open ${item.name} screenshot ${index + 1}`}
+                    >
+                      <ProductImage
+                        src={src}
+                        name={`${item.name} screenshot ${index + 1}`}
+                      />
+                      <span className="absolute bottom-3 right-3 rounded-full bg-[var(--studio-card)] p-2">
+                        <FiExternalLink size={14} aria-hidden />
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
+          <aside className="product-panel order-1 space-y-6 lg:order-2 lg:sticky lg:top-28">
+            <div>
+              <p className="product-eyebrow">Make it yours</p>
+              <p className="mt-3 font-heading text-4xl">{item.price}</p>
+              <p className="mt-2 text-xs text-[var(--color-on-surface-variant)]">
+                {item.license || "View licensing on the product website"}
+              </p>
+            </div>
+            <div className="space-y-3">
+              {item.link && (
                 <a
-                  href={item.website}
+                  href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="break-all text-[var(--color-electric-blue)]"
+                  className="studio-primary flex items-center justify-center gap-3 rounded-xl px-5 py-3.5 text-sm font-semibold"
                 >
-                  {item.website}
+                  {item.price.toLowerCase() === "free"
+                    ? "Get it for free"
+                    : "Get product"}
+                  <FiArrowUpRight aria-hidden />
                 </a>
-              </p>}
-              {item.compatibility && <p>Compatibility: {item.compatibility}</p>}
-              {item.warning && <p>Note: {item.warning}</p>}
-              {item.contactEmail && (
-                <p>
-                  Support:{" "}
-                  <a
-                    href={`mailto:${item.contactEmail}`}
-                    className="break-all text-[var(--color-electric-blue)]"
-                  >
-                    {item.contactEmail}
-                  </a>
-                </p>
               )}
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5">
-            <h2 className="font-heading text-[18px] text-[var(--color-on-surface)]">
-              Links
-            </h2>
-            <div className="mt-4 flex flex-wrap gap-3 text-[12px] font-semibold uppercase tracking-[0.12em]">
-              <a
-                href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--color-electric-blue)]"
-              >
-                Get product →
-              </a>
               {item.livePreview && (
                 <a
                   href={item.livePreview}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--color-electric-blue)]"
+                  className="flex items-center justify-center gap-2 rounded-xl border border-[var(--color-surface-border)] px-5 py-3 text-sm"
                 >
-                  Live preview →
-                </a>
-              )}
-              {item.supportUrl && (
-                <a
-                  href={item.supportUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-electric-blue)]"
-                >
-                  Support →
-                </a>
-              )}
-              {item.upgradeUrl && (
-                <a
-                  href={item.upgradeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--color-electric-blue)]"
-                >
-                  Upgrade →
+                  Live preview <FiArrowUpRight aria-hidden />
                 </a>
               )}
             </div>
-          </div>
-
-          {item.screenshots && item.screenshots.length > 0 && (
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-5">
-              <h3 className="font-heading text-[18px] text-[var(--color-on-surface)]">
-                Screenshots
-              </h3>
-              <p className="mt-3 text-[13px] text-[var(--color-on-surface-variant)]">
-                {item.screenshots.length} preview images are attached to the
-                product record.
+            <dl className="space-y-4 border-t border-[var(--color-surface-border)] pt-6 text-sm">
+              {[
+                ["Version", item.version],
+                ["Works with", item.compatibility],
+                ["License", item.license],
+                ["Technical name", item.technicalName],
+                [
+                  "Created",
+                  item.createdAt
+                    ? new Date(item.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                    : "",
+                ],
+              ]
+                .filter(([, value]) => value)
+                .map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="flex flex-wrap justify-between gap-2"
+                  >
+                    <dt className="text-[var(--color-on-surface-variant)]">
+                      {label}
+                    </dt>
+                    <dd className="max-w-full break-words font-medium">
+                      {value}
+                    </dd>
+                  </div>
+                ))}
+            </dl>
+            {item.warning && (
+              <p className="rounded-xl bg-[var(--studio-accent-soft)] p-4 text-sm leading-6 text-[var(--studio-accent-text)]">
+                {item.warning}
               </p>
+            )}
+            <div className="space-y-3 border-t border-[var(--color-surface-border)] pt-5 text-sm">
+              <p className="font-semibold">Have a question?</p>
+              {item.contactEmail && (
+                <a
+                  href={`mailto:${item.contactEmail}`}
+                  className="block break-all text-[var(--color-electric-blue)]"
+                >
+                  {item.contactEmail}
+                </a>
+              )}
+              {[
+                ["Product support", item.supportUrl],
+                ["Website", item.website],
+                ["Explore upgrade", item.upgradeUrl],
+              ]
+                .filter(([, url]) => url)
+                .map(([label, url]) => (
+                  <a
+                    key={label}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between text-[var(--color-on-surface-variant)]"
+                  >
+                    {label}
+                    <FiArrowUpRight aria-hidden />
+                  </a>
+                ))}
+              {!item.contactEmail && !item.supportUrl && (
+                <Link
+                  href="/#contact"
+                  className="block text-[var(--color-electric-blue)]"
+                >
+                  Get in touch
+                </Link>
+              )}
             </div>
-          )}
+          </aside>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

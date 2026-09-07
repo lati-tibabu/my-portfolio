@@ -1,5 +1,7 @@
 "use client";
 
+import ContentEditor from "./ContentEditor";
+
 import { useEffect, useState } from "react";
 import BlogContent from "../../components/BlogContent";
 import Icon from "../../components/Icon";
@@ -405,14 +407,7 @@ export default function BlogPanel({
               <FormField
                 label={form.contentFormat === "md" ? "Markdown content" : "HTML content"}
               >
-                <textarea
-                  className={inputClass}
-                  rows={14}
-                  value={form.detailsHtml}
-                  onChange={(event) =>
-                    setForm({ ...form, detailsHtml: event.target.value })
-                  }
-                />
+                {form.contentFormat === "html" ? <ContentEditor key={form.id ?? "new"} value={form.detailsHtml} onChange={(detailsHtml) => setForm({ ...form, detailsHtml })} /> : <textarea aria-label="Markdown content" className={inputClass} rows={14} value={form.detailsHtml} onChange={(event) => setForm({ ...form, detailsHtml: event.target.value })} />}
               </FormField>
               <label className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-3 text-sm text-[var(--color-on-surface-variant)]">
                 <input

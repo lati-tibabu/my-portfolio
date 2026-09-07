@@ -37,10 +37,10 @@ export default function FormSection({
   if (!collapsible) {
     return (
       <section
-        className={`rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-5 ${className}`}
+        className={`studio-form-section ${className}`}
       >
         <div className="flex items-baseline justify-between gap-3">
-          <h3 className="font-heading text-[15px] text-[var(--color-on-surface)]">
+          <h3 className="font-heading text-[17px] text-[var(--color-on-surface)]">
             {title}
           </h3>
         </div>
@@ -56,7 +56,7 @@ export default function FormSection({
 
   return (
     <section
-      className={`rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-5 ${className}`}
+      className={`studio-form-section ${className}`}
     >
       <button
         type="button"
@@ -65,7 +65,7 @@ export default function FormSection({
         aria-expanded={open}
       >
         <span className="min-w-0">
-          <span className="block font-heading text-[15px] text-[var(--color-on-surface)]">
+          <span className="block font-heading text-[17px] text-[var(--color-on-surface)]">
             {title}
           </span>
           {description ? (

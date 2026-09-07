@@ -120,17 +120,17 @@ export default async function Home() {
 
   const heroText = (
     <div
-      className={`space-y-8 animate-fade-up ${isCentered ? "mx-auto max-w-[720px] text-center" : ""}`}
+      className={`hero-copy animate-fade-up ${isCentered ? "hero-copy-centered" : ""}`}
     >
       <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
         {hero.eyebrow}
       </p>
-      <h1 className="font-heading text-[40px] leading-[1.1] tracking-tight text-[var(--color-on-surface)] md:text-[64px]">
+      <h1 className="hero-title font-heading">
         {hero.headline}
       </h1>
       <MarkdownText
         content={hero.bodyMd}
-        className="text-[17px] leading-[1.65] text-[var(--color-on-surface-variant)] [&_p]:max-w-[560px] [&_p+p]:mt-4"
+        className="hero-description [&_p+p]:mt-4"
       />
       {heroCtas.length > 0 && (
         <div
@@ -139,8 +139,8 @@ export default async function Home() {
           {heroCtas.map((cta) => {
             const external = /^https?:\/\//i.test(cta.href);
             const className = cta.primary
-              ? "inline-flex items-center gap-2 rounded-md bg-[var(--color-electric-blue)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition hover:scale-[1.02]"
-              : "inline-flex items-center gap-2 rounded-md border border-[var(--color-surface-border)] px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] transition hover:border-[var(--color-electric-blue)]";
+              ? "portfolio-button portfolio-button-primary"
+              : "portfolio-button";
             return external ? (
               <a
                 key={cta.href}
@@ -163,8 +163,8 @@ export default async function Home() {
   );
 
   const heroImage = (
-    <div className="relative">
-      <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.05)]">
+    <div className="hero-portrait">
+      <div className="hero-portrait-frame">
         <div className="relative aspect-square overflow-hidden rounded-lg">
           <Image
             src={hero.imageUrl || "https://placehold.co/600x600@2x.png"}
@@ -176,7 +176,7 @@ export default async function Home() {
           />
         </div>
         {(hero.availabilityLabel || hero.availabilityValue) && (
-          <div className="mt-4 flex items-center justify-between text-sm text-[var(--color-on-surface-variant)]">
+          <div className="hero-availability">
             <span className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
               {hero.availabilityLabel}
             </span>
@@ -189,29 +189,10 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
-      <section className="relative overflow-hidden px-6 pt-14 pb-12 sm:pt-20 lg:pt-24 lg:pb-16">
-        <div className="absolute -top-32 right-[-10%] h-[420px] w-[420px] rounded-full bg-[var(--color-primary-fixed)] blur-3xl opacity-70" />
-        <div className="absolute -bottom-40 left-[-5%] h-[420px] w-[420px] rounded-full bg-[var(--color-secondary-fixed)] blur-3xl opacity-50" />
-        <div className="max-w-[1280px] mx-auto">
-          {showHeroImage ? (
-            <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-center">
-              {hero.layout === "image-left-text-right" ? (
-                <>
-                  {heroImage}
-                  {heroText}
-                </>
-              ) : (
-                <>
-                  {heroText}
-                  {heroImage}
-                </>
-              )}
-            </div>
-          ) : (
-            <div className={isCentered ? "flex flex-col items-center" : ""}>
-              {heroText}
-            </div>
-          )}
+      <section className="home-hero" data-layout={hero.layout}>
+        <div className={`hero-layout mx-auto max-w-[1280px] ${showHeroImage ? "hero-layout-split" : "hero-layout-text"} ${isCentered ? "hero-layout-centered" : ""}`}>
+          {heroText}
+          {showHeroImage && heroImage}
         </div>
       </section>
 

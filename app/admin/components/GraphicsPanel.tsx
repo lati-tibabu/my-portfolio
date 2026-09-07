@@ -1,5 +1,7 @@
 "use client";
 
+import ContentEditor from "./ContentEditor";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { supabaseBrowser } from "../../lib/supabase/browser";
@@ -378,15 +380,8 @@ export default function GraphicsPanel({
                 }
               />
             </FormField>
-            <FormField label="HTML details">
-              <textarea
-                className={inputClass}
-                rows={8}
-                value={form.detailsHtml}
-                onChange={(event) =>
-                  setForm({ ...form, detailsHtml: event.target.value })
-                }
-              />
+            <FormField label="Detailed content">
+              <ContentEditor key={form.id ?? "new"} value={form.detailsHtml} onChange={(detailsHtml) => setForm({ ...form, detailsHtml })} />
             </FormField>
           </FormSection>
 
@@ -412,7 +407,7 @@ export default function GraphicsPanel({
             </FormField>
           </FormSection>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="studio-save-bar">
             <Button variant="primary" onClick={save} disabled={busy}>
               {form.id ? "Update" : "Create"}
             </Button>

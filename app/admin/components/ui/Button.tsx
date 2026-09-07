@@ -12,11 +12,11 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-semibold uppercase tracking-[0.12em] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none";
 
 const variantClass: Record<Variant, string> = {
   primary:
-    "bg-[var(--color-electric-blue)] text-white hover:bg-[var(--color-electric-blue)]/90 focus:ring-[var(--color-electric-blue)]/20",
+    "studio-primary focus:ring-[var(--color-electric-blue)]/20",
   secondary:
     "border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)] focus:ring-[var(--color-electric-blue)]/20",
   danger:

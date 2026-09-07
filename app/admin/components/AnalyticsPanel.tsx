@@ -1,5 +1,7 @@
 "use client";
 
+import { FiActivity, FiUsers, FiLayers, FiGlobe, FiNavigation, FiCpu, FiDownload, FiRefreshCw } from "react-icons/fi";
+
 import { useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "../../lib/supabase/browser";
 import { sectionClass } from "../lib/constants";
@@ -124,13 +126,13 @@ export default function AnalyticsPanel() {
       <section className={sectionClass}>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">Self-hosted insights</p>
+            <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">Portfolio performance</p>
             <h2 className="mt-2 font-heading text-3xl">Visitor analytics</h2>
-            <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">Latest 500 page views. IP addresses are stored only as one-way hashes.</p>
+            <p className="mt-2 text-sm text-[var(--color-on-surface-variant)]">Understand your audience, discover popular pages, and follow visitor activity. Based on the latest 500 page views.</p>
           </div>
           <div className="flex gap-2">
-            <button type="button" onClick={exportCsv} disabled={events.length === 0} className="rounded-lg border border-[var(--color-on-surface)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-on-surface)] hover:text-white disabled:cursor-not-allowed disabled:opacity-40">Export CSV</button>
-            <button type="button" onClick={() => void loadEvents()} className="rounded-lg border border-[var(--color-on-surface)] px-4 py-2 text-sm font-semibold hover:bg-[var(--color-on-surface)] hover:text-white">Refresh</button>
+            <button type="button" onClick={exportCsv} disabled={events.length === 0} className="rounded-lg border border-[var(--color-on-surface)] px-4 py-2 text-sm font-semibold hover:bg-[var(--studio-accent-soft)] hover:text-[var(--studio-accent-text)] disabled:cursor-not-allowed disabled:opacity-40"><FiDownload className="mr-2 inline" aria-hidden />Export CSV</button>
+            <button type="button" onClick={() => void loadEvents()} className="rounded-lg border border-[var(--color-on-surface)] px-4 py-2 text-sm font-semibold hover:bg-[var(--studio-accent-soft)] hover:text-[var(--studio-accent-text)]"><FiRefreshCw className="mr-2 inline" aria-hidden />Refresh</button>
           </div>
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[var(--color-surface-border)] pt-4">
@@ -141,17 +143,17 @@ export default function AnalyticsPanel() {
           <button type="button" onClick={requestClear} className="rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-700 hover:text-white">Delete analytics</button>
         </div>
         {error && <p className="mt-4 text-sm text-red-600">Could not load analytics: {error}</p>}
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <div className={cardClass}><p className="text-xs text-[var(--color-on-surface-variant)]">Page views</p><p className="mt-1 text-3xl font-semibold">{events.length}</p></div>
-          <div className={cardClass}><p className="text-xs text-[var(--color-on-surface-variant)]">Unique visitors</p><p className="mt-1 text-3xl font-semibold">{uniqueVisitors}</p></div>
-          <div className={cardClass}><p className="text-xs text-[var(--color-on-surface-variant)]">Sessions</p><p className="mt-1 text-3xl font-semibold">{sessions}</p></div>
+        <div className="analytics-metrics mt-6 grid gap-4 sm:grid-cols-3">
+          <div className={cardClass}><FiActivity size={20} className="mb-4 text-[var(--color-electric-blue)]" aria-hidden /><p className="text-xs text-[var(--color-on-surface-variant)]">Page views</p><p className="mt-1 text-3xl font-semibold">{events.length}</p></div>
+          <div className={cardClass}><FiUsers size={20} className="mb-4 text-[var(--color-electric-blue)]" aria-hidden /><p className="text-xs text-[var(--color-on-surface-variant)]">Unique visitors</p><p className="mt-1 text-3xl font-semibold">{uniqueVisitors}</p></div>
+          <div className={cardClass}><FiLayers size={20} className="mb-4 text-[var(--color-electric-blue)]" aria-hidden /><p className="text-xs text-[var(--color-on-surface-variant)]">Sessions</p><p className="mt-1 text-3xl font-semibold">{sessions}</p></div>
         </div>
       </section>
 
       <nav className="flex flex-wrap gap-2" aria-label="Analytics views">
         {(["overview", "audience", "navigation", "technical"] as AnalyticsTab[]).map((tab) => (
-          <button key={tab} type="button" onClick={() => setActiveTab(tab)} className={`rounded-lg border px-4 py-2 text-sm font-semibold capitalize transition-colors ${activeTab === tab ? "border-[var(--color-on-surface)] bg-[var(--color-on-surface)] text-white" : "border-[var(--color-surface-border)] hover:border-[var(--color-on-surface)]"}`}>
-            {tab}
+          <button key={tab} type="button" onClick={() => setActiveTab(tab)} aria-pressed={activeTab === tab} className={`rounded-lg border px-4 py-2 text-sm font-semibold capitalize transition-colors ${activeTab === tab ? "border-[var(--color-electric-blue)] bg-[var(--studio-accent-soft)] text-[var(--studio-accent-text)]" : "border-[var(--color-surface-border)] hover:border-[var(--color-on-surface)]"}`}>
+            {tab === "overview" ? <FiActivity className="mr-2 inline" aria-hidden /> : tab === "audience" ? <FiGlobe className="mr-2 inline" aria-hidden /> : tab === "navigation" ? <FiNavigation className="mr-2 inline" aria-hidden /> : <FiCpu className="mr-2 inline" aria-hidden />}{tab}
           </button>
         ))}
       </nav>

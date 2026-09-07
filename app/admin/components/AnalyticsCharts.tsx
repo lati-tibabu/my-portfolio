@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bar, Doughnut, Line, Pie } from "react-chartjs-2";
 import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Filler, LinearScale, LineElement, PointElement, Tooltip } from "chart.js";
 import { sectionClass } from "../lib/constants";
@@ -9,9 +9,8 @@ import { decodeAnalyticsValue } from "../lib/analytics";
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, Filler, LinearScale, LineElement, PointElement, Tooltip);
 
-const ink = "#171717";
-const gray = ["#171717", "#3f3f46", "#71717a", "#a1a1aa", "#d4d4d8", "#e4e4e7", "#52525b", "#27272a"];
-const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: "#e4e4e7" }, ticks: { color: "#52525b" } }, y: { grid: { color: "#e4e4e7" }, ticks: { color: "#52525b" }, beginAtZero: true } } };
+const ink = "#818cf8";
+const palette = ["#818cf8", "#34d399", "#fbbf24", "#f472b6", "#38bdf8", "#a78bfa", "#fb923c", "#2dd4bf"];
 
 function countValues(events: VisitorEvent[], getValue: (event: VisitorEvent) => string | null, limit = 8) {
   const counts = new Map<string, number>();
@@ -37,6 +36,19 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle: str
 type AnalyticsChartScope = "overview" | "audience" | "navigation" | "technical";
 
 export default function AnalyticsCharts({ events, scope }: { events: VisitorEvent[]; scope: AnalyticsChartScope }) {
+  const [theme, setTheme] = useState({ text: "#555555", grid: "#dddddd", surface: "#ffffff" });
+  useEffect(() => {
+    const update = () => {
+      const css = getComputedStyle(document.documentElement);
+      setTheme({ text: css.getPropertyValue("--color-on-surface-variant").trim(), grid: css.getPropertyValue("--color-surface-border").trim(), surface: css.getPropertyValue("--color-surface-container-lowest").trim() });
+    };
+    update();
+    const observer = new MutationObserver(update);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+  const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: theme.text } }, y: { grid: { color: theme.grid }, ticks: { color: theme.text, precision: 0 }, beginAtZero: true } } };
+  const ringOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom" as const, labels: { color: theme.text, usePointStyle: true, padding: 16 } } } };
   const charts = useMemo(() => ({
     country: countValues(events, (event) => event.country),
     location: countValues(events, locationValue),
@@ -48,8 +60,8 @@ export default function AnalyticsCharts({ events, scope }: { events: VisitorEven
     pages: countValues(events, (event) => event.page),
   }), [events]);
 
-  const barData = (values: Array<[string, number]>) => ({ labels: values.map(([label]) => label), datasets: [{ data: values.map(([, count]) => count), backgroundColor: ink, borderColor: ink, borderWidth: 1 }] });
-  const ringData = (values: Array<[string, number]>) => ({ labels: values.map(([label]) => label), datasets: [{ data: values.map(([, count]) => count), backgroundColor: gray, borderColor: "#ffffff", borderWidth: 2 }] });
+  const barData = (values: Array<[string, number]>) => ({ labels: values.map(([label]) => label), datasets: [{ data: values.map(([, count]) => count), backgroundColor: palette, borderColor: palette, borderWidth: 0, borderRadius: 6 }] });
+  const ringData = (values: Array<[string, number]>) => ({ labels: values.map(([label]) => label), datasets: [{ data: values.map(([, count]) => count), backgroundColor: palette, borderColor: theme.surface, borderWidth: 2 }] });
   const allParameters: Array<[string, number]> = [
     ["Country", events.filter((event) => Boolean(event.country)).length],
     ["Location", events.filter((event) => Boolean(locationValue(event))).length],
@@ -77,18 +89,18 @@ export default function AnalyticsCharts({ events, scope }: { events: VisitorEven
   }, [events]);
 
   return <div className="grid gap-5 xl:grid-cols-2">
-    {scope === "overview" && <div className="xl:col-span-2"><ChartCard title="Views over time" subtitle="Daily page views for the last 14 days."><Line data={{ labels: dailyViews.map((day) => day.label), datasets: [{ label: "Page views", data: dailyViews.map((day) => day.count), borderColor: ink, backgroundColor: "rgba(23,23,23,0.08)", pointBackgroundColor: ink, pointBorderColor: ink, pointRadius: 3, fill: true, tension: 0.3 }] }} options={{ ...chartOptions, plugins: { ...chartOptions.plugins, tooltip: { enabled: true } } }} /></ChartCard></div>}
+    {scope === "overview" && <div className="xl:col-span-2"><ChartCard title="Views over time" subtitle="Daily page views for the last 14 days."><Line data={{ labels: dailyViews.map((day) => day.label), datasets: [{ label: "Page views", data: dailyViews.map((day) => day.count), borderColor: ink, backgroundColor: "rgba(129,140,248,0.12)", pointBackgroundColor: ink, pointBorderColor: ink, pointRadius: 3, fill: true, tension: 0.3 }] }} options={{ ...chartOptions, plugins: { ...chartOptions.plugins, tooltip: { enabled: true } } }} /></ChartCard></div>}
     {scope === "audience" && <>
-      <ChartCard title="By country" subtitle="Visits grouped by country."><Doughnut data={ringData(charts.country)} options={chartOptions} /></ChartCard>
+      <ChartCard title="By country" subtitle="Visits grouped by country."><Doughnut data={ringData(charts.country)} options={ringOptions} /></ChartCard>
       <ChartCard title="By location" subtitle="Visits grouped by city, region, or country."><Bar data={barData(charts.location)} options={{ ...chartOptions, indexAxis: "y" as const }} /></ChartCard>
       <ChartCard title="By browser" subtitle="Browser families detected from user agents."><Bar data={barData(charts.browser)} options={chartOptions} /></ChartCard>
-      <ChartCard title="By operating system" subtitle="Operating systems detected from user agents."><Pie data={ringData(charts.os)} options={chartOptions} /></ChartCard>
-      <ChartCard title="By device" subtitle="Desktop, mobile, and tablet visits."><Doughnut data={ringData(charts.device)} options={chartOptions} /></ChartCard>
+      <ChartCard title="By operating system" subtitle="Operating systems detected from user agents."><Pie data={ringData(charts.os)} options={ringOptions} /></ChartCard>
+      <ChartCard title="By device" subtitle="Desktop, mobile, and tablet visits."><Doughnut data={ringData(charts.device)} options={ringOptions} /></ChartCard>
     </>}
     {scope === "navigation" && <ChartCard title="By page" subtitle="Most visited pages in the loaded dataset."><Bar data={barData(charts.pages)} options={{ ...chartOptions, indexAxis: "y" as const }} /></ChartCard>}
     {scope === "technical" && <>
       <ChartCard title="By language" subtitle="Browser language distribution."><Bar data={barData(charts.language)} options={chartOptions} /></ChartCard>
-      <ChartCard title="All parameters" subtitle="How completely each analytics parameter is populated."><Line data={{ labels: allParameters.map(([label]) => label), datasets: [{ data: allParameters.map(([, count]) => count), borderColor: ink, backgroundColor: "rgba(23,23,23,0.08)", fill: true, tension: 0.3 }] }} options={chartOptions} /></ChartCard>
+      <ChartCard title="All parameters" subtitle="How completely each analytics parameter is populated."><Line data={{ labels: allParameters.map(([label]) => label), datasets: [{ data: allParameters.map(([, count]) => count), borderColor: ink, backgroundColor: "rgba(129,140,248,0.12)", fill: true, tension: 0.3 }] }} options={chartOptions} /></ChartCard>
       <div className="xl:col-span-2"><ChartCard title="By timezone" subtitle="Visitor timezone distribution."><Bar data={barData(charts.timezone)} options={{ ...chartOptions, indexAxis: "y" as const }} /></ChartCard></div>
     </>}
   </div>;
