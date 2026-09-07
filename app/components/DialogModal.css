@@ -17,12 +17,4 @@ dialog::backdrop {
   backdrop-filter: blur(8px);
 }
 
-:root[data-modal-open="true"] .custom-cursor {
-  opacity: 0 !important;
-}
-
-:root[data-modal-open="true"] * {
-  cursor: auto !important;
-}
-
 :root[data-modal-open="true"] { overflow: hidden; }

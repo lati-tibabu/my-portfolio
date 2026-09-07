@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Icon from "../components/Icon";
 import {
   certifications as defaultCertifications,
-  devJourneyItems as defaultDevJourneyItems,
 } from "../data/cms";
-import type { Certification, DevJourneyItem } from "../data/cms";
-import { loadCertifications, loadDevJourneyItems } from "../lib/content";
+import type { Certification } from "../data/cms";
+import { loadCertifications } from "../lib/content";
 
 export const metadata: Metadata = {
   title: "About Lati Tibabu",
   description:
     "Read about Lati Tibabu's background, experience, education, skills, and selected projects as a Full Stack and Odoo ERP Developer.",
+  alternates: { canonical: "/about" },
+  openGraph: { title: "About Lati Tibabu", description: "The background, experience, and education behind my work.", url: "/about" },
   keywords: [
     "About Lati Tibabu",
     "Odoo ERP Developer",
@@ -23,13 +25,45 @@ export const metadata: Metadata = {
 // CMS content lives in Supabase; always render fresh so admin edits appear immediately.
 export const revalidate = 0;
 
+const skills = [
+  {
+    title: "Languages",
+    items: ["JavaScript", "TypeScript", "Python", "Java", "SQL"],
+  },
+  {
+    title: "Frontend",
+    items: [
+      "React.js",
+      "Next.js",
+      "Redux Toolkit",
+      "Tailwind CSS",
+      "CSS Modules",
+    ],
+  },
+  {
+    title: "Odoo & Backend",
+    items: [
+      "Odoo (Python, XML, QWeb)",
+      "Node.js",
+      "Express.js",
+      "PostgreSQL",
+      "REST APIs",
+    ],
+  },
+  {
+    title: "Tools & Platforms",
+    items: [
+      "Git & GitHub",
+      "Keycloak (SSO/OAuth2)",
+      "Flutter",
+      "Vercel",
+      "Figma",
+    ],
+  },
+];
+
 export default async function About() {
-  const [devJourneyFromCms, certificationsFromCms] = await Promise.all([
-    loadDevJourneyItems(),
-    loadCertifications(),
-  ]);
-  const devJourney: DevJourneyItem[] =
-    devJourneyFromCms.length > 0 ? devJourneyFromCms : defaultDevJourneyItems;
+  const certificationsFromCms = await loadCertifications();
   const certifications: Certification[] =
     certificationsFromCms.length > 0 ? certificationsFromCms : defaultCertifications;
 
@@ -37,7 +71,7 @@ export default async function About() {
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-on-background)]">
       <section className="px-6 pt-24 pb-12 bg-[var(--color-deep-navy)] text-white">
         <div className="max-w-[1100px] mx-auto space-y-6">
-          <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">Portfolio · CV</p>
+          <p className="font-label text-[11px] uppercase tracking-[0.24em] text-white/60">About / Behind the work</p>
           <h1 className="font-heading text-[36px] md:text-[48px]">LATI TIBABU GAMACHU</h1>
           <p className="text-[18px] text-white/80">Full Stack &amp; Odoo ERP Developer</p>
           <div className="flex flex-wrap gap-4 text-[14px] text-white/80">
@@ -85,25 +119,15 @@ export default async function About() {
       <section className="px-6 py-16">
         <div className="max-w-[1100px] mx-auto grid gap-12 md:grid-cols-[0.9fr_1.1fr]">
           <aside className="space-y-8">
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
-              <h3 className="font-heading text-[18px] text-[var(--color-on-surface)]">Technical skills</h3>
-              <div className="mt-4 space-y-4">
-                <div>
-                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">Programming</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {["Node.js", "JavaScript", "Python", "Java", "React.js", "Next.js", "Flutter"].map((s) => (
-                      <span key={s} className="tag-chip">{s}</span>
-                    ))}
+            <div id="skills" className="scroll-mt-24 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6">
+              <h2 className="font-heading text-lg">Technical skills</h2>
+              <div className="mt-5 space-y-6">
+                {skills.map((group) => (
+                  <div key={group.title}>
+                    <h3 className="section-kicker">{group.title}</h3>
+                    <div className="mt-3 flex flex-wrap gap-2">{group.items.map((item) => <span key={item} className="tag-chip">{item}</span>)}</div>
                   </div>
-                </div>
-                <div>
-                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">ERP & Backend</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {["Odoo ORM", "XML/QWeb", "PostgreSQL", "REST APIs", "Keycloak", "OAuth2"].map((s) => (
-                      <span key={s} className="tag-chip">{s}</span>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -172,30 +196,7 @@ export default async function About() {
                   </ul>
                 </div>
 
-                <div>
-                  <h4 className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">Development Journey</h4>
-                  <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    {devJourney.map((project) => (
-                      <article key={project.id ?? project.title} className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4">
-                        <h5 className="font-heading text-[15px] text-[var(--color-on-surface)]">{project.title}</h5>
-                        <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                          {project.description}
-                          {project.links.map((link, index) => (
-                            <a
-                              key={link.url}
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`text-[var(--color-electric-blue)] font-semibold ${index === 0 ? "ml-1" : "ml-2"}`}
-                            >
-                              {link.label ?? "View"}
-                            </a>
-                          ))}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
+                <Link href="/#work" className="inline-flex items-center gap-2 border-b border-current pb-2 text-sm">Explore my project journey <span aria-hidden="true">↗</span></Link>
               </div>
             </div>
 

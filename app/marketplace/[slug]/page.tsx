@@ -65,7 +65,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
     sku: item.technicalName,
     brand: {
       "@type": "Brand",
-      name: "Aura",
+      name: item.authorName || "Lati Tibabu",
     },
     url: productUrl,
     offers: {
@@ -156,11 +156,11 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
               {item.createdAt && (
                 <p>Created: {new Date(item.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
               )}
-              <p>Version: {item.version}</p>
+              {item.version && <p>Version: {item.version}</p>}
               <p>Price: {item.price}</p>
-              <p>License: {item.license}</p>
-              <p>Technical name: {item.technicalName}</p>
-              <p>
+              {item.license && <p>License: {item.license}</p>}
+              {item.technicalName && <p>Technical name: {item.technicalName}</p>}
+              {item.website && <p>
                 Website:{" "}
                 <a
                   href={item.website}
@@ -170,7 +170,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
                 >
                   {item.website}
                 </a>
-              </p>
+              </p>}
               {item.compatibility && <p>Compatibility: {item.compatibility}</p>}
               {item.warning && <p>Note: {item.warning}</p>}
               {item.contactEmail && (
@@ -198,7 +198,7 @@ export default async function MarketplaceDetailPage({ params }: PageProps) {
                 rel="noopener noreferrer"
                 className="text-[var(--color-electric-blue)]"
               >
-                Odoo listing →
+                Get product →
               </a>
               {item.livePreview && (
                 <a

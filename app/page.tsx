@@ -1,23 +1,20 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "./components/Icon";
 import MarkdownText from "./components/MarkdownText";
+import ProjectJourney from "./components/ProjectJourney";
 import TestimonialsMarquee from "./components/TestimonialsMarquee";
 import {
-  certifications as defaultCertifications,
   devJourneyItems as defaultDevJourneyItems,
   heroContent as defaultHeroContent,
   stats as defaultStats,
 } from "./data/cms";
 import type {
-  Certification,
   DevJourneyItem,
   HeroContent,
 } from "./data/cms";
 import {
-  loadCertifications,
   loadDevJourneyItems,
   loadHeroContent,
   loadMarketplaceItems,
@@ -31,11 +28,11 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
   description:
-    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
+    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and digital products. Based in Ethiopia, available for freelance work globally.",
   keywords: [
     "Full Stack Developer",
     "Odoo ERP",
-    "Odoo Products",
+    "Digital Products",
     "Odoo Themes",
     "Next.js",
     "Python",
@@ -87,74 +84,6 @@ const services = [
   },
 ];
 
-const skills = [
-  {
-    title: "Languages",
-    items: ["JavaScript", "TypeScript", "Python", "Java", "SQL"],
-  },
-  {
-    title: "Frontend",
-    items: [
-      "React.js",
-      "Next.js",
-      "Redux Toolkit",
-      "Tailwind CSS",
-      "CSS Modules",
-    ],
-  },
-  {
-    title: "Odoo & Backend",
-    items: [
-      "Odoo (Python, XML, QWeb)",
-      "Node.js",
-      "Express.js",
-      "PostgreSQL",
-      "REST APIs",
-    ],
-  },
-  {
-    title: "Tools & Platforms",
-    items: [
-      "Git & GitHub",
-      "Keycloak (SSO/OAuth2)",
-      "Flutter",
-      "Vercel",
-      "Figma",
-    ],
-  },
-];
-
-const experience = [
-  {
-    role: "Full Stack / Odoo ERP Developer",
-    period: "08/2025 – Present",
-    org: "OTech Engineering and Technology Solutions",
-    highlights: [
-      "Implemented and deployed 3+ custom Odoo modules for HR, Planning, and Inventory workflows.",
-      "Led system integrations and REST APIs using Keycloak-based IAM (OIDC/OAuth2).",
-      "Managed requirements analysis and ongoing maintenance within ERP teams.",
-    ],
-  },
-  {
-    role: "Software Development Intern",
-    period: "07/2024 – 10/2024",
-    org: "Ministry of Innovation and Technology, Ethiopia",
-    highlights: [
-      "Co-led backend design and data modeling for SchoolStream.",
-      "Developed RESTful APIs and optimized PostgreSQL queries for accessibility.",
-    ],
-  },
-  {
-    role: "Machine Learning Intern",
-    period: "06/2024 – 07/2024",
-    org: "TechnoHacks EduTech (Remote)",
-    highlights: [
-      "Executed supervised learning tasks for classification and regression datasets.",
-      "Achieved 85%+ predictive accuracy in sample models.",
-    ],
-  },
-];
-
 const graphicsPreview = [
   "/Images/Graphics/akkamitti_qophoofna_2025.png",
   "/Images/Graphics/duula_kadhannaa_2023.png",
@@ -164,26 +93,23 @@ const graphicsPreview = [
 
 export default async function Home() {
   const marketplaceItems = await loadMarketplaceItems();
-  const [heroFromCms, testimonials, devJourneyFromCms, certificationsFromCms, statsFromCms] =
+  const [heroFromCms, testimonials, devJourneyFromCms, statsFromCms] =
     await Promise.all([
       loadHeroContent(),
       loadTestimonials(),
       loadDevJourneyItems(),
-      loadCertifications(),
       loadStats(),
     ]);
   const hero: HeroContent = heroFromCms ?? defaultHeroContent;
   const devJourney: DevJourneyItem[] =
     devJourneyFromCms.length > 0 ? devJourneyFromCms : defaultDevJourneyItems;
-  const certifications: Certification[] =
-    certificationsFromCms.length > 0 ? certificationsFromCms : defaultCertifications;
   const stats = statsFromCms.length > 0 ? statsFromCms : defaultStats;
 
   const heroCtas = [
     { label: hero.cta1Label, href: hero.cta1Href, primary: true },
     { label: hero.cta2Label, href: hero.cta2Href, primary: false },
     { label: hero.cta3Label, href: hero.cta3Href, primary: false },
-  ].filter((cta) => cta.label?.trim() && cta.href?.trim()) as {
+  ].map((cta) => ({ ...cta, href: cta.href === "/#skills" || cta.href === "#skills" ? "/about#skills" : cta.href })).filter((cta) => cta.label?.trim() && cta.href?.trim()) as {
     label: string;
     href: string;
     primary: boolean;
@@ -289,54 +215,17 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="px-6">
-        <div className="max-w-[1280px] mx-auto">
-          <div className="grid grid-cols-2 gap-3 text-center sm:gap-6 lg:grid-cols-4">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-3 px-3 py-6 sm:p-6 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] transition-all duration-300 hover:bg-[var(--color-surface-container-lowest)] hover:-translate-y-1">
-                <p className="font-heading text-[28px] text-[var(--color-on-surface)]">
-                  {stat.value}
-                </p>
-                <p className="text-[12px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                  {stat.label}
-                </p>
+      <section aria-label="Work in numbers" className="px-6 py-8">
+        <div className="impact-panel mx-auto max-w-[1280px]">
+          <div className="impact-heading"><span className="section-kicker">The work, in numbers</span><span className="font-mono text-xs opacity-60">Small details. Real impact.</span></div>
+          <dl className="impact-stats">
+            {stats.map((stat, index) => (
+              <div key={stat.id ?? stat.label} className="impact-stat">
+                <span aria-hidden="true" className="font-mono text-xs opacity-40">/{String(index + 1).padStart(2, "0")}</span>
+                <dt>{stat.label}</dt><dd>{stat.value}</dd>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="marketplace" className="lively-section px-6 py-24">
-        <div className="relative z-[1] mx-auto max-w-[1280px] space-y-10">
-          <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
-            <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              01 / Products
-            </p>
-            <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
-              Odoo products built for real workflows
-            </h2>
-            <p className="text-[16px] text-[var(--color-on-surface-variant)] max-w-[640px]">
-              Explore Aura apps and themes as practical products, with full
-              details, screenshots, and support links.
-            </p>
-          </div>
-          <div className="lively-card group stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between [--stagger-delay:180ms] md:p-8">
-            <div className="relative z-[1]">
-              <p className="font-heading text-[22px] text-[var(--color-on-surface)] transition-transform duration-300 group-hover:translate-x-1">
-                Aura Odoo Products
-              </p>
-              <p className="mt-2 text-[14px] text-[var(--color-on-surface-variant)]">
-                {marketplaceItems.length} products with full specs, pricing,
-                screenshots, and support links.
-              </p>
-            </div>
-            <Link
-              href="/marketplace"
-              className="lively-arrow inline-flex items-center gap-2 self-start rounded-full border border-[var(--color-on-surface)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] md:self-auto"
-            >
-              View products <span aria-hidden="true">↗</span>
-            </Link>
-          </div>
+          </dl>
         </div>
       </section>
 
@@ -348,7 +237,7 @@ export default async function Home() {
           <div className="grid gap-6 lg:grid-cols-[1.4fr_0.6fr] lg:items-end">
             <div className="space-y-4">
               <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-                02 / Services
+                01 / Services
               </p>
               <h2 className="font-heading text-[36px] leading-[1.05] tracking-[-0.02em] text-[var(--color-on-surface)] md:text-[44px]">
                 Services built for measurable growth
@@ -378,22 +267,22 @@ export default async function Home() {
                 href="/#contact"
                 className="group grid grid-cols-[auto_1fr_auto] items-center gap-5 px-5 py-7 transition-colors duration-300 hover:bg-[var(--color-on-surface)] sm:gap-8 sm:px-7 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-[var(--color-surface-border)] hover:[&:not(:first-child)]:border-[var(--color-on-surface)]"
               >
-                <span className="font-label text-[12px] tracking-[0.2em] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-white/55">
+                <span className="font-label text-[12px] tracking-[0.2em] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-[var(--color-background)]">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <div className="min-w-0">
-                  <h3 className="font-heading text-[22px] leading-tight text-[var(--color-on-surface)] transition-colors duration-300 group-hover:text-white sm:text-[24px]">
+                  <h3 className="font-heading text-[22px] leading-tight text-[var(--color-on-surface)] transition-colors duration-300 group-hover:text-[var(--color-background)] sm:text-[24px]">
                     {service.title}
                   </h3>
-                  <p className="mt-2 max-w-[560px] text-[14px] leading-[1.6] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-white/70">
+                  <p className="mt-2 max-w-[560px] text-[14px] leading-[1.6] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-[var(--color-background)]">
                     {service.description}
                   </p>
                 </div>
                 <div className="flex items-center gap-4 sm:gap-6">
-                  <span className="font-label hidden text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-white/55 sm:inline">
+                  <span className="font-label hidden text-[10px] uppercase tracking-[0.2em] text-[var(--color-on-surface-variant)] transition-colors duration-300 group-hover:text-[var(--color-background)] sm:inline">
                     {service.tag}
                   </span>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] transition-all duration-300 group-hover:border-white/40 group-hover:text-white">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-surface-border)] text-[var(--color-on-surface-variant)] transition-all duration-300 group-hover:border-[var(--color-background)] group-hover:text-[var(--color-background)]">
                     <Icon
                       name="arrow-right"
                       size={15}
@@ -485,265 +374,46 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="skills" className="lively-section bg-[var(--color-surface-container-low)] px-6 py-24">
+      <section id="marketplace" className="lively-section px-6 py-24">
         <div className="relative z-[1] mx-auto max-w-[1280px] space-y-10">
           <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
             <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              03 / Skills
+              02 / Products
             </p>
             <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
-              Skills & tech stack
+              Digital products for everyday possibilities
             </h2>
             <p className="text-[16px] text-[var(--color-on-surface-variant)] max-w-[640px]">
-              Full-stack delivery with deep ERP specialization and
-              platform-level integrations.
+              Apps, themes, templates, and tools built to help you work smarter.
+              Discover the details, previews, and resources behind each product.
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {skills.map((skillGroup, index) => (
-              <article
-                key={skillGroup.title}
-                className="lively-card stagger-up group rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 [--stagger-delay:calc(160ms+var(--index)*90ms)]"
-                style={{ "--index": index } as CSSProperties}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <span className="font-label text-[10px] tracking-[0.2em] text-[var(--color-on-surface-variant)]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="lively-arrow flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-surface-border)] text-sm text-[var(--color-on-surface-variant)]">
-                    ↗
-                  </span>
-                </div>
-                <h3 className="mt-8 font-heading text-[18px] text-[var(--color-on-surface)] transition-transform duration-300 group-hover:translate-x-1">
-                  {skillGroup.title}
-                </h3>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {skillGroup.items.map((item) => (
-                    <span key={item} className="tag-chip">
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </article>
-            ))}
+          <div className="lively-card group stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between [--stagger-delay:180ms] md:p-8">
+            <div className="relative z-[1]">
+              <p className="font-heading text-[22px] text-[var(--color-on-surface)] transition-transform duration-300 group-hover:translate-x-1">
+                The digital product catalog
+              </p>
+              <p className="mt-2 text-[14px] text-[var(--color-on-surface-variant)]">
+                {marketplaceItems.length} products with full specs, pricing,
+                screenshots, and support links.
+              </p>
+            </div>
+            <Link
+              href="/marketplace"
+              className="lively-arrow inline-flex items-center gap-2 self-start rounded-full border border-[var(--color-on-surface)] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface)] md:self-auto"
+            >
+              View products <span aria-hidden="true">↗</span>
+            </Link>
           </div>
         </div>
       </section>
 
-      <section
-        id="about"
-        className="lively-section px-6 py-24 bg-[var(--color-background)]"
-      >
-        <div className="relative z-[1] mx-auto max-w-[1280px] space-y-12">
-          <div className="stagger-up space-y-3 [--stagger-delay:80ms]">
-            <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              04 / About
-            </p>
-            <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
-              Personal profile
-            </h2>
-            <p className="text-[16px] leading-[1.7] text-[var(--color-on-surface-variant)] max-w-[720px]">
-              I am Lati Tibabu, a Full Stack and Odoo ERP Developer based in
-              Addis Ababa, specializing in backend development, Odoo
-              customization, and system integration using Python and the Odoo
-              ORM. I work on REST APIs, workflow automation, and Identity &
-              Access Management with Keycloak (OIDC, OAuth2, SSO). I hold a
-              B.Sc. in Computer Science and Engineering from Adama Science and
-              Technology University and focus on building scalable, maintainable
-              ERP solutions.
-            </p>
-          </div>
+      <ProjectJourney projects={devJourney} />
 
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <div className="lively-card stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-6 [--stagger-delay:160ms]">
-              <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                Profile
-              </h3>
-              <p className="mt-3 text-[15px] leading-[1.7] text-[var(--color-on-surface-variant)]">
-                Full Stack Developer and Odoo ERP Developer with practical
-                experience in Odoo customization, module development, and ERP
-                implementation. Expert in Python, PostgreSQL, Odoo ORM, XML
-                views, and workflow automation. Focused on delivering
-                maintainable systems across the software development lifecycle.
-              </p>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <div className="group relative aspect-square overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
-                  <Image
-                    src="/static/about_image_pc.jpg"
-                    alt="LATI team"
-                    fill
-                    sizes="(min-width: 1024px) 260px, 45vw"
-                    className="object-cover grayscale transition duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <div className="group relative aspect-square overflow-hidden rounded-lg border border-[var(--color-surface-border)]">
-                  <Image
-                    src="/static/colleagues-reading-company-documents.jpg"
-                    alt="Collaboration"
-                    fill
-                    sizes="(min-width: 1024px) 260px, 45vw"
-                    className="object-cover grayscale transition duration-700 group-hover:scale-105"
-                  />
-                </div>
-              </div>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 text-[14px] text-[var(--color-on-surface-variant)]">
-                <div>
-                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                    Location
-                  </p>
-                  <p className="mt-2">Addis Ababa, Ethiopia</p>
-                </div>
-                <div>
-                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                    Education
-                  </p>
-                  <p className="mt-2">
-                    B.Sc. Computer Science & Engineering — Adama Science and
-                    Technology University
-                  </p>
-                </div>
-                <div>
-                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                    Email
-                  </p>
-                  <p className="mt-2">latitibabu2018@gmail.com</p>
-                </div>
-                <div>
-                  <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                    Phone
-                  </p>
-                  <p className="mt-2">+251 979 586 697</p>
-                </div>
-              </div>
-              <div className="mt-6">
-                <p className="font-label text-[10px] uppercase tracking-[0.2em] text-[var(--color-electric-blue)]">
-                  Languages
-                </p>
-                <p className="mt-2 text-[14px] text-[var(--color-on-surface-variant)]">
-                  Afan Oromo (Native), English (Proficient), Amharic (Basic)
-                </p>
-              </div>
-            </div>
-
-            <div className="lively-card stagger-up rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-6 [--stagger-delay:240ms]">
-              <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                Experience
-              </h3>
-              <div className="mt-4 space-y-6">
-                {experience.map((role) => (
-                  <div key={role.role} className="space-y-3">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-[15px] font-semibold text-[var(--color-on-surface)]">
-                          {role.role}
-                        </p>
-                        <p className="text-[13px] text-[var(--color-on-surface-variant)]">
-                          {role.org}
-                        </p>
-                      </div>
-                      <span className="tag-chip">{role.period}</span>
-                    </div>
-                    <ul className="space-y-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                      {role.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-start gap-2">
-                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[var(--color-electric-blue)]" />
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-4 transition-colors duration-300 hover:bg-[var(--color-surface-container-high)]">
-                <p className="font-heading text-[16px] text-[var(--color-on-surface)]">
-                  Built for impact. Designed for you.
-                </p>
-                <p className="mt-2 text-[13px] text-[var(--color-on-surface-variant)]">
-                  We deliver results that help businesses grow, scale, and stay
-                  ahead.
-                </p>
-              </div>
-              <div className="mt-4 grid gap-3 text-[13px] text-[var(--color-on-surface-variant)]">
-                {[
-                  "Proven expertise",
-                  "Focused on outcomes",
-                  "Long-term partnership",
-                ].map((item) => (
-                  <div key={item} className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-electric-blue)]" />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 sm:p-8">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                  Development journey
-                </h3>
-                <span className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
-                  Core Projects
-                </span>
-              </div>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {devJourney.map((project) => {
-                  const primaryLink = project.links[0];
-                  return (
-                    <article
-                      key={project.id ?? project.title}
-                      className="flex flex-col justify-between rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--color-electric-blue)]/40 hover:shadow-md"
-                    >
-                      <div>
-                        <h4 className="font-heading text-[16px] font-semibold text-[var(--color-on-surface)]">
-                          {project.title}
-                        </h4>
-                        <p className="mt-2 text-[13px] leading-relaxed text-[var(--color-on-surface-variant)]">
-                          {project.description}
-                        </p>
-                      </div>
-                      {primaryLink && (
-                        <a
-                          href={primaryLink.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-4 inline-flex items-center gap-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-electric-blue)] transition hover:gap-2"
-                        >
-                          View project →
-                        </a>
-                      )}
-                    </article>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] p-6 sm:p-8">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="font-heading text-[20px] text-[var(--color-on-surface)]">
-                  Certifications
-                </h3>
-                <span className="text-[12px] font-medium uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">
-                  Verified Credentials
-                </span>
-              </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {certifications.map((cert) => (
-                  <div
-                    key={cert.id ?? cert.title}
-                    className="flex items-center gap-3 rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4 transition hover:border-[var(--color-electric-blue)]/40"
-                  >
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--color-electric-blue)]" />
-                    <span className="text-[13px] font-medium text-[var(--color-on-surface)]">
-                      {cert.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      <section id="about" className="px-6 py-12 border-y border-[var(--color-surface-border)]">
+        <div className="mx-auto flex max-w-[1280px] flex-col justify-between gap-5 sm:flex-row sm:items-center">
+          <div><p className="section-kicker">Behind the work</p><h2 className="mt-3 text-2xl tracking-tight">A little more about the person building it.</h2></div>
+          <Link href="/about" className="inline-flex shrink-0 items-center gap-4 self-start border-b border-current pb-2 text-sm sm:self-auto">Meet Lati <span aria-hidden="true">↗</span></Link>
         </div>
       </section>
 
@@ -773,7 +443,7 @@ export default async function Home() {
         <div className="max-w-[1280px] mx-auto space-y-10">
           <div className="space-y-3">
             <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              05 / Graphics
+              04 / Graphics
             </p>
             <h2 className="font-heading text-[32px] text-[var(--color-on-surface)]">
               Graphics & creative work
@@ -808,89 +478,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <section
-        id="contact"
-        className="px-6 py-20 bg-[var(--color-deep-navy)] text-[var(--color-inverse-on-surface)]"
-      >
-        <div className="max-w-[1280px] mx-auto grid gap-10 lg:grid-cols-[1.2fr_0.8fr] items-center">
-          <div className="space-y-4">
-            <p className="font-label text-[11px] uppercase tracking-[0.24em] text-[var(--color-electric-blue)]">
-              06 / Contact
-            </p>
-            <h2 className="font-heading text-[32px] text-white">
-              Let&apos;s build better systems together
-            </h2>
-            <p className="text-[16px] leading-[1.7] text-[var(--color-inverse-on-surface)] max-w-[520px]">
-              Ready to build better systems? I&apos;m open to freelance work,
-              ERP modernization, and long-term product partnerships. Reach out
-              via email or Telegram and I will respond quickly.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="mailto:latitibabu2018@gmail.com"
-                className="inline-flex items-center gap-2 rounded-md bg-white px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--color-deep-navy)]"
-              >
-                Email personal
-              </a>
-              <a
-                href="mailto:hello@latitibabu.com"
-                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white"
-              >
-                Email business
-              </a>
-              <a
-                href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white"
-              >
-                <Icon name="upwork" size={18} />
-                Hire me on Upwork
-              </a>
-              <a
-                href="https://t.me/latitibabu"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-white/30 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-white"
-              >
-                Telegram
-              </a>
-            </div>
-          </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 p-6">
-            <h3 className="font-heading text-[20px] text-white">
-              Contact details
-            </h3>
-            <div className="mt-4 space-y-4 text-[14px] text-[var(--color-inverse-on-surface)]">
-              <div className="flex items-center gap-3">
-                <Icon name="mail" size={18} />
-                <span>latitibabu2018@gmail.com · hello@latitibabu.com</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Icon name="fiverr" size={18} />
-                <span>Fiverr: latitibabu</span>
-              </div>
-              <a
-                href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 transition hover:text-white"
-              >
-                <Icon name="upwork" size={18} />
-                <span>Upwork: hire me for freelance work</span>
-              </a>
-              <div className="flex items-center gap-3">
-                <Icon name="phone" size={18} />
-                <span>+251 979 586 697</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Icon name="location" size={18} />
-                <span>Addis Ababa, Ethiopia</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "s6.imgcdn.dev",
+      },
+      {
+        protocol: "https",
         hostname: "apps.odoocdn.com",
       },
       {

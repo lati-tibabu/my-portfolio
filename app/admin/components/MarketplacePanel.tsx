@@ -308,7 +308,7 @@ export default function MarketplacePanel({
             records.length === 0 ? (
               <EmptyState
                 title="No products yet"
-                description="Add Odoo apps and themes to the marketplace."
+                description="Add apps, themes, templates, and other digital products to the catalog."
                 action={<Button variant="primary" onClick={startNew}>New product</Button>}
               />
             ) : (

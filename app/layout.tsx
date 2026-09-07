@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Lexend, Playwrite_ID, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
-import Link from "next/link";
 import "./globals.css";
 import Header from "./components/Header";
-import CustomCursor from "./components/CustomCursor";
+import Footer from "./components/Footer";
 import VisitorTracker from "./components/VisitorTracker";
 
 const playwrite = Playwrite_ID({
@@ -24,14 +23,14 @@ export const metadata: Metadata = {
     template: "%s | Lati Tibabu",
   },
   description:
-    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
+    "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and digital products. Based in Ethiopia, available for freelance work globally.",
   applicationName: "Lati Tibabu",
   keywords: [
     "Lati Tibabu",
     "Full Stack Developer",
     "Odoo ERP",
     "Odoo Themes",
-    "Odoo Products",
+    "Digital Products",
     "Next.js",
     "Python",
     "Ethiopia",
@@ -46,7 +45,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
     description:
-      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
+      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and digital products. Based in Ethiopia, available for freelance work globally.",
     url: "/",
     siteName: "Lati Tibabu",
     images: [
@@ -64,7 +63,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Lati Tibabu — Full Stack & Odoo ERP Developer",
     description:
-      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and Odoo products. Based in Ethiopia, available for freelance work globally.",
+      "Lati Tibabu builds scalable web apps, Odoo ERP solutions, and digital products. Based in Ethiopia, available for freelance work globally.",
     images: ["/me4.png"],
   },
   robots: {
@@ -107,6 +106,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `try{const saved=localStorage.getItem("portfolio-theme");document.documentElement.dataset.theme=saved==="dark"||saved==="light"?saved:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}catch{document.documentElement.dataset.theme=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}` }} />
+      </head>
       <body
         suppressHydrationWarning
         className={`${playwrite.variable} ${lexend.variable} ${jetbrainsMono.variable} flex min-h-screen flex-col bg-[var(--color-background)] text-[var(--color-on-background)] antialiased transition-colors duration-200`}
@@ -123,15 +125,7 @@ export default function RootLayout({
         <Header />
         <VisitorTracker />
         <main id="main-content" tabIndex={-1} className="flex-1">{children}</main>
-        <CustomCursor />
-        <footer className="border-t border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] py-6">
-          <div className="max-w-[1280px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-[12px] text-[var(--color-on-surface-variant)]">
-            <p>&copy;{new Date().getFullYear()} Lati Tibabu. All rights reserved.</p>
-            <Link href="/privacy" className="underline-offset-4 hover:text-[var(--color-on-surface)] hover:underline">
-              Privacy policy
-            </Link>
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );
