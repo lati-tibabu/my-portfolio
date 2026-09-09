@@ -1,16 +1,15 @@
 "use client";
 
-import { FiActivity, FiUsers, FiLayers, FiGlobe, FiNavigation, FiCpu, FiDownload, FiRefreshCw } from "react-icons/fi";
+import { FiActivity, FiUsers, FiLayers, FiGlobe, FiNavigation, FiCpu, FiDownload, FiRefreshCw, FiMoreVertical, FiTrash2 } from "react-icons/fi";
 
 import { useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "../../lib/supabase/browser";
 import { sectionClass } from "../lib/constants";
 import type { VisitorEvent } from "../lib/types";
 import AnalyticsCharts from "./AnalyticsCharts";
-import ConfirmDialog from "./ui/ConfirmDialog";
-import { useConfirmDialog } from "../lib/useConfirmDialog";
 import { decodeAnalyticsValue } from "../lib/analytics";
 import Pagination from "./ui/Pagination";
+import Button from "./ui/Button";
 
 const cardClass = "rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface-container-low)] p-4";
 const csvCell = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
@@ -33,7 +32,9 @@ export default function AnalyticsPanel() {
   const [clearRange, setClearRange] = useState<ClearRange>("month");
   const [activeTab, setActiveTab] = useState<AnalyticsTab>("overview");
   const [recentPage, setRecentPage] = useState(1);
-  const { confirm, dialogProps } = useConfirmDialog();
+  const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadEvents = async () => {
     setBusy(true);
@@ -90,7 +91,7 @@ export default function AnalyticsPanel() {
     URL.revokeObjectURL(url);
   };
 
-  const clearAnalytics = async (range: ClearRange) => {
+  const clearAnalytics = async (range: ClearRange): Promise<boolean> => {
     const query = supabaseBrowser.from("visitor_events").delete();
     if (range === "all") {
       query.not("id", "is", null);
@@ -105,19 +106,17 @@ export default function AnalyticsPanel() {
     const { error: deleteError } = await query;
     if (deleteError) {
       setError(deleteError.message);
-      return;
+      return false;
     }
     await loadEvents();
+    return true;
   };
 
-  const requestClear = () => {
-    const label = clearRangeLabels[clearRange];
-    confirm({
-      title: `Clear ${label.toLowerCase()} analytics?`,
-      message: `This permanently deletes visitor events from ${label.toLowerCase()}. This action cannot be undone.`,
-      confirmLabel: `Delete ${label}`,
-      onConfirm: () => clearAnalytics(clearRange),
-    });
+  const handleDelete = async () => {
+    setDeleting(true);
+    const deleted = await clearAnalytics(clearRange);
+    setDeleting(false);
+    if (deleted) setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -133,14 +132,33 @@ export default function AnalyticsPanel() {
           <div className="flex gap-2">
             <button type="button" onClick={exportCsv} disabled={events.length === 0} className="rounded-lg border border-[var(--color-on-surface)] px-4 py-2 text-sm font-semibold hover:bg-[var(--studio-accent-soft)] hover:text-[var(--studio-accent-text)] disabled:cursor-not-allowed disabled:opacity-40"><FiDownload className="mr-2 inline" aria-hidden />Export CSV</button>
             <button type="button" onClick={() => void loadEvents()} className="rounded-lg border border-[var(--color-on-surface)] px-4 py-2 text-sm font-semibold hover:bg-[var(--studio-accent-soft)] hover:text-[var(--studio-accent-text)]"><FiRefreshCw className="mr-2 inline" aria-hidden />Refresh</button>
+            <div className="relative">
+              <button
+                type="button"
+                aria-label="Analytics actions"
+                aria-haspopup="menu"
+                aria-expanded={isActionsOpen}
+                title="Analytics actions"
+                onClick={() => setIsActionsOpen((open) => !open)}
+                className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-[var(--color-on-surface)] hover:bg-[var(--studio-accent-soft)] hover:text-[var(--studio-accent-text)]"
+              >
+                <FiMoreVertical aria-hidden />
+              </button>
+              {isActionsOpen && (
+                <div className="absolute right-0 top-full z-30 mt-2 w-48 rounded-xl border border-[var(--color-surface-border)] bg-[var(--color-surface)] p-1.5 shadow-lg" role="menu">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => { setIsActionsOpen(false); setIsDeleteDialogOpen(true); }}
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-error)]/10"
+                  >
+                    <FiTrash2 aria-hidden />
+                    Delete analytics
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[var(--color-surface-border)] pt-4">
-          <label htmlFor="clear-analytics-range" className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">Clear data</label>
-          <select id="clear-analytics-range" value={clearRange} onChange={(event) => setClearRange(event.target.value as ClearRange)} className="rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-3 py-2 text-sm">
-            {Object.entries(clearRangeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-          </select>
-          <button type="button" onClick={requestClear} className="rounded-lg border border-red-700 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-700 hover:text-white">Delete analytics</button>
         </div>
         {error && <p className="mt-4 text-sm text-red-600">Could not load analytics: {error}</p>}
         <div className="analytics-metrics mt-6 grid gap-4 sm:grid-cols-3">
@@ -210,7 +228,56 @@ export default function AnalyticsPanel() {
         <Pagination page={recentPage} pageCount={recentPageCount} onPageChange={(page) => { setRecentPage(page); setSelectedSessionId(null); }} />
       </section>}
     </div>
-    <ConfirmDialog {...dialogProps} />
+
+    {isDeleteDialogOpen && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-analytics-title"
+        onClick={() => !deleting && setIsDeleteDialogOpen(false)}
+      >
+        <div
+          className="w-full max-w-md rounded-2xl border border-[var(--color-surface-border)] bg-[var(--color-surface)] p-6 shadow-xl"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-error)]/10 text-[var(--color-error)]">
+              <FiTrash2 aria-hidden />
+            </div>
+            <div>
+              <h3 id="delete-analytics-title" className="font-heading text-[20px] text-[var(--color-on-surface)]">Delete analytics</h3>
+              <p className="mt-1 text-sm text-[var(--color-on-surface-variant)]">Choose which visitor data to permanently remove.</p>
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <label htmlFor="delete-analytics-range" className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-on-surface-variant)]">Data range</label>
+            <select
+              id="delete-analytics-range"
+              value={clearRange}
+              onChange={(event) => setClearRange(event.target.value as ClearRange)}
+              disabled={deleting}
+              className="mt-2 w-full rounded-lg border border-[var(--color-surface-border)] bg-[var(--color-surface-container-lowest)] px-3 py-2.5 text-sm outline-none focus:border-[var(--color-electric-blue)]"
+            >
+              {Object.entries(clearRangeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </div>
+
+          <div className="mt-4 rounded-xl border border-[var(--color-error)]/20 bg-[var(--color-error)]/5 p-3 text-sm text-[var(--color-on-surface-variant)]">
+            This permanently deletes visitor events for <span className="font-semibold text-[var(--color-on-surface)]">{clearRangeLabels[clearRange].toLowerCase()}</span>. This action cannot be undone.
+          </div>
+
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)} disabled={deleting}>Cancel</Button>
+            <Button variant="danger" onClick={() => void handleDelete()} disabled={deleting}>
+              <FiTrash2 aria-hidden />
+              {deleting ? "Deleting..." : `Delete ${clearRangeLabels[clearRange]}`}
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   );
 }
