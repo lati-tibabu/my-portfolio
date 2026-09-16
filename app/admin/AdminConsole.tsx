@@ -103,11 +103,28 @@ export default function AdminConsole() {
   }, [activeTab, auth.adminRole]);
 
   if (auth.loadingSession || auth.loadingProfile) {
+    const loadingLabel = auth.loadingSession
+      ? "Checking your session"
+      : "Loading your admin profile";
+
     return (
-      <div className={sectionClass}>
-        <p className="text-sm text-[var(--color-on-surface-variant)]">
-          {auth.loadingSession ? "Loading admin session..." : "Loading admin profile..."}
-        </p>
+      <div className="flex min-h-[calc(100vh-80px)] w-full items-center justify-center px-6">
+        <div className="flex w-full max-w-sm flex-col items-center justify-center text-center">
+          <div
+            className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-outline)] bg-[var(--color-surface)] shadow-sm"
+            role="status"
+            aria-label={loadingLabel}
+          >
+            <span className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--color-on-surface)] border-r-transparent" />
+          </div>
+
+          <p className="text-sm font-medium text-[var(--color-on-surface)]">
+            {loadingLabel}
+          </p>
+          <p className="mt-1 text-xs text-[var(--color-on-surface-variant)]">
+            Please wait a moment.
+          </p>
+        </div>
       </div>
     );
   }
