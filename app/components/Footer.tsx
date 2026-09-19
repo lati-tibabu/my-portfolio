@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Icon from "./Icon";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -18,10 +19,12 @@ export default function Footer() {
           </div>
           <div className="flex flex-col items-start gap-5">
             <a href="mailto:hello@latitibabu.com" className="header-contact inline-flex items-center gap-10 rounded-full px-6 py-4">Start a conversation <span aria-hidden="true">↗</span></a>
-            <a href="mailto:latitibabu2018@gmail.com" className="text-sm hover:underline">Email personal ↗</a>
-            <a href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share" target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">Hire me on Upwork ↗</a>
-            <a href="tel:+251979586697" className="text-sm hover:underline">+251 979 586 697</a>
-            <p className="text-xs text-[var(--color-on-surface-variant)]">Addis Ababa, Ethiopia · Fiverr: latitibabu</p>
+            <a href="mailto:latitibabu2018@gmail.com" className="inline-flex items-center gap-3 text-sm hover:underline"><Icon name="mail" size={16} /> Email personal <span aria-hidden="true">↗</span></a>
+            <a href="https://www.upwork.com/freelancers/~0162435256404567a3?mp_source=share" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 text-sm hover:underline"><Icon name="upwork" size={16} /> Hire me on Upwork <span aria-hidden="true">↗</span></a>
+            <a href="tel:+251979586697" className="inline-flex items-center gap-3 text-sm hover:underline"><Icon name="phone" size={16} /> +251 979 586 697</a>
+            <a href="https://t.me/latitibabu" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 text-sm hover:underline"><Icon name="telegram" size={16} /> @latitibabu <span aria-hidden="true">↗</span></a>
+            <a href="https://www.fiverr.com/latitibabu" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 text-sm hover:underline"><Icon name="fiverr" size={16} /> Fiverr: latitibabu <span aria-hidden="true">↗</span></a>
+            <p className="inline-flex items-center gap-3 text-xs text-[var(--color-on-surface-variant)]"><Icon name="location" size={16} /> Addis Ababa, Ethiopia</p>
           </div>
         </div>
         <div className="flex flex-col justify-between gap-10 pb-14 lg:flex-row">
